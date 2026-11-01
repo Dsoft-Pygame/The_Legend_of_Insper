@@ -85,10 +85,11 @@ The_Legend_of_Insper/
     │   └── hud.py                   vidas, pontos, nível, chefe
     ├── render/                      ÚNICA pasta que desenha o mundo
     │   ├── camera.py                recorte do mapa que aparece na tela
-    │   ├── aparencias.py            chave de aparência → cor ou sprite
+    │   ├── aparencias.py            chave de aparência → cor, sprite ou animação
+    │   ├── animacoes.py             qual imagem da animação mostrar agora (pelo tempo)
     │   └── renderizador_nivel.py    desenha mapa e entidades pela câmera
     ├── jogo/
-    │   ├── mundo.py                 níveis em sequência, vitória e derrota, passo fixo
+    │   ├── mundo.py                 níveis em sequência, vitória e derrota, 20 ticks/s
     │   ├── nivel.py                 o tick de um nível
     │   ├── combate.py               ataques, projéteis, colisões e dano
     │   ├── eventos.py               PersonagemDerrotado, HeroiNaSaida
@@ -138,11 +139,11 @@ The_Legend_of_Insper/
 | `Aplicacao` | `aplicacao/aplicacao.py` | Abre a janela, roda o loop e guarda a tela ativa, o catálogo, o ranking e a sessão. |
 | `Sessao`, `PerfilJogador` | `aplicacao/sessao.py` | Lista de jogadores (nome, dispositivo, classe). Co-op = mais um perfil. |
 | `LeitorEntrada` | `entrada/leitor_entrada.py` | Lê os eventos do pygame uma vez por quadro e devolve dados simples. |
-| `DispositivoTeclado`, `DispositivoGamepad` | `entrada/` | Leem teclas ou botões e devolvem um `EstadoEntrada`. |
+| `DispositivoTeclado`, `DispositivoGamepad` | `entrada/` | Olham teclas ou botões a cada quadro e entregam um `EstadoEntrada` a cada tick, sem perder toques rápidos. |
 | `GerenciadorDispositivos` | `entrada/gerenciador_dispositivos.py` | Sabe quais dispositivos existem e quem está usando cada um. |
 | `Tela` | `telas/tela.py` | Molde das telas: `tratar_entrada`, `atualizar` e `desenhar`. |
-| `RenderizadorNivel`, `Camera`, `Aparencias` | `render/` | Desenham o nível pela câmera, só lendo o estado. |
-| `Mundo` | `jogo/mundo.py` | Partida: níveis em sequência, lista de heróis, passo fixo, regras de vitória e derrota. |
+| `RenderizadorNivel`, `Camera`, `Aparencias`, `Animacao` | `render/` | Desenham o nível pela câmera, só lendo o estado: interpolam entre dois ticks e animam pelo tempo. |
+| `Mundo` | `jogo/mundo.py` | Partida: níveis em sequência, lista de heróis, passo fixo de 20 ticks por segundo, regras de vitória e derrota. |
 | `Nivel` | `jogo/nivel.py` | Um nível em andamento: personagens e controladores por id, projéteis, fila, o tick. |
 | `Fabrica`, `Catalogo` | `jogo/` | Leem os dados e montam personagens e controladores. |
 | `Controlador` | `controle/controlador.py` | Base de quem manda num personagem: `gerar_comandos(visao)`. |
@@ -211,7 +212,7 @@ flowchart TD
     P --> K["combate<br/>ataque vira projétil"]
 ```
 
-1. O dispositivo do jogador (uma parte do teclado ou um controle) é lido e vira um `EstadoEntrada`: um eixo de -1 a 1 e os botões apertados. Nada de pygame passa daqui.
+1. O dispositivo do jogador (uma parte do teclado ou um controle) é olhado a cada quadro e, a cada tick, vira um `EstadoEntrada`: um eixo de -1 a 1, os botões segurados e os que foram apertados desde o tick anterior. Nada de pygame passa daqui.
 2. O `ControladorHumano` transforma isso em comandos: eixo → `Mover(eixo)`, botão de ataque → `Atacar()`, botão de especial → `Especial()`.
 3. Para um inimigo, o `Nivel` monta a `Visao` dele e o `ControladorIA` pergunta ao sistema de decisão, que devolve comandos do mesmo tipo.
 4. Todos os comandos vão para a mesma `FilaComandos`, com o id do personagem.
@@ -223,10 +224,19 @@ Nos menus, o `LeitorEntrada` transforma teclas e botões em ações (`CIMA`, `BA
 
 ## Controle de tempo
 
+A lógica e a tela andam em ritmos diferentes:
+
+| | Vezes por segundo | Quem controla |
+|---|---|---|
+| Tick: decidir, mover, combate, regras | 20 | `Mundo` (`TICKS_POR_SEGUNDO`) |
+| Quadro: ler a entrada e desenhar | 60 | `Aplicacao` (`QUADROS_POR_SEGUNDO`) |
+
+A cada tick, a tela desenha 3 quadros. A lógica mais lenta deixa o jogo mais leve e mais simples de acertar (colisão, IA e combate rodam 20 vezes por segundo, e não 60), e a tela continua lisa porque o render desenha as entidades no caminho **entre** um tick e o próximo.
+
 `Aplicacao.executar` roda um loop com estes passos por quadro:
 
 1. `leitor_entrada.ler_quadro()` lê os eventos; fechar a janela encerra.
-2. `dispositivos.atualizar(...)` trata controles ligados e desligados.
+2. `dispositivos.atualizar(...)` trata controles ligados e desligados, e `dispositivos.amostrar()` faz cada dispositivo olhar teclas e botões.
 3. `tela_atual.tratar_entrada(...)` recebe as ações de menu.
 4. `tela_atual.atualizar(dt)`, com o tempo real desde o quadro anterior.
 5. `tela_atual.desenhar(...)` numa superfície pequena (240×160, resolução de GBA), ampliada para a janela.
@@ -234,13 +244,47 @@ Nos menus, o `LeitorEntrada` transforma teclas e botões em ações (`CIMA`, `BA
 Durante a partida, a `TelaJogo` chama `mundo.tempo_avancar(dt)`, que usa o mesmo **passo fixo com acumulador** do `Simulacao::tempo_avancar`:
 
 ```
-tempo_acumulado += dt              (limitado a 0,25 s por quadro)
-enquanto tempo_acumulado >= PASSO: (PASSO = 1/60 s)
+tempo_acumulado += dt              (limitado a 0,25 s por quadro, ou seja, até 5 ticks)
+enquanto tempo_acumulado >= PASSO: (PASSO = 1/20 s = 0,05 s)
     tick_atualizar()
     tempo_acumulado -= PASSO
+alfa = tempo_acumulado / PASSO     (mundo.fracao_tick(): quanto do próximo tick já passou)
 ```
 
-Cada tick representa sempre o mesmo tempo, em PC rápido ou lento. Junto com a sorte determinística da IA (um gerador por semente, tick e id, como na simulação), a mesma sequência de comandos sempre produz a mesma partida.
+Em 2 de cada 3 quadros nenhum tick roda: a tela só é redesenhada com um `alfa` maior. Cada tick representa sempre o mesmo tempo, em PC rápido ou lento. Junto com a sorte determinística da IA (um gerador por semente, tick e id, como na simulação), a mesma sequência de comandos sempre produz a mesma partida.
+
+### Movimento liso: interpolação
+
+No começo de cada tick, toda entidade copia `posicao` para `posicao_anterior`. Na hora de desenhar, o `RenderizadorNivel` coloca cada uma em `posicao_anterior.lerp(posicao, alfa)`. Um herói andando 80 px/s anda 4 px por tick, e na tela fica assim:
+
+```
+tick 10 roda: posicao_anterior x = 100, posicao x = 104
+  quadro com alfa 0     → desenha em x = 100
+  quadro com alfa 0,33  → desenha em x ≈ 101,3
+  quadro com alfa 0,67  → desenha em x ≈ 102,7
+tick 11 roda: posicao_anterior x = 104, posicao x = 108
+  quadro com alfa 0     → desenha em x = 104
+```
+
+- Só o desenho usa a posição interpolada. Colisão, IA e combate usam sempre `posicao`, a do tick.
+- A câmera segue a posição interpolada dos heróis, então também anda lisa.
+- Quem nasce ou é teletransportado (projétil novo, herói no começo de um nível) usa `colocar_em`, que muda as duas posições juntas: nada desliza pela tela.
+- O HUD não é interpolado: vida e pontos mudam de uma vez, no tick.
+
+### Animação pelo tempo
+
+O personagem guarda `acao_atual` ("parado", "andando", "atacando", "especial" ou "atingido") e `tempo_na_acao`. Isso é estado, não desenho. O render escolhe a imagem com `Animacao.quadro_em(tempo_na_acao + alfa × PASSO)`. A imagem depende só do tempo, então uma animação de 8 imagens por segundo toca igual a 20 ou 30 ticks, a 60 ou 144 fps, e um ataque sempre começa da primeira imagem. O que pisca sem depender de uma ação (herói invulnerável, saída aberta) usa o relógio do próprio render, que anda a cada quadro.
+
+### Entrada sem perder toques
+
+Os dispositivos são olhados a cada quadro (`amostrar`) e entregues ao `ControladorHumano` a cada tick (`ler`). Um botão que desceu entre dois ticks fica guardado até o próximo `ler`, mesmo que já tenha sido solto, então um toque rápido de espaço não some. Ao começar a partida, `reservar` esvazia o que estava guardado, para o ENTER do menu não virar um ataque.
+
+### O que muda com 20 ticks
+
+- **Atraso:** um toque espera até o próximo tick para ser lido: no máximo 50 ms (25 ms em média), contra no máximo 17 ms a 60 ticks. Num jogo de aventura top-down isso quase não se sente. Se incomodar, 30 ticks por segundo baixa para no máximo 33 ms, mudando só `Mundo.TICKS_POR_SEGUNDO`.
+- **Coisas rápidas:** a 20 ticks, uma flecha a 200 px/s anda 10 px por tick. Acima de 8 px por tick (meio tile), o combate move o projétil em subpassos de no máximo 8 px, para ele não atravessar uma parede de 16 px nem pular um inimigo.
+- **Tempos viram ticks:** recargas e durações andam de 0,05 em 0,05 s (0,3 s = 6 ticks). Um valor menor que 0,05 s dura um tick inteiro.
+- **Nada conta ticks:** tudo que anda ou espera usa `dt` em segundos, e as animações usam o tempo. Trocar `TICKS_POR_SEGUNDO` não exige mudar mais nada.
 
 ## Ciclo de um tick
 
@@ -248,6 +292,7 @@ Cada tick representa sempre o mesmo tempo, em PC rápido ou lento. Junto com a s
 
 ```mermaid
 flowchart TD
+    Z["guardar_posicoes<br/>posicao_anterior = posicao, para o render interpolar"] --> A
     A["coletar_comandos<br/>cada controlador recebe a Visao e devolve comandos"] --> B["executar_comandos<br/>a fila é aplicada nos personagens"]
     B --> C["mover_personagens<br/>cada Movimento anda; o Mapa diz onde dá"]
     C --> D["resolver_combate<br/>ataques, projéteis, contato e dano"]
@@ -262,7 +307,7 @@ flowchart TD
 
 Na etapa de coleta ninguém altera o mundo: todos decidem olhando o mesmo estado. O `Nivel` não soma pontos nem decide vitória; ele só devolve eventos, como o `matar_animais` da simulação devolve a lista de mortos, e o `Mundo` aplica as regras.
 
-Depois do tick, o `RenderizadorNivel` desenha o estado como ficou e o `Hud` vai por cima.
+A cada quadro, com ou sem tick, o `RenderizadorNivel` desenha o estado entre o tick anterior e o atual, e o `Hud` vai por cima.
 
 ## Mundo, níveis e câmera
 
@@ -275,7 +320,7 @@ O `Mundo` é criado pela `TelaJogo` com a lista de heróis (um por jogador da `S
 
 Cada nível tem um `Mapa` maior que a tela, criado pelo carregador que o tema indica (hoje, um mapa de texto em `src/data/mapas/`). A tela do jogo mostra só um recorte, e quem decide qual é a `Camera`, que agora mora no render:
 
-- a cada quadro, `camera.seguir(...)` centraliza o recorte no ponto médio dos heróis vivos (com um jogador, é ele);
+- a cada quadro, `camera.seguir(...)` centraliza o recorte no ponto médio dos heróis vivos (com um jogador, é ele), usando as posições interpoladas;
 - perto das bordas do mapa, a câmera para e quem anda na tela é o herói;
 - tudo que é desenhado dentro do nível passa por `camera.para_tela(...)`;
 - o `Hud` não usa a câmera, porque fica sempre fixo na tela.
@@ -322,12 +367,12 @@ Cada etapa termina com o jogo abrindo e algo novo funcionando.
 
 1. **Base:** `main.py`, `Aplicacao`, `LeitorEntrada`, `EntradaMenu`, `Tela` e as quatro telas com navegação simples. Roda: digitar o nome e passar por todas as telas.
 2. **Mapa e desenho:** `Mapa`, `MapaTiles`, `CarregadorTexto`, um mapa em `src/data/mapas/`, `Camera`, `Aparencias` e `RenderizadorNivel`. Roda: o nível aparece na tela de jogo.
-3. **Herói controlado:** `Personagem`, `MovimentoLivre`, comandos, fila, `ControladorHumano`, `DispositivoTeclado` e o começo do `Nivel`. Roda: andar pelo mapa com a câmera seguindo.
+3. **Herói controlado:** `Personagem`, `MovimentoLivre`, comandos, fila, `ControladorHumano`, `DispositivoTeclado` e o começo do `Nivel`. Roda: andar pelo mapa com a câmera seguindo, lisa a 60 fps com a lógica a 20 ticks.
 4. **Combate e classes:** ataques, `Projetil`, `combate.py`, `classes.json`, `Catalogo`, `Fabrica`. Roda: atacar com as três classes.
 5. **Inimigos e IA:** `ia/`, `ControladorIA`, `inimigos.json`, dano e mortes. Roda: um nível jogável.
 6. **Mundo e chefe:** `temas.json`, três níveis em sequência, saída, `DecisaoChefe`, vitória e derrota.
 7. **Pontos e ranking:** `Pontuacao`, `Ranking`, `PainelRanking`, `Hud` e `TelaResultado`.
-8. **Extras:** `MovimentoGrade`, `DispositivoGamepad`, `GerenciadorDispositivos` completo e o `tests/test_camadas.py`.
+8. **Extras:** `MovimentoGrade`, `DispositivoGamepad`, `GerenciadorDispositivos` completo, animações com folhas de sprites (`render/animacoes.py`) e o `tests/test_camadas.py`.
 
 ## Divisão sugerida do grupo
 

@@ -19,7 +19,8 @@ Atributos:
 
 Montagem:
     - adicionar(personagem: Personagem, controlador: Controlador,
-      raio_visao: float) -> EntidadeId.
+      raio_visao: float) -> EntidadeId. Quem entra já está no lugar
+      certo (colocar_em), sem posição anterior de outro nível.
     - trocar_controlador(id: EntidadeId, controlador: Controlador) -> bool:
       False se o id não existe.
     - remover(id: EntidadeId) -> Personagem | None: tira do nível (usado
@@ -34,13 +35,18 @@ Consultas:
 
 O tick:
     - tick_atualizar(dt: float, tick: int) -> list[Evento]:
+      dt é sempre o PASSO do Mundo (0,05 s a 20 ticks por segundo).
+        0. guardar_posicoes(): cada entidade copia posicao para
+           posicao_anterior, para o render poder interpolar.
         1. coletar_comandos(tick): para cada personagem vivo, monta a
            Visao, chama controlador.gerar_comandos e põe na fila. Ninguém
            altera o mundo nesta etapa.
         2. executar_comandos(): esvazia a fila e aplica cada comando no
            personagem, se ele ainda existir e estiver vivo.
         3. mover_personagens(dt): personagem.movimento.atualizar(...) para
-           cada um, e avancar_tempos(dt).
+           cada um, avancar_tempos(dt) e mudar_acao("andando") se a
+           posição mudou ou mudar_acao("parado") se não (respeitando
+           DURACAO_ACAO de um ataque em andamento).
         4. resolver_combate(dt): ver jogo/combate.py.
         5. remover_mortos(): tira quem morreu e cria os eventos
            PersonagemDerrotado.

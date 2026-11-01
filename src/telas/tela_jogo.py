@@ -5,6 +5,10 @@ O que é:
     nível é o RenderizadorNivel. A TelaJogo só monta as peças, passa o
     tempo, desenha e decide quando a partida acabou.
 
+    Ela é chamada 60 vezes por segundo, mas a partida anda 20 ticks por
+    segundo. Quem converte um no outro é o Mundo; a TelaJogo só entrega o
+    tempo real e, na hora de desenhar, quanto do próximo tick já passou.
+
 Atributos:
     - mundo: Mundo.
     - renderizador: RenderizadorNivel.
@@ -22,12 +26,17 @@ O que faz:
     - tratar_entrada(entrada: EntradaMenu): VOLTAR pode pausar (futuro).
       O movimento dos heróis não passa por aqui: vem dos dispositivos,
       pelos controladores.
-    - atualizar(dt): mundo.tempo_avancar(dt). Se mundo.terminou(), guarda
-      o resultado e a pontuação na Sessao e troca para TelaResultado.
+    - atualizar(dt): a cada quadro,
+        1. mundo.tempo_avancar(dt): roda 0, 1 ou mais ticks;
+        2. renderizador.avancar(dt): o relógio do desenho anda sempre;
+        3. desconta aviso_nivel.
+      Se mundo.terminou(), guarda o resultado e a pontuação na Sessao e
+      troca para TelaResultado.
     - desenhar(superficie): renderizador.desenhar(superficie,
-      mundo.nivel_atual) e, por cima, hud.desenhar(superficie,
-      mundo.resumo()). Ao trocar de nível, mostra o nome dele no meio da
-      tela por uns segundos.
+      mundo.nivel_atual, mundo.fracao_tick()) e, por cima,
+      hud.desenhar(superficie, mundo.resumo()). Ao trocar de nível, mostra
+      o nome dele no meio da tela por uns segundos. O HUD não é
+      interpolado: vida e pontos mudam de uma vez, no tick.
 
 Usa: jogo/mundo.py, jogo/fabrica.py, controle/controlador_humano.py,
 render/renderizador_nivel.py, ui/hud.py,

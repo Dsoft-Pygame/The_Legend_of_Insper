@@ -4,6 +4,8 @@ Tudo que é conteúdo mora aqui, e não no código: classes jogáveis, inimigos,
 
 Os arquivos abaixo ainda vão ser criados. Como JSON não aceita comentários, o formato de cada um fica documentado aqui. Todos os números são **valores de exemplo**, para ajustar no balanceamento.
 
+Tempos (`recarga`, `duracao`) são em segundos. A lógica roda a 20 ticks por segundo, então eles andam de 0,05 em 0,05 s (0,3 s = 6 ticks), e um valor menor que 0,05 s dura um tick inteiro. Velocidades são em pixels por segundo.
+
 Ao abrir o jogo, `jogo/catalogo.py` lê tudo e confere: campo faltando ou nome que não existe nos registros (IA, movimento, ataque, carregador de mapa) dá erro na hora, com o arquivo e a entrada, e não no meio da partida.
 
 | Arquivo | O que guarda | Quem lê |
@@ -12,7 +14,7 @@ Ao abrir o jogo, `jogo/catalogo.py` lê tudo e confere: campo faltando ou nome q
 | `inimigos.json` | Os inimigos e o chefe: atributos, IA, movimento, ataques | `Catalogo` → `Fabrica` |
 | `temas.json` | Os temas e os 3 níveis de cada um | `Catalogo` → `Mundo` |
 | `controles.json` | Teclas e botões de cada dispositivo | `GerenciadorDispositivos` |
-| `aparencias.json` | Cor ou sprite de cada chave de aparência | `Aparencias` (render) |
+| `aparencias.json` | Cor, sprite ou animações de cada chave de aparência | `Aparencias` (render) |
 | `mapas/*.txt` | Os mapas dos níveis, desenhados em texto | `CarregadorTexto` |
 | `ranking.json` | As partidas jogadas (gerado pelo jogo, fora do git) | `Ranking` |
 
@@ -127,7 +129,13 @@ Os nomes das teclas são os do pygame (`pygame.key.key_code` converte). O teclad
 
 ## aparencias.json
 
-Para cada chave de aparência usada nos outros arquivos: `cor` (nome de uma cor de `settings.py`) enquanto não houver arte, ou `sprite` (arquivo em `assets/`). Chave sem entrada aparece magenta no jogo.
+Para cada chave de aparência usada nos outros arquivos, uma de três formas:
+
+- `cor`: nome de uma cor de `settings.py`, enquanto não houver arte;
+- `sprite`: uma imagem parada em `assets/`;
+- `folha`: uma folha de sprites em `assets/`, com animações.
+
+Chave sem entrada aparece magenta no jogo.
 
 ```json
 {
@@ -135,11 +143,22 @@ Para cada chave de aparência usada nos outros arquivos: `cor` (nome de uma cor 
   "parede": {"cor": "GRAY"},
   "saida":  {"cor": "YELLOW"},
   "mago":   {"cor": "BLUE"},
-  "slime":  {"cor": "GREEN"},
   "bola_fogo": {"cor": "RED"},
-  "dragao": {"sprite": "dragao.png"}
+  "dragao": {"sprite": "dragao.png"},
+  "slime": {
+    "folha": "slime.png",
+    "tamanho_quadro": [16, 16],
+    "animacoes": {
+      "parado":   {"linha": 0, "quadros": 2, "por_segundo": 2},
+      "andando":  {"linha": 1, "quadros": 4, "por_segundo": 8},
+      "atacando": {"linha": 2, "quadros": 3, "por_segundo": 10, "repete": false},
+      "atingido": {"linha": 3, "quadros": 2, "por_segundo": 10, "repete": false}
+    }
+  }
 }
 ```
+
+Na folha, cada ação é uma linha (`linha` 0 é a de cima) e as imagens ficam lado a lado, todas do tamanho `tamanho_quadro`. `por_segundo` é a velocidade da animação em tempo real: não depende de ticks nem de fps. `repete` é `true` se omitido; ataque e "atingido" costumam parar na última imagem. Ação sem animação usa a de `"parado"`. As ações possíveis são as do personagem: `parado`, `andando`, `atacando`, `especial` e `atingido`. O personagem virado para a esquerda usa a mesma imagem espelhada.
 
 ## mapas/*.txt
 

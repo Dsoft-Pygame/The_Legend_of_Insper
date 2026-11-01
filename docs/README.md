@@ -6,7 +6,7 @@ Jogo de ação top-down em Python com [pygame](https://www.pygame.org/). O jogad
 
 A arquitetura está definida e todos os arquivos existem, mas só com o docstring do que cada um vai conter. O código ainda vai ser escrito, na ordem sugerida em [ARQUITETURA.md](ARQUITETURA.md#ordem-sugerida-para-implementar).
 
-O desenho deixa cada sistema trocável sem mexer no resto: o personagem só expõe ações e não sabe quem manda nele (teclado, controle ou IA), o jeito de andar e o mapa ficam atrás de interfaces, e inimigos, classes e níveis são dados em JSON. O jogo também já está preparado para co-op local.
+O desenho deixa cada sistema trocável sem mexer no resto: o personagem só expõe ações e não sabe quem manda nele (teclado, controle ou IA), o jeito de andar e o mapa ficam atrás de interfaces, e inimigos, classes e níveis são dados em JSON. O jogo também já está preparado para co-op local. A lógica roda a 20 ticks por segundo e a tela a 60 quadros por segundo, com o movimento e as animações lisos entre um tick e outro.
 
 ## Como rodar (quando houver código)
 

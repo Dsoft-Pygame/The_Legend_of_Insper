@@ -11,9 +11,11 @@ Atributos:
       controle deste jogador.
 
 Métodos:
-    - gerar_comandos(visao: Visao) -> list[Comando]: lê o dispositivo e:
+    - gerar_comandos(visao: Visao) -> list[Comando]: chamado uma vez por
+      tick. Lê o dispositivo (dispositivo.ler()) e:
         * eixo diferente de (0, 0) -> Mover(eixo);
-        * apertou ATAQUE -> Atacar();
+        * apertou ATAQUE -> Atacar() (vale também um toque rápido que
+          já foi solto antes do tick: o dispositivo guardou);
         * apertou ESPECIAL -> Especial().
       Ignora a visão.
 

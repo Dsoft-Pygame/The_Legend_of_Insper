@@ -87,3 +87,12 @@ A `TelaClasses` mostra todas as classes do JSON, então ela aparece sozinha. Um 
 ## Trocar a arte
 
 Em `src/data/aparencias.json`, troque `{"cor": "GREEN"}` por `{"sprite": "slime.png"}` e coloque o arquivo em `src/assets/`. Nenhuma entidade muda: elas só guardam a chave `"slime"`.
+
+**Para animar:** desenhe uma folha de sprites com uma linha por ação (parado, andando, atacando...) e troque a entrada por `{"folha": "slime.png", "tamanho_quadro": [16, 16], "animacoes": {...}}`, com quantas imagens e quantas por segundo cada ação tem (formato em [src/data/README.md](../src/data/README.md#aparenciasjson)). Ação sem animação usa a de `"parado"`. Nenhum código muda: o personagem já diz o que está fazendo (`acao_atual`) e o render escolhe a imagem pelo tempo.
+
+## Trocar quantos ticks e quadros por segundo
+
+- **Lógica:** em `jogo/mundo.py`, mude `TICKS_POR_SEGUNDO` (hoje 20).
+- **Tela:** em `aplicacao/aplicacao.py`, mude `QUADROS_POR_SEGUNDO` (hoje 60).
+
+Mais nada muda: tudo que anda ou espera usa `dt` em segundos, as animações usam o tempo, e o render interpola entre dois ticks seja qual for a proporção. Mais ticks respondem mais rápido ao controle e gastam mais processamento; menos ticks deixam cada passo maior (projéteis rápidos já andam em subpassos de 8 px, então não atravessam parede). Recargas e durações viram múltiplos do tick: a 20 ticks, de 0,05 em 0,05 s.

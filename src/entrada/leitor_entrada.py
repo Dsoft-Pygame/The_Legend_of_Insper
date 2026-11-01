@@ -16,8 +16,9 @@ O que é:
         - controles que foram ligados ou desligados.
 
     O movimento e os ataques durante a partida NÃO passam por aqui: cada
-    dispositivo (teclado.py, gamepad.py) lê o estado das teclas e botões
-    quando o seu ControladorHumano pede.
+    dispositivo (teclado.py, gamepad.py) olha o estado das teclas e botões
+    a cada quadro (amostrar) e entrega ao seu ControladorHumano a cada
+    tick (ler).
 
 Atributos:
     - teclas_menu: dict[int, AcaoMenu]. Qual tecla vira qual ação de menu

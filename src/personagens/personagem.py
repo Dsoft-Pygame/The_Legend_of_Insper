@@ -32,6 +32,15 @@ Atributos:
     - invulneravel: float. Segundos sem levar dano depois de um golpe
       (o render faz piscar).
     - ultimo_agressor: EntidadeId | None. Quem deu o último golpe.
+    - acao_atual: str. O que está fazendo agora: "parado", "andando",
+      "atacando", "especial" ou "atingido". Não é desenho, é estado: o
+      render usa para escolher a animação. O Nivel põe "andando" ou
+      "parado" depois de mover; o combate põe "atacando" ou "especial"
+      quando o ataque sai e "atingido" quando leva dano. Essas três ficam
+      por DURACAO_ACAO (0,3 s) antes de andar ou parar poder trocá-las,
+      para o golpe não ser cortado pela metade.
+    - tempo_na_acao: float. Segundos desde que acao_atual mudou (para a
+      animação de ataque começar da primeira imagem).
 
 Ações (chamadas pelos comandos; só registram a intenção):
     - mover(direcao: pygame.Vector2) -> None: guarda a intenção e vira o
@@ -45,7 +54,10 @@ Regras do próprio personagem:
       ignorado.
     - pode_atacar() -> bool e pode_especial() -> bool: vivo e sem recarga.
     - avancar_tempos(dt: float) -> None: desconta recargas e
-      invulnerabilidade.
+      invulnerabilidade e soma dt em tempo_na_acao.
+    - mudar_acao(acao: str) -> None: troca acao_atual e zera
+      tempo_na_acao. Se já estava nessa ação, não zera (a animação de
+      andar não recomeça a cada tick).
     - esta_vivo -> bool (propriedade): vida > 0.
 
 Quem cria: Fabrica, a partir dos dados.

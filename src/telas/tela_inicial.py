@@ -8,13 +8,21 @@ O que aparece:
 Atributos:
     - caixa_nome: CaixaTexto onde o jogador digita o nome.
     - painel_ranking: PainelRanking que desenha a lista.
+    - aviso: str. "Digite um nome" quando tenta seguir com o nome vazio.
 
 O que faz:
-    - tratar_evento: passa as letras digitadas para a caixa_nome.
-    - atualizar: se apertou ENTER e o nome não está vazio, chama
-      aplicacao.nova_partida(nome) e troca para TelaClasses.
-      Se o nome estiver vazio, mostra um aviso.
-    - desenhar: título, caixa de nome e ranking.
+    - ao_entrar(): limpa a Sessao e a caixa do nome.
+    - tratar_entrada(entrada: EntradaMenu): passa entrada.texto para
+      caixa_nome.digitar e APAGAR para caixa_nome.apagar. CONFIRMAR com o
+      nome preenchido cria o PerfilJogador do P1 na Sessao e troca para
+      TelaClasses. O P1 fica com o dispositivo que apertou CONFIRMAR
+      (teclado_wasd, se foi o teclado). Nome vazio mostra o aviso.
+    - atualizar(dt): pisca o cursor e o aviso.
+    - desenhar(superficie): título, caixa de nome e ranking.
 
-Usa: ui/caixa_texto.py, ui/painel_ranking.py, jogo/ranking.py.
+Co-op (quando for feito): um segundo jogador aperta CONFIRMAR no próprio
+dispositivo e digita o nome; vira o PerfilJogador 2.
+
+Usa: ui/caixa_texto.py, ui/painel_ranking.py, jogo/ranking.py,
+aplicacao/sessao.py, entrada/gerenciador_dispositivos.py.
 """

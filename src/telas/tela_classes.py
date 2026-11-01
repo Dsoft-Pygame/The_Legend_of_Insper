@@ -1,19 +1,26 @@
 """Classe TelaClasses (herda de Tela): escolha da classe.
 
 O que aparece:
-    Três cartões lado a lado: Mago, Arqueiro e Bárbaro, cada um com
-    imagem, nome e atributos. O cartão selecionado fica destacado, e
-    embaixo aparece a descrição da classe selecionada.
+    Um cartão para cada classe de data/classes.json (hoje Mago, Arqueiro e
+    Bárbaro), cada um com imagem, nome e atributos. O cartão selecionado
+    fica destacado, e embaixo aparece a descrição da classe selecionada.
+    Uma classe nova no JSON aparece aqui sozinha.
 
 Atributos:
-    - cartoes: lista com um CartaoClasse para cada classe.
-    - selecionado: índice da classe destacada (0, 1 ou 2).
+    - cartoes: list[CartaoClasse]. Um por ClasseHeroi do Catalogo.
+    - selecionado: int. Índice do cartão destacado.
 
 O que faz:
-    - Setas esquerda/direita: mudam o selecionado.
-    - ENTER: guarda a classe em aplicacao.classe_escolhida e troca para
-      TelaJogo.
-    - ESC: volta para TelaInicial.
+    - tratar_entrada(entrada: EntradaMenu):
+        * ESQUERDA e DIREITA mudam o selecionado;
+        * CONFIRMAR grava a classe no PerfilJogador do P1 e troca para
+          TelaJogo;
+        * VOLTAR volta para TelaInicial.
+    - desenhar(superficie): cartões e descrição.
 
-Usa: ui/cartao_classe.py, personagens/classes/.
+Co-op (quando for feito): um selecionado por jogador, cada um mexendo com
+o próprio dispositivo (a EntradaMenu diz de qual dispositivo veio cada
+ação).
+
+Usa: ui/cartao_classe.py, jogo/catalogo.py, aplicacao/sessao.py.
 """

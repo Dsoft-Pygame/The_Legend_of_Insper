@@ -1,12 +1,14 @@
 """Classe CartaoClasse: o cartão de uma classe na tela de escolha.
 
 Atributos:
-    - classe: a classe que o cartão mostra (Mago, Arqueiro ou Barbaro).
-    - retangulo: posição e tamanho do cartão.
+    - classe: ClasseHeroi. Os dados da classe (vêm de data/classes.json).
+    - retangulo: pygame.Rect. Posição e tamanho do cartão.
 
 Métodos:
-    - desenhar(superficie, selecionado): desenha imagem, nome e atributos
-      (vida, dano, velocidade). Com selecionado=True, a borda fica destacada.
+    - desenhar(superficie: pygame.Surface, aparencias: Aparencias,
+      selecionado: bool) -> None: desenha a imagem (pela chave de
+      aparência), o nome e os atributos (vida, velocidade, dano do
+      ataque). Com selecionado=True, a borda fica destacada.
 
 Usada em: TelaClasses.
 """

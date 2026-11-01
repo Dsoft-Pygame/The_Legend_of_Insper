@@ -1,38 +1,60 @@
-"""Classe Nivel: um nível (andar) do jogo.
+"""Classe Nivel: um nível em andamento e o tick que move tudo.
 
 O que é:
-    Um mapa grande, maior que a tela, como nos Pokémon antigos. A tela
-    mostra só um pedaço dele por vez, através da Camera. Tem paredes,
-    inimigos espalhados e uma saída (escada ou porta) para o próximo nível.
-    Cada nível tem um estilo diferente (cores, inimigos, tamanho), que vem
-    do tema. O Mundo cria 3 Niveis e joga um de cada vez.
+    Junta um Mapa com quem está nele: personagens, controladores e
+    projéteis. A cada tick faz as etapas abaixo, sempre nesta ordem, como
+    o Simulacao::tick_atualizar da simulação lobo-coelho. O Nivel não sabe
+    o formato do mapa (só usa a interface Mapa) e não desenha nada.
 
 Atributos:
-    - nome: nome do nível (ex.: "Catacumbas").
-    - numero: 1, 2 ou 3.
-    - largura, altura: tamanho do mapa em pixels (maior que a tela).
-    - mapa: grade de tiles (quadradinhos de 16x16) dizendo onde é chão e
-      onde é parede. Pode ser desenhado num editor como o Tiled depois.
-    - paredes: lista de retângulos por onde ninguém passa.
-    - inimigos: lista de Inimigos vivos no nível.
-    - chefe: o Chefe (só existe no nível 3).
-    - projeteis: flechas, bolas de fogo e tiros voando agora.
-    - saida: retângulo da porta/escada. Só abre quando todos os inimigos morrem.
-    - posicao_inicial: onde o jogador aparece ao entrar.
-    - cores: cor do chão e das paredes (até ter sprites).
+    - nome: str. Ex.: "Catacumbas".
+    - numero: int.
+    - mapa: Mapa.
+    - personagens: dict[EntidadeId, Personagem].
+    - controladores: dict[EntidadeId, Controlador]. Quem manda em cada um.
+    - raios_visao: dict[EntidadeId, float]. Até onde cada um enxerga.
+    - projeteis: dict[EntidadeId, Projetil].
+    - fila: FilaComandos.
+    - proximo_id: EntidadeId.
 
-Métodos:
-    - atualizar(dt, jogador): move inimigos e projéteis e checa colisões:
-        * ataque do jogador encostou num inimigo -> inimigo leva dano;
-        * inimigo ou tiro do chefe encostou no jogador -> jogador leva dano;
-        * projétil bateu na parede -> some.
-    - remover_mortos(): tira do nível os inimigos com vida zero e devolve
-      quem morreu (para o Mundo somar os pontos).
-    - esta_limpo(): True quando não sobrou nenhum inimigo.
-    - jogador_na_saida(jogador): True quando o jogador encosta na saída.
-    - desenhar(superficie, camera): desenha só o pedaço do mapa que a
-      câmera está mostrando, com a saída e todo mundo que estiver visível.
+Montagem:
+    - adicionar(personagem: Personagem, controlador: Controlador,
+      raio_visao: float) -> EntidadeId. Quem entra já está no lugar
+      certo (colocar_em), sem posição anterior de outro nível.
+    - trocar_controlador(id: EntidadeId, controlador: Controlador) -> bool:
+      False se o id não existe.
+    - remover(id: EntidadeId) -> Personagem | None: tira do nível (usado
+      para levar os heróis ao próximo nível).
+    - buscar(id: EntidadeId) -> Personagem | None.
 
-Quem usa: Mundo.
-Usa: personagens/.
+Consultas:
+    - observar(id: EntidadeId) -> Visao: monta o retrato do que esse
+      personagem enxerga, como o Mundo::observar da simulação.
+    - herois() -> list[Personagem] e monstros() -> list[Personagem].
+    - esta_limpo() -> bool: nenhum monstro vivo (a saída abre).
+
+O tick:
+    - tick_atualizar(dt: float, tick: int) -> list[Evento]:
+      dt é sempre o PASSO do Mundo (0,05 s a 20 ticks por segundo).
+        0. guardar_posicoes(): cada entidade copia posicao para
+           posicao_anterior, para o render poder interpolar.
+        1. coletar_comandos(tick): para cada personagem vivo, monta a
+           Visao, chama controlador.gerar_comandos e põe na fila. Ninguém
+           altera o mundo nesta etapa.
+        2. executar_comandos(): esvazia a fila e aplica cada comando no
+           personagem, se ele ainda existir e estiver vivo.
+        3. mover_personagens(dt): personagem.movimento.atualizar(...) para
+           cada um, avancar_tempos(dt) e mudar_acao("andando") se a
+           posição mudou ou mudar_acao("parado") se não (respeitando
+           DURACAO_ACAO de um ataque em andamento).
+        4. resolver_combate(dt): ver jogo/combate.py.
+        5. remover_mortos(): tira quem morreu e cria os eventos
+           PersonagemDerrotado.
+        6. checar_saida(): HeroiNaSaida quando um herói encosta na saída
+           com o nível limpo.
+      Devolve os eventos do tick para o Mundo aplicar as regras.
+
+Quem usa: Mundo, RenderizadorNivel (só lê).
+Usa: mapa/mapa.py, controle/, personagens/, jogo/combate.py,
+jogo/eventos.py.
 """

@@ -1,21 +1,44 @@
 """Classe TelaJogo (herda de Tela): a tela onde se joga.
 
 O que é:
-    Uma tela "fina": quem controla os níveis é o Mundo. A TelaJogo só cria
-    o Mundo, repassa o teclado, desenha e decide quando a partida acabou.
+    Uma tela "fina": quem controla a partida é o Mundo, e quem desenha o
+    nível é o RenderizadorNivel. A TelaJogo só monta as peças, passa o
+    tempo, desenha e decide quando a partida acabou.
+
+    Ela é chamada 60 vezes por segundo, mas a partida anda 20 ticks por
+    segundo. Quem converte um no outro é o Mundo; a TelaJogo só entrega o
+    tempo real e, na hora de desenhar, quanto do próximo tick já passou.
 
 Atributos:
-    - jogador: o Jogador, criado com a classe escolhida.
-    - mundo: o Mundo, com os 3 níveis do tema escolhido.
-    - hud: o Hud desenhado por cima do jogo.
+    - mundo: Mundo.
+    - renderizador: RenderizadorNivel.
+    - hud: Hud.
+    - aviso_nivel: float. Segundos restantes mostrando o nome do nível.
 
 O que faz:
-    - Ao entrar: cria o Jogador e o Mundo.
-    - atualizar(dt): chama mundo.atualizar(dt). Se mundo.terminou(),
-      troca para TelaResultado (ganhando ou perdendo).
-    - desenhar: desenha o mundo (só o pedaço que a câmera mostra) e o HUD
-      por cima, fixo na tela. Ao trocar de nível,
-      mostra o nome do nível no meio da tela por uns segundos.
+    - ao_entrar(): para CADA PerfilJogador da Sessao (um hoje, vários no
+      co-op):
+        1. pede o dispositivo dele ao GerenciadorDispositivos;
+        2. cria o personagem com fabrica.criar_heroi(perfil.classe, ...);
+        3. cria um ControladorHumano com esse dispositivo;
+        4. junta tudo num Heroi.
+      Depois cria o Mundo com a lista de heróis e o tema da Sessao.
+    - tratar_entrada(entrada: EntradaMenu): VOLTAR pode pausar (futuro).
+      O movimento dos heróis não passa por aqui: vem dos dispositivos,
+      pelos controladores.
+    - atualizar(dt): a cada quadro,
+        1. mundo.tempo_avancar(dt): roda 0, 1 ou mais ticks;
+        2. renderizador.avancar(dt): o relógio do desenho anda sempre;
+        3. desconta aviso_nivel.
+      Se mundo.terminou(), guarda o resultado e a pontuação na Sessao e
+      troca para TelaResultado.
+    - desenhar(superficie): renderizador.desenhar(superficie,
+      mundo.nivel_atual, mundo.fracao_tick()) e, por cima,
+      hud.desenhar(superficie, mundo.resumo()). Ao trocar de nível, mostra
+      o nome dele no meio da tela por uns segundos. O HUD não é
+      interpolado: vida e pontos mudam de uma vez, no tick.
 
-Usa: jogo/mundo.py, personagens/jogador.py, ui/hud.py.
+Usa: jogo/mundo.py, jogo/fabrica.py, controle/controlador_humano.py,
+render/renderizador_nivel.py, ui/hud.py,
+entrada/gerenciador_dispositivos.py.
 """

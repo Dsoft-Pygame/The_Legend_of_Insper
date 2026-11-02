@@ -25,3 +25,21 @@ Implementações: MapaTiles, criado pelo CarregadorTexto.
 Quem usa: Nivel, Mundo, movimento/, ia/ (pela Visao), jogo/combate.py e
 render/.
 """
+
+from typing import Iterator, Protocol
+import pygame
+
+class Mapa(Protocol):
+  largura: int  # em pixels
+  altura: int # em pixels
+
+  def area_livre(self, caixa: pygame.Rect) -> bool: ...
+
+  def surgimentos(self, marcador: str) -> list[pygame.Vector2]: ...
+
+  def saida(self) -> pygame.Rect | None: ...
+
+  def ladrilhos_em(self, area: pygame.Rect) -> Iterator[tuple[pygame.Rect, str]]: ...
+
+class CarregadorMapa(Protocol):
+  def carregar(self, origem: str) -> Mapa: ...

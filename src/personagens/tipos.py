@@ -17,3 +17,20 @@ Regra das camadas de domínio (personagens/, movimento/, mapa/):
 
 Quem usa: quase todo mundo.
 """
+
+from enum import Enum,auto
+import pygame
+
+EntidadeId = int
+Vetor = pygame.Vector2
+Caixa = pygame.Rect
+
+class Lado(Enum):
+  HEROIS = auto()
+  MONSTROS = auto()
+
+  def oposto(self) -> Lado:
+    if self == Lado.HEROIS:
+      return Lado.MONSTROS
+    return Lado.HEROIS
+

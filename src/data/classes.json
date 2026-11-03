@@ -1,0 +1,29 @@
+{
+  "mago": {
+    "nome": "Mago",
+    "descricao": "Frágil, mas com dano alto à distância.",
+    "vida_maxima": 60, "velocidade": 70, "movimento": "livre", "aparencia": "mago",
+    "ataque":   {"tipo": "projetil", "recarga": 0.6, "dano": 30, "velocidade": 90,
+                 "duracao": 1.5, "quantidade": 1, "abertura": 0, "tamanho": 8, "aparencia": "bola_fogo"},
+    "especial": {"tipo": "projetil", "recarga": 5.0, "dano": 20, "velocidade": 90,
+                 "duracao": 1.0, "quantidade": 12, "abertura": 360, "tamanho": 8, "aparencia": "bola_fogo"}
+  },
+  "arqueiro": {
+    "nome": "Arqueiro",
+    "descricao": "Ágil, ataca rápido de longe.",
+    "vida_maxima": 80, "velocidade": 100, "movimento": "livre", "aparencia": "arqueiro",
+    "ataque":   {"tipo": "projetil", "recarga": 0.3, "dano": 10, "velocidade": 200,
+                 "duracao": 1.0, "quantidade": 1, "abertura": 0, "tamanho": 4, "aparencia": "flecha"},
+    "especial": {"tipo": "projetil", "recarga": 3.0, "dano": 10, "velocidade": 200,
+                 "duracao": 1.0, "quantidade": 3, "abertura": 30, "tamanho": 4, "aparencia": "flecha"}
+  },
+  "barbaro": {
+    "nome": "Bárbaro",
+    "descricao": "Resistente, luta de perto.",
+    "vida_maxima": 140, "velocidade": 75, "movimento": "livre", "aparencia": "barbaro",
+    "ataque":   {"tipo": "golpe", "recarga": 0.5, "dano": 35, "alcance": 18,
+                 "forma": "frente", "duracao": 0.1, "aparencia": "golpe"},
+    "especial": {"tipo": "golpe", "recarga": 4.0, "dano": 25, "alcance": 32,
+                 "forma": "volta", "duracao": 0.3, "aparencia": "giro"}
+  }
+}

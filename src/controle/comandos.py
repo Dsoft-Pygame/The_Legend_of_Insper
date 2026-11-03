@@ -31,3 +31,40 @@ Personagem e um Botao novo em dispositivo.py.
 
 Quem usa: ControladorHumano, ControladorIA, ia/, FilaComandos, Nivel.
 """
+
+
+from dataclasses import dataclass
+from typing import Protocol
+
+import pygame
+
+
+class Ator(Protocol):
+    def mover(self, direcao: pygame.Vector2) -> None: ...
+    def atacar(self) -> None: ...
+    def especial(self) -> None: ...
+
+
+class Comando(Protocol):
+    def aplicar(self, ator: Ator) -> None: ...
+
+
+@dataclass(frozen=True)
+class Mover:
+    direcao: tuple[float, float]
+
+    def aplicar(self, ator: Ator) -> None:
+        ator.mover(pygame.Vector2(self.direcao))
+
+
+@dataclass(frozen=True)
+class Atacar:
+    def aplicar(self, ator: Ator) -> None:
+        ator.atacar()
+
+
+@dataclass(frozen=True)
+class Especial:
+    def aplicar(self, ator: Ator) -> None:
+        ator.especial() 
+        

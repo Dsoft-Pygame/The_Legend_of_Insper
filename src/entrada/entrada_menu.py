@@ -24,3 +24,37 @@ EntradaQuadro (dataclass congelada):
 Quem cria: LeitorEntrada.
 Quem usa: Aplicacao, GerenciadorDispositivos, telas/.
 """
+from dataclasses import dataclass, field
+from enum import Enum, auto
+
+class AcaoMenu(Enum):
+    CIMA = auto()
+    BAIXO = auto()
+    ESQUERDA = auto()
+    DIREITA = auto()
+    CONFIRMAR = auto()
+    VOLTAR = auto()
+    APAGAR = auto()
+
+
+@dataclass(frozen=True)
+class EntradaMenu:
+    acoes: tuple[tuple[AcaoMenu, str], ...] = ()   # (ação, nome do dispositivo), em ordem
+    texto: str = ""                                 # letras digitadas neste quadro
+
+    def tem(self, acao: AcaoMenu) -> bool:
+        return any(a == acao for a, _ in self.acoes)
+
+    def dispositivo_de(self, acao: AcaoMenu) -> str | None:
+        for a, dispositivo in self.acoes:
+            if a == acao:
+                return dispositivo
+        return None
+
+
+@dataclass(frozen=True)
+class EntradaQuadro:
+    fechar: bool = False
+    menu: EntradaMenu = field(default_factory=EntradaMenu)
+    controles_ligados: tuple[int, ...] = ()
+    controles_desligados: tuple[int, ...] = ()

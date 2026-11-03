@@ -29,3 +29,18 @@ Quem cria: Catalogo, lendo data/classes.json.
 Quem usa: Fabrica (monta o Personagem), TelaClasses e CartaoClasse
 (mostram nome, descrição e atributos).
 """
+
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class ClasseHeroi:
+    nome: str                 # "Mago"
+    descricao: str            # o texto que aparece na escolha de classe
+    vida_maxima: int          # ex.: 60
+    velocidade: float         # pixels por segundo
+    movimento: str | dict     # "livre" ou {"tipo": "...", ...}
+    aparencia: str            # chave do aparencias.json, ex.: "mago"
+    ataque: dict              # o ataque normal (tipo e números)
+    especial: dict            # o ataque especial

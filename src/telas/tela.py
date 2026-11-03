@@ -25,3 +25,36 @@ Métodos (cada tela filha implementa os seus):
 
 Herdam dela: TelaInicial, TelaClasses, TelaJogo e TelaResultado.
 """
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
+
+import pygame
+
+from entrada.entrada_menu import EntradaMenu
+
+if TYPE_CHECKING:
+    from aplicacao.aplicacao import Aplicacao
+
+
+class Tela(ABC):
+    def __init__(self, aplicacao: Aplicacao) -> None:
+        self.aplicacao = aplicacao   
+
+    @abstractmethod
+    def tratar_entrada(self, entrada: EntradaMenu) -> None: ...    
+
+    @abstractmethod
+    def atualizar(self, dt: float) -> None: ...                     
+
+    @abstractmethod
+    def desenhar(self, superficie: pygame.Surface) -> None: ...     
+
+    def ao_entrar(self) -> None:
+        pass                                                         
+
+    def ao_sair(self) -> None:
+        pass               
+
+                                            

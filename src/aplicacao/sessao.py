@@ -29,3 +29,49 @@ Sessao:
 Quem usa: Aplicacao, TelaInicial, TelaClasses, TelaJogo, TelaResultado.
 Usa: jogo/pontuacao.py.
 """
+
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from jogo.pontuacao import Pontuacao
+
+
+@dataclass
+class PerfilJogador:
+    numero: int
+    nome: str
+    dispositivo: str
+    classe: str | None = None
+
+
+class Sessao:
+    def __init__(self) -> None:
+        self.jogadores: list[PerfilJogador] = []
+        self.tema: str = ""
+        self.pontuacao: Pontuacao | None = None
+        self.venceu: bool = False
+        self.tempo_partida: float = 0.0
+        self.vida_restante: float = 0.0
+
+    def adicionar_jogador(self, nome: str, dispositivo: str) -> PerfilJogador:
+        numero = len(self.jogadores) + 1
+        perfil = PerfilJogador(numero=numero, nome=nome, dispositivo=dispositivo)
+        self.jogadores.append(perfil)
+        return perfil
+
+    def buscar(self, numero: int) -> PerfilJogador | None:
+        for perfil in self.jogadores:
+            if perfil.numero == numero:
+                return perfil
+        return None
+
+    def limpar(self) -> None:
+        self.jogadores = []
+        self.pontuacao = None
+        self.venceu = False
+        self.tempo_partida = 0.0
+        self.vida_restante = 0.0

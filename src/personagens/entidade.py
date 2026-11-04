@@ -33,3 +33,30 @@ Propriedades:
 
 Herdam dela: Personagem e Projetil.
 """
+
+import pygame
+from personagens.tipos import EntidadeId
+
+
+
+class Entidade:
+  
+  def __init__(self, posicao: pygame.Vector2, tamanho: pygame.Vector2, aparencia: str):
+    self.id: EntidadeId = 0                          # o Nivel dá o id de verdade
+    self.posicao = pygame.Vector2(posicao)           # cópia
+    self.posicao_anterior = pygame.Vector2(posicao)  # OUTRA cópia, separada
+    self.tamanho = pygame.Vector2(tamanho)
+    self.aparencia = aparencia                       # ex.: "slime"
+  
+  def guardar_posicao(self) -> None:
+    self.posicao_anterior = pygame.Vector2(self.posicao)
+
+  def colocar_em(self, posicao: pygame.Vector2) -> None: # teleporta para a nova posição
+    self.posicao = pygame.Vector2(posicao)
+    self.posicao_anterior = pygame.Vector2(posicao)
+
+  @property
+  def caixa(self) -> pygame.Rect: # retangulo de colisão
+    caixa = pygame.Rect(0, 0, int(self.tamanho.x), int(self.tamanho.y))
+    caixa.center = (round(self.posicao.x), round(self.posicao.y))
+    return caixa

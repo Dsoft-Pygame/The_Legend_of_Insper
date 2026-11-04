@@ -21,3 +21,22 @@ Métodos:
 Quem usa: Nivel.
 Usa: controle/comandos.py, personagens/tipos.py.
 """
+
+
+from controle.comandos import Comando
+from personagens.tipos import EntidadeId
+
+class FilaComandos:
+    def __init__(self) -> None:
+        self.pedidos: list[tuple[EntidadeId, Comando]] = []
+    
+    def adicionar(self, ator_id: EntidadeId, comando: Comando) -> None:
+        self.pedidos.append((ator_id, comando))
+
+    def esvaziar(self) -> list[tuple[EntidadeId, Comando]]:
+        pedidos = self.pedidos
+        self.pedidos = []
+        return pedidos
+    def __len__(self) -> int:
+        return len(self.pedidos)
+        

@@ -31,3 +31,24 @@ DispositivoEntrada (interface, typing.Protocol):
 Quem usa: ControladorHumano.
 Implementam: DispositivoTeclado e DispositivoGamepad (entrada/).
 """
+
+
+from dataclasses import dataclass
+from enum import Enum, auto
+from typing import Protocol
+
+
+class Botao(Enum):
+    ATAQUE = auto()
+    ESPECIAL = auto()
+
+@dataclass(frozen=True)
+class EstadoEntrada:
+    eixo: tuple[float, float] = (0.0, 0.0)        # de -1 a 1 em x e em y; (1, 0) = direita
+    segurando: frozenset[Botao] = frozenset()     # botões apertados agora
+    apertou: frozenset[Botao] = frozenset()       # botões que desceram desde a última leitura 
+
+class DispositivoEntrada(Protocol):
+    nome: str
+
+    def ler(self) -> EstadoEntrada: ...    # ⏸️ fica 

@@ -37,3 +37,52 @@ O HUD não usa a câmera: ele fica sempre no mesmo lugar da tela.
 
 Quem usa: RenderizadorNivel.
 """
+import pygame
+import math
+from typing import Sequence
+from settings import LARGURA_TELA, ALTURA_TELA
+
+
+def limitar(valor: float, maximo: float) -> float:
+    if maximo < 0:
+        return maximo / 2
+    return max(0.0, min(valor, maximo))
+
+class Camera:
+    def __init__(self, largura: int= LARGURA_TELA, altura: int= ALTURA_TELA): # define tamanho e posição da camera
+        self.x = 0.0
+        self.y = 0.0
+        # tamanho do recorte (a tela do jogo, 240x160)
+        self.largura = largura
+        self.altura = altura
+        # tamanho do mapa completo, para não mostrar nada fora do mapa
+        self.largura_mapa = 0
+        self.altura_mapa = 0
+
+    def mudar_mapa(self, largura: int, altura: int): #tamanho do mapa completo
+        self.largura_mapa = largura
+        self.altura_mapa = altura
+
+    def seguir(self, alvos: Sequence[pygame.Vector2]) -> None: # segue o ponto medio dos alvos, sejam eles quantos forem
+        if not alvos:
+            return
+
+        centro = pygame.Vector2(0, 0)
+        for alvo in alvos:
+            centro += alvo
+        centro /= len(alvos)
+
+        self.x = centro.x - self.largura / 2
+        self.y = centro.y - self.altura / 2
+        # Impede que a câmera ultrapasse as bordas do mapa.
+        self.x = limitar(self.x, self.largura_mapa - self.largura)
+        self.y = limitar(self.y, self.altura_mapa - self.altura)
+
+    def para_tela(self, caixa: pygame.Rect) -> pygame.Rect: #gera o novo retangulo da camera, evita que a camera fiquei no meio de 2 pixeis
+        return caixa.move(-round(self.x), -round(self.y))
+    
+    def area_visivel(self) -> pygame.Rect:
+        return pygame.Rect(math.floor(self.x), math.floor(self.y), self.largura + 1, self.altura + 1)
+    
+    def esta_visivel(self, caixa: pygame.Rect) -> bool:
+        return self.area_visivel().colliderect(caixa)

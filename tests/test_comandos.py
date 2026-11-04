@@ -30,3 +30,17 @@ def test_cada_comando_chama_a_acao_certa():
 def test_comandos_sao_dados_comparaveis():
     assert Mover((1, 0)) == Mover((1, 0))
     assert Atacar() == Atacar()
+
+
+from controle.fila_comandos import FilaComandos
+
+
+def test_fila_devolve_em_ordem_e_esvazia():
+    fila = FilaComandos()
+    fila.adicionar(1, Mover((0, 1)))
+    fila.adicionar(2, Atacar())
+    assert len(fila) == 2
+    assert fila.esvaziar() == [(1, Mover((0, 1))), (2, Atacar())]
+    assert len(fila) == 0
+    assert fila.esvaziar() == []
+

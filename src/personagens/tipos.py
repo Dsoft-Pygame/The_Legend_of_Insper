@@ -18,6 +18,8 @@ Regra das camadas de domínio (personagens/, movimento/, mapa/):
 Quem usa: quase todo mundo.
 """
 
+from __future__ import annotations
+
 from enum import Enum,auto
 import pygame
 

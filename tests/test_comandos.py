@@ -44,3 +44,38 @@ def test_fila_devolve_em_ordem_e_esvazia():
     assert len(fila) == 0
     assert fila.esvaziar() == []
 
+from controle.comandos import Atacar, Mover
+from controle.controlador_humano import ControladorHumano
+from controle.dispositivo import Botao, EstadoEntrada
+
+
+class DispositivoDeTeste:
+    nome = "teste"
+
+    def __init__(self, estado):
+        self.estado = estado
+
+    def ler(self):
+        return self.estado
+
+
+def test_controlador_humano_transforma_estado_em_comandos():
+    estado = EstadoEntrada(
+        eixo=(1.0, 0.0),
+        segurando=frozenset(),
+        apertou=frozenset({Botao.ATAQUE}),
+    )
+    controlador = ControladorHumano(DispositivoDeTeste(estado))
+
+    assert controlador.gerar_comandos(visao=None) == [
+        Mover((1.0, 0.0)),
+        Atacar(),
+    ]
+
+
+def test_controlador_humano_parado_nao_gera_nada():
+    controlador = ControladorHumano(
+        DispositivoDeTeste(EstadoEntrada())
+    )
+
+    assert controlador.gerar_comandos(visao=None) == []

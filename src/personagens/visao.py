@@ -31,3 +31,46 @@ Métodos:
 Quem cria: Nivel.observar.
 Quem usa: Controlador e ia/.
 """
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+import pygame
+
+from personagens.tipos import EntidadeId, Lado
+
+if TYPE_CHECKING:
+    from mapa.mapa import Mapa
+
+
+@dataclass(frozen=True)
+class Avistado:
+    id: EntidadeId
+    lado: Lado
+    posicao: pygame.Vector2
+    vida: int
+    vida_maxima: int
+    chefe: bool
+
+
+@dataclass(frozen=True)
+class Visao:
+    tick: int
+    dt: float
+    eu: Avistado
+    direcao_olhar: pygame.Vector2
+    pode_atacar: bool
+    pode_especial: bool
+    avistados: tuple[Avistado, ...]
+    mapa: Mapa
+
+    def do_lado(self, lado: Lado) -> list[Avistado]:
+        return [a for a in self.avistados if a.lado == lado]
+
+    def mais_proximo(self, lado: Lado) -> Avistado | None:
+        candidatos = self.do_lado(lado)
+        if not candidatos:
+            return None
+        return min(candidatos, key=lambda a: a.posicao.distance_to(self.eu.posicao))

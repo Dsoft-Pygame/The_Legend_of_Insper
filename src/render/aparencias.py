@@ -29,3 +29,67 @@ Métodos:
 Quem usa: RenderizadorNivel e CartaoClasse.
 Usa: render/animacoes.py, settings.py, assets/.
 """
+from pathlib import Path
+import pygame
+from settings import MAGENTA, PASTA_ASSETS
+Visual = pygame.Surface | tuple[int, int, int]   # uma imagem OU uma cor RGB
+
+import settings
+from settings import MAGENTA, PASTA_ASSETS
+
+
+class Aparencias:
+    def __init__(self) -> None:
+        self.cores: dict[str, tuple[int, int, int]] = {}
+        self.sprites: dict[str, pygame.Surface] = {}
+        self.animacoes: dict = {}
+        self.padrao = MAGENTA
+
+    @classmethod
+    def carregar(cls, config: dict, pasta_assets: Path = PASTA_ASSETS) -> "Aparencias":
+        aparencias = cls()
+
+        for chave, entrada in config.items():
+            if "cor" in entrada:
+                if not hasattr(settings, entrada["cor"]):
+                    raise ValueError(
+                        f"aparencias.json, '{chave}': a cor "
+                        f"'{entrada['cor']}' não existe no settings.py"
+                    )
+
+                aparencias.cores[chave] = getattr(settings, entrada["cor"])
+
+            if "sprite" in entrada:
+                aparencias.sprites[chave] = pygame.image.load(
+                    pasta_assets / entrada["sprite"]
+                ).convert_alpha()
+
+            if "folha" in entrada:
+                # folhas de animação: T62
+                pass
+
+        return aparencias
+
+    def obter(self, chave: str) -> Visual:
+        if chave in self.sprites:
+            return self.sprites[chave]
+
+        return self.cores.get(chave, self.padrao)
+
+    def quadro(self, chave: str, acao: str, tempo: float) -> Visual:
+        return self.obter(chave)
+
+
+def desenhar_visual(
+    superficie: pygame.Surface,
+    visual: Visual,
+    retangulo: pygame.Rect,
+    espelhar: bool = False
+) -> None:
+    if isinstance(visual, pygame.Surface):
+        if espelhar:
+            visual = pygame.transform.flip(visual, True, False)
+
+        superficie.blit(visual, visual.get_rect(center=retangulo.center))
+    else:
+        pygame.draw.rect(superficie, visual, retangulo)

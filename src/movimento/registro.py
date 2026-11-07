@@ -17,3 +17,30 @@ uma linha aqui.
 
 Quem usa: Fabrica e Catalogo (para conferir os nomes).
 """
+from typing import Callable
+from movimento.movimento import Movimento
+from movimento.movimento_livre import MovimentoLivre
+
+
+
+MOVIMENTOS: dict[str, Callable[..., Movimento]] = {"livre": MovimentoLivre}
+
+def criar_movimento(config: str | dict) -> Movimento:
+    if isinstance(config, str):
+        tipo = config
+        parametros = {}
+    else:
+        tipo = config["tipo"]
+        parametros = {
+            chave: valor
+            for chave, valor in config.items()
+            if chave != "tipo"
+        }
+
+    if tipo not in MOVIMENTOS:
+        raise ValueError(
+            f"Movimento desconhecido: '{tipo}'. "
+            f"Opções: {', '.join(MOVIMENTOS)}"
+        )
+
+    return MOVIMENTOS[tipo](**parametros)

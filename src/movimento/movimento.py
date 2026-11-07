@@ -25,3 +25,27 @@ Movimento (interface):
 Implementações: MovimentoLivre (padrão) e MovimentoGrade.
 Quem usa: Personagem (guarda), Nivel (chama na etapa mover_personagens).
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING, Protocol
+import pygame
+
+
+
+if TYPE_CHECKING:
+    from mapa.mapa import Mapa
+
+class Corpo(Protocol):
+    posicao: pygame.Vector2
+    tamanho: pygame.Vector2
+    velocidade: float
+    intencao: pygame.Vector2
+
+class Movimento(Protocol):
+    def atualizar(self, corpo: Corpo, mapa: Mapa, dt: float) -> None:
+        ...
+
+# Fora da classe Movimento
+def caixa_em(posicao: pygame.Vector2, tamanho: pygame.Vector2) -> pygame.Rect:
+    caixa = pygame.Rect(0, 0, int(tamanho.x), int(tamanho.y))
+    caixa.center = (round(posicao.x), round(posicao.y))
+    return caixa

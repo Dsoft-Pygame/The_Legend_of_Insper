@@ -54,19 +54,21 @@ class DispositivoFisico(DispositivoEntrada, Protocol):
     def amostrar(self) -> None: ... # mesmas funções do dispositivo teclado
     def limpar(self) -> None: ...
 
-class GerenciadorDispositivos(DispositivoEntrada, Protocol): # para receber alem do wasd, setinas, gampads e outros controladores
+class GerenciadorDispositivos: # para receber alem do wasd, setinas, gampads e outros controladores
     def __init__(self, controles: dict) -> None:
         self.dispositivos = {}
         self.em_uso = set()
         self.config_gamepad ={}
         for nome, config in controles.items():
-            if config["tipo"] == "gamepad":
-                self.config_gamepad = config
             if config["tipo"] == "teclado":
                 self.dispositivos[nome] = DispositivoTeclado.de_config(nome, config)
+            if config["tipo"] == "gamepad":
+                self.config_gamepad = config
+
 
     def atualizar(self, entrada: EntradaQuadro) -> None: # controles ligados ou desligados
         pass #ainda sem função específica, mas futuramente vai atualizar os dispositivos conectados
+    
     def amostrar(self) -> None:
         for dispositivo in self.dispositivos.values():
             dispositivo.amostrar()
@@ -81,6 +83,7 @@ class GerenciadorDispositivos(DispositivoEntrada, Protocol): # para receber alem
     def reservar(self, nome: str) -> DispositivoEntrada:
         dispositivo = self.dispositivos[nome]
         self.em_uso.add(nome)
+        dispositivo.limpar() #o toque que confirmou o menu não vira ataque
         return dispositivo
     
     def liberar(self, nome: str) -> None:

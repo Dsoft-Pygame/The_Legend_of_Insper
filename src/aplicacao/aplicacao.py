@@ -45,3 +45,48 @@ Quem usa: main.py.
 Usa: entrada/, telas/, aplicacao/sessao.py, jogo/catalogo.py,
 jogo/ranking.py.
 """
+from __future__ import annotations
+
+import pygame
+
+from aplicacao.sessao import Sessao
+from entrada.leitor_entrada import LeitorEntrada
+from settings import ALTURA_TELA, ESCALA, LARGURA_TELA, TITULO
+from telas.tela import Tela
+from telas.tela_inicial import TelaInicial
+
+
+class Aplicacao:
+    QUADROS_POR_SEGUNDO = 60
+
+    def __init__(self) -> None:
+        pygame.init()
+        self.janela = pygame.display.set_mode((LARGURA_TELA * ESCALA, ALTURA_TELA * ESCALA))  # 960 x 640
+        pygame.display.set_caption(TITULO)
+        self.tela_jogo = pygame.Surface((LARGURA_TELA, ALTURA_TELA))   # 240 x 160: tudo é desenhado aqui
+        self.relogio = pygame.time.Clock()
+        self.leitor_entrada = LeitorEntrada()
+        self.sessao = Sessao()
+        # catálogo, aparências, dispositivos e ranking entram na T28 e na T58
+        self.tela_atual: Tela | None = None
+        self.trocar_tela(TelaInicial(self))
+
+    def trocar_tela(self, nova_tela: Tela) -> None:
+        if self.tela_atual is not None:
+            self.tela_atual.ao_sair()
+        nova_tela.ao_entrar()
+        self.tela_atual = nova_tela
+
+    def executar(self) -> None:
+        while True:
+            entrada = self.leitor_entrada.ler_quadro()
+            if entrada.fechar:
+                break
+            # passo 2 (dispositivos): T28
+            self.tela_atual.tratar_entrada(entrada.menu)
+            dt = self.relogio.tick(self.QUADROS_POR_SEGUNDO) / 1000
+            self.tela_atual.atualizar(dt)
+            self.tela_atual.desenhar(self.tela_jogo)
+            pygame.transform.scale(self.tela_jogo, self.janela.get_size(), self.janela)
+            pygame.display.flip()
+        pygame.quit()

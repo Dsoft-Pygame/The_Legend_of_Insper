@@ -26,3 +26,22 @@ dispositivo e digita o nome; vira o PerfilJogador 2.
 Usa: ui/caixa_texto.py, ui/painel_ranking.py, jogo/ranking.py,
 aplicacao/sessao.py, entrada/gerenciador_dispositivos.py.
 """
+import pygame
+
+from entrada.entrada_menu import EntradaMenu
+from settings import ALTURA_TELA, BLACK, LARGURA_TELA, YELLOW
+from telas.tela import Tela
+from ui.texto import desenhar_texto
+
+
+class TelaInicial(Tela):
+    def tratar_entrada(self, entrada: EntradaMenu) -> None:
+        pass
+
+    def atualizar(self, dt: float) -> None:
+        pass
+
+    def desenhar(self, superficie: pygame.Surface) -> None:
+        superficie.fill(BLACK)
+        desenhar_texto(superficie, "The Legend of Insper", (LARGURA_TELA // 2, ALTURA_TELA // 2),
+                       YELLOW, 22, centralizado=True)

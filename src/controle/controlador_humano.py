@@ -23,3 +23,29 @@ Quem cria: TelaJogo (um por jogador da Sessao).
 Quem usa: Nivel.
 Usa: controle/dispositivo.py, controle/comandos.py.
 """
+
+
+from controle.comandos import Atacar, Comando, Especial, Mover
+from controle.controlador import Controlador
+from controle.dispositivo import Botao, DispositivoEntrada
+from personagens.visao import Visao
+
+
+class ControladorHumano(Controlador):
+    def __init__(self, dispositivo: DispositivoEntrada) -> None:
+        self.dispositivo = dispositivo
+
+    def gerar_comandos(self, visao: Visao) -> list[Comando]:
+        estado = self.dispositivo.ler()
+        comandos: list[Comando] = []
+
+        if estado.eixo != (0, 0):
+            comandos.append(Mover(estado.eixo))
+
+        if Botao.ATAQUE in estado.apertou:
+            comandos.append(Atacar())
+
+        if Botao.ESPECIAL in estado.apertou:
+            comandos.append(Especial())
+
+        return comandos

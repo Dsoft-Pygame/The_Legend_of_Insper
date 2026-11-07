@@ -18,3 +18,14 @@ Herdam dela: ControladorHumano e ControladorIA.
 Possíveis no futuro: ControladorReplay (devolve comandos gravados) e
 ControladorRede (comandos vindos de outro PC).
 """
+
+
+from abc import ABC, abstractmethod
+
+from controle.comandos import Comando
+from personagens.visao import Visao
+
+
+class Controlador(ABC):
+    @abstractmethod
+    def gerar_comandos(self, visao: Visao) -> list[Comando]: ...

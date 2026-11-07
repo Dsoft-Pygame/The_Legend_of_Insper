@@ -50,20 +50,17 @@ class LeitorEntrada:
     }
     self.botoes_menu: dict[int, AcaoMenu] = {0: AcaoMenu.CONFIRMAR, 1: AcaoMenu.VOLTAR}
   def ler_quadro(self) -> EntradaQuadro:
-    retorno = EntradaQuadro()
     fechar = False
     acoes: list[tuple[AcaoMenu, str]] = []
     texto = ""
     for evento in pygame.event.get(): # controles: T69
-      if evento == pygame.QUIT:
+      if evento.type == pygame.QUIT:
         fechar = True
-      elif evento == pygame.KEYDOWN:
+      elif evento.type == pygame.KEYDOWN:
         acao = self.teclas_menu.get(evento.key)
         if acao != None:
           acoes.append((acao, "teclado"))
-      elif evento == pygame.TEXTINPUT:
+      elif evento.type == pygame.TEXTINPUT:
         texto += evento.text
     
-    retorno.fechar = fechar
-    retorno.menu = EntradaMenu(tuple(acoes), texto)
-    return retorno
+    return EntradaQuadro(fechar=fechar, menu=EntradaMenu(tuple(acoes), texto))

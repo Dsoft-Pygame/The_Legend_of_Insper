@@ -1,5 +1,6 @@
 import pygame
 
+from controle.comandos import Mover
 from controle.controlador import Controlador
 from jogo.nivel import Nivel
 from mapa.carregador_texto import CarregadorTexto
@@ -53,3 +54,13 @@ def test_observar_so_ve_quem_esta_no_raio(tmp_path):
     assert visao.eu.id == heroi
     assert len(visao.avistados) == 1                     # o de x=140 está longe demais
     assert visao.mais_proximo(Lado.MONSTROS).posicao == pygame.Vector2(60, 24)
+
+
+def test_tick_move_quem_pediu(tmp_path):
+    nivel = criar_nivel(tmp_path, SALA)
+    id_heroi = nivel.adicionar(criar_personagem(Lado.HEROIS, 24, 24), ControladorFixo([Mover((1, 0))]), 160)
+    nivel.tick_atualizar(0.05, tick=0)
+    heroi = nivel.buscar(id_heroi)
+    assert heroi.posicao == pygame.Vector2(28, 24)
+    assert heroi.posicao_anterior == pygame.Vector2(24, 24)
+    assert heroi.acao_atual == "andando"

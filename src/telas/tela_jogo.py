@@ -42,3 +42,27 @@ Usa: jogo/mundo.py, jogo/fabrica.py, controle/controlador_humano.py,
 render/renderizador_nivel.py, ui/hud.py,
 entrada/gerenciador_dispositivos.py.
 """
+import pygame
+
+from entrada.entrada_menu import AcaoMenu, EntradaMenu
+from settings import ALTURA_TELA, BLACK, LARGURA_TELA, WHITE, YELLOW
+from telas.tela import Tela
+from ui.texto import desenhar_texto
+
+
+class TelaJogo(Tela):
+    def tratar_entrada(self, entrada: EntradaMenu) -> None:
+        if entrada.tem(AcaoMenu.CONFIRMAR):
+            from telas.tela_resultado import TelaResultado   # aqui dentro: evita o import circular
+            self.aplicacao.trocar_tela(TelaResultado(self.aplicacao))
+
+    def atualizar(self, dt: float) -> None:
+        pass
+
+    def desenhar(self, superficie: pygame.Surface) -> None:
+        superficie.fill(BLACK)
+        desenhar_texto(superficie, "JOGO (em construção)", (LARGURA_TELA // 2, ALTURA_TELA // 2),
+                       YELLOW, centralizado=True)
+        classe = self.aplicacao.sessao.buscar(1).classe   # se aparecer a classe escolhida, a Sessao guardou
+        desenhar_texto(superficie, str(classe), (LARGURA_TELA // 2, ALTURA_TELA // 2 + 20),
+                       WHITE, centralizado=True)

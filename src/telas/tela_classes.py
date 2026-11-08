@@ -24,3 +24,38 @@ ação).
 
 Usa: ui/cartao_classe.py, jogo/catalogo.py, aplicacao/sessao.py.
 """
+import pygame
+
+from entrada.entrada_menu import AcaoMenu, EntradaMenu
+from settings import BLACK, LARGURA_TELA, WHITE, YELLOW
+from telas.tela import Tela
+from ui.texto import desenhar_texto
+
+
+class TelaClasses(Tela):
+    def __init__(self, aplicacao) -> None:
+        super().__init__(aplicacao)                    # guarda self.aplicacao
+        self.opcoes = ["mago", "arqueiro", "barbaro"]
+        self.selecionado = 0                           # índice em self.opcoes
+
+    def tratar_entrada(self, entrada: EntradaMenu) -> None:
+        if entrada.tem(AcaoMenu.ESQUERDA):
+            self.selecionado = (self.selecionado - 1) % len(self.opcoes)   # o % dá a volta
+        if entrada.tem(AcaoMenu.DIREITA):
+            self.selecionado = (self.selecionado + 1) % len(self.opcoes)
+        if entrada.tem(AcaoMenu.CONFIRMAR):
+            self.aplicacao.sessao.buscar(1).classe = self.opcoes[self.selecionado]
+            from telas.tela_jogo import TelaJogo        # aqui dentro: evita o import circular
+            self.aplicacao.trocar_tela(TelaJogo(self.aplicacao))
+        elif entrada.tem(AcaoMenu.VOLTAR):
+            from telas.tela_inicial import TelaInicial
+            self.aplicacao.trocar_tela(TelaInicial(self.aplicacao))
+
+    def atualizar(self, dt: float) -> None:
+        pass
+
+    def desenhar(self, superficie: pygame.Surface) -> None:
+        superficie.fill(BLACK)
+        for i, opcao in enumerate(self.opcoes):
+            cor = YELLOW if i == self.selecionado else WHITE
+            desenhar_texto(superficie, opcao, (LARGURA_TELA // 2, 50 + i * 20), cor, centralizado=True)

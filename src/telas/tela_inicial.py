@@ -28,15 +28,21 @@ aplicacao/sessao.py, entrada/gerenciador_dispositivos.py.
 """
 import pygame
 
-from entrada.entrada_menu import EntradaMenu
-from settings import ALTURA_TELA, BLACK, LARGURA_TELA, YELLOW
+from entrada.entrada_menu import AcaoMenu, EntradaMenu
+from settings import ALTURA_TELA, BLACK, GRAY, LARGURA_TELA, YELLOW
 from telas.tela import Tela
 from ui.texto import desenhar_texto
 
 
 class TelaInicial(Tela):
+    def ao_entrar(self) -> None:
+        self.aplicacao.sessao.limpar()                 # toda vez que a tela aparece, começa uma partida nova
+
     def tratar_entrada(self, entrada: EntradaMenu) -> None:
-        pass
+        if entrada.tem(AcaoMenu.CONFIRMAR):
+            self.aplicacao.sessao.adicionar_jogador("Jogador", "teclado_wasd")   # jogador provisório (T55)
+            from telas.tela_classes import TelaClasses  # aqui dentro: evita o import circular
+            self.aplicacao.trocar_tela(TelaClasses(self.aplicacao))
 
     def atualizar(self, dt: float) -> None:
         pass
@@ -45,3 +51,5 @@ class TelaInicial(Tela):
         superficie.fill(BLACK)
         desenhar_texto(superficie, "The Legend of Insper", (LARGURA_TELA // 2, ALTURA_TELA // 2),
                        YELLOW, 22, centralizado=True)
+        desenhar_texto(superficie, "ENTER para jogar", (LARGURA_TELA // 2, ALTURA_TELA // 2 + 24),
+                       GRAY, centralizado=True)

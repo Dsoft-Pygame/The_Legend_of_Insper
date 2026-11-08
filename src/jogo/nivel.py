@@ -58,3 +58,127 @@ Quem usa: Mundo, RenderizadorNivel (só lê).
 Usa: mapa/mapa.py, controle/, personagens/, jogo/combate.py,
 jogo/eventos.py.
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import pygame
+
+from controle.fila_comandos import FilaComandos
+from personagens.tipos import EntidadeId, Lado
+from personagens.visao import Avistado, Visao
+
+if TYPE_CHECKING:
+    from controle.controlador import Controlador
+    from mapa.mapa import Mapa
+    from personagens.personagem import Personagem
+
+
+class Nivel:
+    def __init__(self, nome: str, numero: int, mapa: Mapa) -> None:
+        self.nome = nome
+        self.numero = numero
+        self.mapa = mapa
+        self.personagens: dict[EntidadeId, Personagem] = {}
+        self.controladores: dict[EntidadeId, Controlador] = {}
+        self.raios_visao: dict[EntidadeId, float] = {}
+        self.projeteis: dict = {}                      # id -> Projetil (T41)
+        self.fila = FilaComandos()
+        self.proximo_id: EntidadeId = 1
+
+    # ---- montagem ----
+
+    def novo_id(self) -> EntidadeId:
+        id_novo = self.proximo_id
+        self.proximo_id += 1
+        return id_novo
+
+    def adicionar(self, personagem: Personagem, controlador: Controlador, raio_visao: float) -> EntidadeId:
+        id_novo = self.novo_id()
+        personagem.id = id_novo
+        personagem.colocar_em(personagem.posicao)      # zera a posição anterior (podia ser do nível passado)
+        self.personagens[id_novo] = personagem
+        self.controladores[id_novo] = controlador
+        self.raios_visao[id_novo] = raio_visao
+        return id_novo
+
+    def trocar_controlador(self, id: EntidadeId, controlador: Controlador) -> bool:
+        if id not in self.personagens:
+            return False
+        self.controladores[id] = controlador
+        return True
+
+    def remover(self, id: EntidadeId) -> Personagem | None:
+        self.controladores.pop(id, None)
+        self.raios_visao.pop(id, None)
+        return self.personagens.pop(id, None)
+
+    def buscar(self, id: EntidadeId) -> Personagem | None:
+        return self.personagens.get(id)
+
+    # ---- consultas ----
+
+    def herois(self) -> list[Personagem]:
+        return [p for p in self.personagens.values() if p.lado == Lado.HEROIS]
+
+    def monstros(self) -> list[Personagem]:
+        return [p for p in self.personagens.values() if p.lado == Lado.MONSTROS]
+
+    def esta_limpo(self) -> bool:
+        return not any(m.esta_vivo for m in self.monstros())
+
+    def observar(self, id: EntidadeId, tick: int = 0, dt: float = 0.0) -> Visao:
+        eu = self.personagens[id]
+        raio = self.raios_visao[id]
+        avistados = tuple(avistar(outro) for outro in self.personagens.values()
+                          if outro.id != id and outro.esta_vivo
+                          and outro.posicao.distance_to(eu.posicao) <= raio)
+        return Visao(tick=tick, dt=dt, eu=avistar(eu), direcao_olhar=pygame.Vector2(eu.direcao_olhar),
+                     pode_atacar=eu.pode_atacar(), pode_especial=eu.pode_especial(),
+                     avistados=avistados, mapa=self.mapa)
+
+    # ---- o tick ----
+
+    def guardar_posicoes(self) -> None:
+        for personagem in self.personagens.values():
+            personagem.guardar_posicao()
+        for projetil in self.projeteis.values():
+            projetil.guardar_posicao()
+
+    def coletar_comandos(self, tick: int, dt: float) -> None:
+        # ninguém muda o mundo aqui: todos decidem olhando o mesmo estado
+        for id_personagem, personagem in self.personagens.items():
+            if not personagem.esta_vivo:
+                continue
+            visao = self.observar(id_personagem, tick, dt)
+            for comando in self.controladores[id_personagem].gerar_comandos(visao):
+                self.fila.adicionar(id_personagem, comando)
+
+    def executar_comandos(self) -> None:
+        for id_personagem, comando in self.fila.esvaziar():
+            personagem = self.personagens.get(id_personagem)
+            if personagem is not None and personagem.esta_vivo:
+                comando.aplicar(personagem)
+
+    def mover_personagens(self, dt: float) -> None:
+        for personagem in self.personagens.values():
+            if not personagem.esta_vivo:
+                continue
+            antes = pygame.Vector2(personagem.posicao)
+            personagem.movimento.atualizar(personagem, self.mapa, dt)
+            personagem.avancar_tempos(dt)
+            personagem.mudar_acao("andando" if personagem.posicao != antes else "parado")
+
+    def tick_atualizar(self, dt: float, tick: int) -> list:
+        self.guardar_posicoes()           # 0
+        self.coletar_comandos(tick, dt)   # 1
+        self.executar_comandos()          # 2
+        self.mover_personagens(dt)        # 3
+        # etapas 4 a 6 (combate, mortos, saída): T43
+        return []
+
+
+def avistar(personagem: Personagem) -> Avistado:
+    """A "foto" de um personagem. O Vector2 é uma cópia: a IA não mexe na posição de verdade."""
+    return Avistado(id=personagem.id, lado=personagem.lado, posicao=pygame.Vector2(personagem.posicao),
+                    vida=personagem.vida, vida_maxima=personagem.vida_maxima, chefe=personagem.chefe)

@@ -50,7 +50,10 @@ from __future__ import annotations
 import pygame
 
 from aplicacao.sessao import Sessao
+from entrada.gerenciador_dispositivos import GerenciadorDispositivos
 from entrada.leitor_entrada import LeitorEntrada
+from jogo.catalogo import Catalogo
+from render.aparencias import Aparencias
 from settings import ALTURA_TELA, ESCALA, LARGURA_TELA, TITULO
 from telas.tela import Tela
 from telas.tela_inicial import TelaInicial
@@ -66,8 +69,12 @@ class Aplicacao:
         self.tela_jogo = pygame.Surface((LARGURA_TELA, ALTURA_TELA))   # 240 x 160: tudo é desenhado aqui
         self.relogio = pygame.time.Clock()
         self.leitor_entrada = LeitorEntrada()
-        self.sessao = Sessao()
-        # catálogo, aparências, dispositivos e ranking entram na T28 e na T58
+        self.catalogo = Catalogo.carregar()                                   # T11: lê todos os JSON uma vez
+        self.aparencias = Aparencias.carregar(self.catalogo.aparencias)       # T16: carrega as imagens
+        self.dispositivos = GerenciadorDispositivos(self.catalogo.controles)  # T27
+        self.sessao = Sessao()                                                # T03
+        self.sessao.tema = self.catalogo.tema_padrao
+        # ranking: T58
         self.tela_atual: Tela | None = None
         self.trocar_tela(TelaInicial(self))
 
@@ -82,7 +89,8 @@ class Aplicacao:
             entrada = self.leitor_entrada.ler_quadro()
             if entrada.fechar:
                 break
-            # passo 2 (dispositivos): T28
+            self.dispositivos.atualizar(entrada)   # controles ligados/desligados (T69)
+            self.dispositivos.amostrar()           # todo quadro, para não perder toque rápido
             self.tela_atual.tratar_entrada(entrada.menu)
             dt = self.relogio.tick(self.QUADROS_POR_SEGUNDO) / 1000
             self.tela_atual.atualizar(dt)

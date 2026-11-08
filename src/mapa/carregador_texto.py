@@ -21,3 +21,41 @@ resto do jogo.
 
 Quem usa: Mundo (pelo registro de mapas).
 """
+from pathlib import Path
+
+import pygame
+
+from mapa.mapa_tiles import MapaTiles
+from settings import PASTA_DATA, TAMANHO_TILE
+
+CELULAS = {"#": "parede", ".": "chao", "S": "saida", "H": "chao", "I": "chao", "C": "chao"}
+MARCADORES = {"H": "heroi", "I": "inimigo", "C": "chefe"}
+
+
+class CarregadorTexto:
+    def __init__(self, pasta_dados: Path = PASTA_DATA) -> None:
+        self.pasta_dados = pasta_dados
+
+    def carregar(self, origem: str) -> MapaTiles:
+        texto = (self.pasta_dados / origem).read_text(encoding="utf-8")
+        linhas = [linha.rstrip() for linha in texto.splitlines()]
+        linhas = [linha for linha in linhas if linha]
+        largura = len(linhas[0])
+        celulas: list[list[str]] = []
+        pontos: dict[str, list[pygame.Vector2]] = {"heroi": [], "inimigo": [], "chefe": []}
+        for numero_linha, linha in enumerate(linhas):
+            if len(linha) != largura:
+                raise ValueError(f"{origem}: linha {numero_linha + 1} tem {len(linha)} caracteres, "
+                                 f"mas a primeira tem {largura}")
+            fileira: list[str] = []
+            for coluna, caractere in enumerate(linha):
+                if caractere not in CELULAS:
+                    raise ValueError(f"{origem}: linha {numero_linha + 1}, coluna {coluna + 1}: "
+                                     f"caractere '{caractere}' desconhecido")
+                fileira.append(CELULAS[caractere])
+                if caractere in MARCADORES:
+                    centro = pygame.Vector2(coluna * TAMANHO_TILE + TAMANHO_TILE // 2,
+                                            numero_linha * TAMANHO_TILE + TAMANHO_TILE // 2)
+                    pontos[MARCADORES[caractere]].append(centro)
+            celulas.append(fileira)
+        return MapaTiles(celulas, pontos, TAMANHO_TILE)

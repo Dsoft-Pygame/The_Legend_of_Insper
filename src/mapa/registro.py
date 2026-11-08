@@ -13,3 +13,15 @@ Funções:
 
 Quem usa: Mundo e Catalogo (para conferir os nomes).
 """
+from typing import Callable
+
+from mapa.carregador_texto import CarregadorTexto
+from mapa.mapa import CarregadorMapa
+
+CARREGADORES: dict[str, Callable[[], CarregadorMapa]] = {"texto": CarregadorTexto}
+
+
+def criar_carregador(nome: str) -> CarregadorMapa:
+    if nome not in CARREGADORES:
+        raise ValueError(f"Carregador de mapa desconhecido: '{nome}'. Opções: {', '.join(CARREGADORES)}")
+    return CARREGADORES[nome]()

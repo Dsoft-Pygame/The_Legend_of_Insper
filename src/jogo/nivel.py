@@ -137,6 +137,46 @@ class Nivel:
                      pode_atacar=eu.pode_atacar(), pode_especial=eu.pode_especial(),
                      avistados=avistados, mapa=self.mapa)
 
+    # ---- o tick ----
+
+    def guardar_posicoes(self) -> None:
+        for personagem in self.personagens.values():
+            personagem.guardar_posicao()
+        for projetil in self.projeteis.values():
+            projetil.guardar_posicao()
+
+    def coletar_comandos(self, tick: int, dt: float) -> None:
+        # ninguém muda o mundo aqui: todos decidem olhando o mesmo estado
+        for id_personagem, personagem in self.personagens.items():
+            if not personagem.esta_vivo:
+                continue
+            visao = self.observar(id_personagem, tick, dt)
+            for comando in self.controladores[id_personagem].gerar_comandos(visao):
+                self.fila.adicionar(id_personagem, comando)
+
+    def executar_comandos(self) -> None:
+        for id_personagem, comando in self.fila.esvaziar():
+            personagem = self.personagens.get(id_personagem)
+            if personagem is not None and personagem.esta_vivo:
+                comando.aplicar(personagem)
+
+    def mover_personagens(self, dt: float) -> None:
+        for personagem in self.personagens.values():
+            if not personagem.esta_vivo:
+                continue
+            antes = pygame.Vector2(personagem.posicao)
+            personagem.movimento.atualizar(personagem, self.mapa, dt)
+            personagem.avancar_tempos(dt)
+            personagem.mudar_acao("andando" if personagem.posicao != antes else "parado")
+
+    def tick_atualizar(self, dt: float, tick: int) -> list:
+        self.guardar_posicoes()           # 0
+        self.coletar_comandos(tick, dt)   # 1
+        self.executar_comandos()          # 2
+        self.mover_personagens(dt)        # 3
+        # etapas 4 a 6 (combate, mortos, saída): T43
+        return []
+
 
 def avistar(personagem: Personagem) -> Avistado:
     """A "foto" de um personagem. O Vector2 é uma cópia: a IA não mexe na posição de verdade."""

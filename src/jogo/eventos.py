@@ -18,3 +18,26 @@ Evento = PersonagemDerrotado | HeroiNaSaida (apelido de tipo).
 Quem cria: Nivel.
 Quem usa: Mundo.
 """
+
+
+from dataclasses import dataclass
+
+from personagens.tipos import EntidadeId, Lado
+
+
+@dataclass(frozen=True)
+class PersonagemDerrotado:
+    id: EntidadeId                      # quem morreu
+    lado: Lado                          # HEROIS ou MONSTROS
+    nome: str                           # "Slime", "Mago", ...
+    pontos: int                         # quanto vale (0 nos heróis)
+    chefe: bool                         # derrotar o chefe vence a partida
+    derrotado_por: EntidadeId | None    # quem deu o último golpe
+
+
+@dataclass(frozen=True)
+class HeroiNaSaida:
+    id: EntidadeId                      # o herói que pisou na saída
+
+
+Evento = PersonagemDerrotado | HeroiNaSaida   # "um evento é um desses dois"

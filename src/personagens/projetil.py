@@ -26,3 +26,42 @@ combate (jogo/combate.py), perguntando ao Mapa.
 Quem cria: os ataques (personagens/ataques/).
 Quem usa: Nivel, jogo/combate.py, render (só lê).
 """
+
+
+import pygame
+
+from personagens.entidade import Entidade
+from personagens.tipos import EntidadeId, Lado
+
+
+class Projetil(Entidade): # Cria a classe Projetil, herdando de Entidade. Assim, o projétil também tem as características de uma entidade.
+    def __init__(
+        self,
+        lado: Lado,
+        dono: EntidadeId,
+        posicao: pygame.Vector2,
+        tamanho: pygame.Vector2,
+        aparencia: str,
+        velocidade: pygame.Vector2,
+        dano: int,
+        duracao: float,
+        atravessa: bool = False,
+    ) -> None:
+        super().__init__(posicao, tamanho, aparencia)
+
+        self.lado = lado
+        self.dono = dono
+        self.velocidade = pygame.Vector2(velocidade)
+        self.dano = dano
+        self.duracao = duracao
+        self.atravessa = atravessa
+
+        self.ja_acertou: set[EntidadeId] = set()
+        self.caixas_do_tick: list[pygame.Rect] = []
+
+    def avancar(self, dt: float) -> None:
+        self.posicao += self.velocidade * dt
+        self.duracao -= dt
+
+    def acabou(self) -> bool:
+        return self.duracao <= 0

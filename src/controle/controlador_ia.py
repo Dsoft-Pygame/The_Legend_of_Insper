@@ -24,3 +24,21 @@ Quem cria: Fabrica.
 Quem usa: Nivel.
 Usa: ia/sistema_decisao.py, controle/comandos.py.
 """
+
+
+import random
+
+from controle.comandos import Comando
+from controle.controlador import Controlador
+from ia.sistema_decisao import SistemaDecisao
+from personagens.visao import Visao
+
+
+class ControladorIA(Controlador):
+    def __init__(self, sistema: SistemaDecisao, semente: int) -> None:
+        self.sistema = sistema
+        self.semente = semente
+
+    def gerar_comandos(self, visao: Visao) -> list[Comando]:
+        gerador = random.Random(f"{self.semente}:{visao.tick}:{visao.eu.id}")
+        return self.sistema.decidir(visao, gerador)

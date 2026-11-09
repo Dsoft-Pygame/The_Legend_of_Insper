@@ -21,3 +21,14 @@ Métodos:
 Implementações: DecisaoPerseguir, DecisaoZigueZague e DecisaoChefe.
 Quem usa: ControladorIA.
 """
+
+
+import random
+from typing import Protocol
+
+from controle.comandos import Comando
+from personagens.visao import Visao
+
+
+class SistemaDecisao(Protocol):
+    def decidir(self, visao: Visao, gerador: random.Random) -> list[Comando]: ...

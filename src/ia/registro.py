@@ -21,3 +21,22 @@ Funções:
 
 Quem usa: Fabrica e Catalogo (para conferir os nomes).
 """
+
+
+from typing import Callable
+
+from ia.decisao_perseguir import DecisaoPerseguir
+from ia.sistema_decisao import SistemaDecisao
+
+SISTEMAS_DECISAO: dict[str, Callable[..., SistemaDecisao]] = {
+    "perseguir": DecisaoPerseguir,
+    # "zigue_zague": T46, "chefe": T47
+}
+
+
+def criar_decisao(config: dict) -> SistemaDecisao:
+    tipo = config.get("tipo")
+    if tipo not in SISTEMAS_DECISAO:
+        raise ValueError(f"Sistema de decisão desconhecido: '{tipo}'. Opções: {', '.join(SISTEMAS_DECISAO)}")
+    parametros = {chave: valor for chave, valor in config.items() if chave != "tipo"}
+    return SISTEMAS_DECISAO[tipo](**parametros)

@@ -44,3 +44,38 @@ Quem usa: TelaJogo.
 Usa: render/camera.py, render/aparencias.py, jogo/nivel.py (só leitura),
 jogo/mundo.py (só a constante PASSO).
 """
+
+from __future__ import annotations
+from typing import TYPE_CHECKING
+import pygame
+from render.aparencias import Aparencias, desenhar_visual
+from render.camera import Camera
+from settings import BLACK
+
+if TYPE_CHECKING:
+    from jogo.nivel import Nivel
+
+
+class RenderizadorNivel: #renderiza o nivel
+    def __init__(self, aparencias: Aparencias) -> None:
+        self.aparencias = aparencias
+        self.camera = Camera()
+        self.relogio = 0.0
+
+    def avancar(self, dt: float) -> None: #ticks do jogo
+        self.relogio += dt
+
+    def mudar_mapa(self, nivel: Nivel) -> None: #avisa a câmera do tamanho do mapa novo
+        self.camera.mudar_mapa(nivel.mapa.largura, nivel.mapa.altura)
+
+    def desenhar(self, superficie: pygame.Surface, nivel: Nivel, alfa: float) -> None:
+        
+        superficie.fill(BLACK)
+        saida_aberta = nivel.esta_limpo()
+
+        for retangulo, chave in nivel.mapa.ladrilhos_em(self.camera.area_visivel()):
+            if chave == "saida":
+                if saida_aberta:
+                    if int(self.relogio * 4) % 2 == 0:
+                        desenhar_visual(superficie, self.aparencias.obter(chave), self.camera.para_tela(retangulo))
+                        

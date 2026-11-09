@@ -35,17 +35,18 @@ class CartaoClasse: # o cartão de uma classe na tela de escolha
         r=self.retangulo
         pygame.draw.rect(superficie, DARK_GRAY,r) #fundo do cartão
         pygame.draw.rect(superficie, YELLOW if selecionado else GRAY,r,2 if selecionado else 1) #borda do cartão
+        #icone da classe
         icone=pygame.Rect(0,0,16,16)
         icone.center=(r.centerx,r.y + 16)
+        visual = aparencias.obter(self.classe.aparencia)
+        desenhar_visual(superficie, visual, icone)
+        #nome da classe
         desenhar_texto(superficie, self.classe.nome, (r.centerx, r.y + 32), YELLOW if selecionado else WHITE, 16, centralizado=True)
-        
-        fonte=pygame.font.Font(None, 14)
+        #atributos da classe
         linhas = [
             f"Vida: {self.classe.vida_maxima}",
-            f"Velocidade: {int(self.classe.velocidade)}",
+            f"Vel: {int(self.classe.velocidade)}",
             f"Dano: {self.classe.ataque.get('dano',0)}"
         ]
         for i, texto in enumerate(linhas):
-            imagem_texto = fonte.render(texto, True, (255, 255, 255))
-            posicao = (r.x + 6, r.y + 46 + i * 12)
-            tela.blit(imagem_texto, posicao)
+            desenhar_texto(superficie, texto, (r.x + 6, r.y + 46 + i * 12), WHITE, 14)

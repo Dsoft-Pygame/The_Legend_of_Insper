@@ -35,6 +35,7 @@ Herdam dela: Personagem e Projetil.
 """
 
 import pygame
+from movimento.movimento import caixa_em
 from personagens.tipos import EntidadeId
 
 
@@ -56,7 +57,5 @@ class Entidade:
     self.posicao_anterior = pygame.Vector2(posicao)
 
   @property
-  def caixa(self) -> pygame.Rect: # retangulo de colisão
-    caixa = pygame.Rect(0, 0, int(self.tamanho.x), int(self.tamanho.y))
-    caixa.center = (round(self.posicao.x), round(self.posicao.y))
-    return caixa
+  def caixa(self) -> pygame.Rect: # retangulo de colisão (o mesmo que o movimento usa)
+    return caixa_em(self.posicao, self.tamanho)

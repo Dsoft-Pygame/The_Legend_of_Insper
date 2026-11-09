@@ -50,6 +50,7 @@ from typing import TYPE_CHECKING
 import pygame
 from render.aparencias import Aparencias, desenhar_visual
 from render.camera import Camera
+from movimento.movimento import caixa_em
 from settings import BLACK
 from jogo.mundo import Mundo                    # só para usar Mundo.PASSO
 from personagens.personagem import Personagem   # para saber se a entidade é personagem ou projétil
@@ -97,12 +98,7 @@ class RenderizadorNivel: #renderiza o nivel
         for entidade in sorted(entidades, key=lambda e: posicoes[e.id].y):
             posicao = posicoes[entidade.id]
 
-            caixa = pygame.Rect(
-                0, 0,
-                int(entidade.tamanho.x),
-                int(entidade.tamanho.y),
-            )
-            caixa.center = (round(posicao.x), round(posicao.y))
+            caixa = caixa_em(posicao, entidade.tamanho)   # mesmo arredondamento da colisão
 
             # Pula entidades que estão fora da câmera.
             if not self.camera.esta_visivel(caixa):

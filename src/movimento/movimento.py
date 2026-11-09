@@ -26,6 +26,7 @@ Implementações: MovimentoLivre (padrão) e MovimentoGrade.
 Quem usa: Personagem (guarda), Nivel (chama na etapa mover_personagens).
 """
 from __future__ import annotations
+import math
 from typing import TYPE_CHECKING, Protocol
 import pygame
 
@@ -45,7 +46,13 @@ class Movimento(Protocol):
         ...
 
 # Fora da classe Movimento
+def pixel(valor: float) -> int:
+    # Arredonda o .5 sempre para cima. O round() do Python arredonda o .5
+    # para o número par (round(22.5) = 22, round(23.5) = 24), o que fazia a
+    # caixa cair 1 px para lados diferentes conforme a posição.
+    return math.floor(valor + 0.5)
+
 def caixa_em(posicao: pygame.Vector2, tamanho: pygame.Vector2) -> pygame.Rect:
     caixa = pygame.Rect(0, 0, int(tamanho.x), int(tamanho.y))
-    caixa.center = (round(posicao.x), round(posicao.y))
+    caixa.center = (pixel(posicao.x), pixel(posicao.y))
     return caixa

@@ -51,6 +51,8 @@ import pygame
 from render.aparencias import Aparencias, desenhar_visual
 from render.camera import Camera
 from settings import BLACK
+from jogo.mundo import Mundo                    # só para usar Mundo.PASSO
+from personagens.personagem import Personagem   # para saber se a entidade é personagem ou projétil
 
 if TYPE_CHECKING:
     from jogo.nivel import Nivel
@@ -62,20 +64,62 @@ class RenderizadorNivel: #renderiza o nivel
         self.camera = Camera()
         self.relogio = 0.0
 
-    def avancar(self, dt: float) -> None: #ticks do jogo
+    def avancar(self, dt: float) -> None: #ataualiza o tempo a cada quadro
         self.relogio += dt
 
     def mudar_mapa(self, nivel: Nivel) -> None: #avisa a câmera do tamanho do mapa novo
         self.camera.mudar_mapa(nivel.mapa.largura, nivel.mapa.altura)
 
     def desenhar(self, superficie: pygame.Surface, nivel: Nivel, alfa: float) -> None:
-        
         superficie.fill(BLACK)
+
+        # Calcula as posições de desenho sem alterar as posições das entidades.
+        entidades = list(nivel.personagens.values()) + list(nivel.projeteis.values())
+
+        posicoes = {e.id: e.posicao_anterior.lerp(e.posicao, alfa) for e in entidades}
+
+        self.camera.seguir([posicoes[h.id]
+            for h in nivel.herois()
+            if h.esta_vivo
+        ])
+
         saida_aberta = nivel.esta_limpo()
 
+        # Desenha todos os ladrilhos da área visível.
         for retangulo, chave in nivel.mapa.ladrilhos_em(self.camera.area_visivel()):
-            if chave == "saida":
-                if saida_aberta:
-                    if int(self.relogio * 4) % 2 == 0:
-                        desenhar_visual(superficie, self.aparencias.obter(chave), self.camera.para_tela(retangulo))
-                        
+            if chave == "saida" and saida_aberta:
+                if int(self.relogio * 4) % 2 == 0:
+                    chave = "saida_aberta"
+
+            desenhar_visual(superficie, self.aparencias.obter(chave), self.camera.para_tela(retangulo))
+
+        # Quem está mais embaixo é desenhado por último.
+        for entidade in sorted(entidades, key=lambda e: posicoes[e.id].y):
+            posicao = posicoes[entidade.id]
+
+            caixa = pygame.Rect(
+                0, 0,
+                int(entidade.tamanho.x),
+                int(entidade.tamanho.y),
+            )
+            caixa.center = (round(posicao.x), round(posicao.y))
+
+            # Pula entidades que estão fora da câmera.
+            if not self.camera.esta_visivel(caixa):
+                continue
+
+            if isinstance(entidade, Personagem):
+                # Personagens invulneráveis piscam.
+                if entidade.invulneravel > 0:
+                    if int(self.relogio * 10) % 2 == 0:
+                        continue
+
+                tempo = entidade.tempo_na_acao + alfa * Mundo.PASSO
+                visual = self.aparencias.quadro(entidade.aparencia, entidade.acao_atual, tempo)
+                espelhar = entidade.direcao_olhar.x < 0
+
+            else:
+                visual = self.aparencias.obter(entidade.aparencia)
+                espelhar = False
+
+            desenhar_visual(superficie, visual, self.camera.para_tela(caixa), espelhar)

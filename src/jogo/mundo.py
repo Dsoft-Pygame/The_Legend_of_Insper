@@ -65,3 +65,83 @@ Quem usa: TelaJogo.
 Usa: jogo/nivel.py, jogo/fabrica.py, jogo/pontuacao.py, jogo/eventos.py,
 mapa/registro.py.
 """
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+import pygame
+
+from jogo.nivel import Nivel
+from mapa.registro import criar_carregador
+
+if TYPE_CHECKING:
+    from controle.controlador import Controlador
+    from jogo.catalogo import DefinicaoTema
+    from jogo.fabrica import Fabrica
+    from personagens.personagem import Personagem
+
+RAIO_VISAO_HEROI = 160
+
+
+@dataclass
+class Heroi:
+    numero: int                 # 1 = P1, 2 = P2
+    nome: str                   # o nome que o jogador digitou
+    personagem: Personagem
+    controlador: Controlador
+
+
+class Mundo:
+    TICKS_POR_SEGUNDO = 20
+    PASSO = 1 / TICKS_POR_SEGUNDO          # 0,05 s
+    TEMPO_MAXIMO_POR_QUADRO = 0.25
+
+    def __init__(self, tema: DefinicaoTema, fabrica: Fabrica, herois: list[Heroi]) -> None:
+        self.tema = tema
+        self.fabrica = fabrica
+        self.herois = herois
+        self.indice_nivel = -1
+        self.nivel_atual: Nivel | None = None
+        self.tick = 0
+        self.tempo_acumulado = 0.0
+        self.venceu = False
+        self.proximo_nivel()                # monta o nível 1
+
+    def tempo_avancar(self, dt: float) -> None:
+        # passo fixo com acumulador: roda quantos ticks de PASSO couberem
+        self.tempo_acumulado += min(dt, self.TEMPO_MAXIMO_POR_QUADRO)
+        while self.tempo_acumulado >= self.PASSO and not self.terminou():
+            self.tick_atualizar()
+            self.tempo_acumulado -= self.PASSO
+
+    def fracao_tick(self) -> float:
+        return min(1.0, self.tempo_acumulado / self.PASSO)
+
+    def tick_atualizar(self) -> None:
+        eventos = self.nivel_atual.tick_atualizar(self.PASSO, self.tick)
+        self.tick += 1
+        # regras com os eventos: T51
+
+    def proximo_nivel(self) -> None:
+        if self.indice_nivel + 1 >= len(self.tema.niveis):
+            self.venceu = True
+            return
+        self.indice_nivel += 1
+        definicao = self.tema.niveis[self.indice_nivel]
+        mapa = criar_carregador(definicao.carregador).carregar(definicao.mapa)
+        nivel = Nivel(definicao.nome, self.indice_nivel + 1, mapa)
+
+        pontos = mapa.surgimentos("heroi")
+        for i, heroi in enumerate(self.herois):
+            if not heroi.personagem.esta_vivo:
+                continue
+            posicao = pontos[i] if i < len(pontos) else pontos[0] + pygame.Vector2(16 * i, 0)
+            heroi.personagem.colocar_em(posicao)
+            nivel.adicionar(heroi.personagem, heroi.controlador, RAIO_VISAO_HEROI)
+
+        # inimigos e chefe: T51
+        self.nivel_atual = nivel
+
+    def terminou(self) -> bool:
+        return self.venceu          # "ou todos os heróis caíram": T51

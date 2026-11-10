@@ -21,3 +21,15 @@ Implementações: AtaqueProjetil e AtaqueGolpe.
 Quem usa: Personagem (guarda), jogo/combate.py (chama), Fabrica (cria
 pelo registro).
 """
+
+from __future__ import annotations
+from typing import TYPE_CHECKING, Protocol
+if TYPE_CHECKING:
+    from personagens.personagem import Personagem
+    from personagens.projetil import Projetil
+
+
+
+class Ataque(Protocol):
+    recarga: float                                                   # segundos entre um uso e outro
+    def executar(self, atacante: Personagem) -> list[Projetil]: ...

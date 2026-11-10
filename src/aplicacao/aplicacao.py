@@ -57,6 +57,7 @@ from render.aparencias import Aparencias
 from settings import ALTURA_TELA, ESCALA, LARGURA_TELA, TITULO
 from telas.tela import Tela
 from telas.tela_inicial import TelaInicial
+from jogo.ranking import Ranking
 
 
 class Aplicacao:
@@ -77,6 +78,8 @@ class Aplicacao:
         # ranking: T58
         self.tela_atual: Tela | None = None
         self.trocar_tela(TelaInicial(self))
+        self.ranking = Ranking()
+        self.ranking.carregar()
 
     def trocar_tela(self, nova_tela: Tela) -> None:
         if self.tela_atual is not None:

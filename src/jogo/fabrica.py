@@ -36,9 +36,12 @@ from movimento.registro import criar_movimento
 from personagens.personagem import Personagem
 from personagens.tipos import Lado
 from personagens.ataques.registro import criar_ataque
+from controle.controlador_ia import ControladorIA
+from ia.registro import criar_decisao
 
 if TYPE_CHECKING:
     from jogo.catalogo import Catalogo
+    from controle.controlador import Controlador
 
 TAMANHO_PERSONAGEM = (12, 12)       # um pouco menor que o tile (16): passa em corredor de 1 tile
 TAMANHO_CHEFE = (24, 24)
@@ -60,3 +63,16 @@ class Fabrica:
             tempo_invulneravel=TEMPO_INVULNERAVEL_HEROI, 
             ataque=criar_ataque(definicao.ataque), ataque_especial=criar_ataque(definicao.especial)
         )
+
+    def criar_monstro(self, tipo: str, posicao: pygame.Vector2) -> tuple[Personagem, Controlador]:
+        definicao = self.catalogo.inimigos[tipo]
+        tamanho = TAMANHO_CHEFE if definicao.chefe else TAMANHO_PERSONAGEM
+        personagem = Personagem(
+            lado=Lado.MONSTROS, nome=definicao.nome, posicao=posicao,
+            tamanho=pygame.Vector2(tamanho), aparencia=definicao.aparencia,
+            vida_maxima=definicao.vida, velocidade=definicao.velocidade,
+            movimento=criar_movimento(definicao.movimento),
+            ataque=criar_ataque(definicao.ataque), ataque_especial=criar_ataque(definicao.especial),
+            dano_contato=definicao.dano_contato, pontos=definicao.pontos, chefe=definicao.chefe)
+        controlador = ControladorIA(criar_decisao(definicao.decisao), self.semente)
+        return personagem, controlador 

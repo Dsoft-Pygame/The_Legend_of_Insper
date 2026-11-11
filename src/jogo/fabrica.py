@@ -35,6 +35,7 @@ import pygame
 from movimento.registro import criar_movimento
 from personagens.personagem import Personagem
 from personagens.tipos import Lado
+from personagens.ataques.registro import criar_ataque
 
 if TYPE_CHECKING:
     from jogo.catalogo import Catalogo
@@ -56,6 +57,6 @@ class Fabrica:
             tamanho=pygame.Vector2(TAMANHO_PERSONAGEM), aparencia=definicao.aparencia,
             vida_maxima=definicao.vida_maxima, velocidade=definicao.velocidade,
             movimento=criar_movimento(definicao.movimento),           # T22
-            tempo_invulneravel=TEMPO_INVULNERAVEL_HEROI)
-            # ataque e ataque_especial: T39
-
+            tempo_invulneravel=TEMPO_INVULNERAVEL_HEROI, 
+            ataque=criar_ataque(definicao.ataque), ataque_especial=criar_ataque(definicao.especial)
+        )

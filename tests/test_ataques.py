@@ -5,6 +5,7 @@ from personagens.ataques.ataque_projetil import AtaqueProjetil
 from personagens.personagem import Personagem
 from personagens.tipos import Lado
 from personagens.ataques.ataque_golpe import AtaqueGolpe
+from personagens.ataques.registro import criar_ataque
 
 
 def criar_personagem(lado=Lado.HEROIS, x=50, y=50):
@@ -36,3 +37,8 @@ def test_golpe_frente_e_volta():
     assert frente.posicao.x > heroi.posicao.x and not frente.atravessa
     giro = AtaqueGolpe(recarga=4, dano=25, alcance=32, forma="volta").executar(heroi)[0]
     assert giro.posicao == heroi.posicao and giro.atravessa
+
+
+def test_registro_de_ataques():
+    assert isinstance(criar_ataque({"tipo": "golpe", "recarga": 1, "dano": 5, "alcance": 10}), AtaqueGolpe)
+    assert criar_ataque(None) is None

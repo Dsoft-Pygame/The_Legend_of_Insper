@@ -34,6 +34,8 @@ if TYPE_CHECKING:
 class AtaqueGolpe:
     def __init__(self, recarga: float, dano: int, alcance: int, forma: str = "frente",
              duracao: float = 0.1, aparencia: str = "golpe") -> None:
+        if forma not in ("frente", "volta"):
+            raise ValueError(f"Forma inválida: {forma!r}. Use 'frente' ou 'volta'.")
         self.recarga = recarga
         self.dano = dano
         self.alcance = alcance
@@ -44,7 +46,7 @@ class AtaqueGolpe:
     def executar(self, atacante: Personagem) -> list[Projetil]:
         if self.forma == 'frente':
             direcao =  pygame.Vector2(atacante.direcao_olhar)
-            if direcao.length == 0:
+            if direcao.length() == 0:
                 direcao = pygame.Vector2(1,0)
             direcao = direcao.normalize()
 

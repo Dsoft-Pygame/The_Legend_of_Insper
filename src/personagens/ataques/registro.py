@@ -15,3 +15,37 @@ Um tipo de ataque novo (ex.: armadilha no chão) = um arquivo nesta pasta
 
 Quem usa: Fabrica e Catalogo (para conferir os nomes).
 """
+
+from typing import Callable
+
+from personagens.ataques.ataque import Ataque
+from personagens.ataques.ataque_golpe import AtaqueGolpe
+from personagens.ataques.ataque_projetil import AtaqueProjetil
+
+
+ATAQUES: dict[str, Callable[..., Ataque]] = {
+    "projetil": AtaqueProjetil,
+    "golpe": AtaqueGolpe,
+}
+
+
+def criar_ataque(config: dict | None) -> Ataque | None:
+    if config is None:
+        return None
+
+    tipo = config.get("tipo")
+
+    if tipo not in ATAQUES:
+        raise ValueError(
+            f"Tipo de ataque desconhecido: '{tipo}'. "
+            f"Opções: {', '.join(ATAQUES)}"
+        )
+
+    parametros = {
+        chave: valor
+        for chave, valor in config.items()
+        if chave != "tipo"
+    }
+
+    return ATAQUES[tipo](**parametros)
+

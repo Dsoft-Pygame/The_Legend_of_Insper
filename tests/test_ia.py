@@ -9,6 +9,8 @@ from ia.decisao_perseguir import DecisaoPerseguir
 from ia.registro import criar_decisao
 from personagens.tipos import Lado
 from personagens.visao import Avistado, Visao
+from ia.decisao_zigue_zague import DecisaoZigueZague
+
 
 
 def avistado(id, lado, x, y, vida=100, vida_maxima=100, chefe=False):
@@ -57,3 +59,11 @@ def test_registro_de_ia():
     assert isinstance(criar_decisao({"tipo": "perseguir", "raio_alerta": 80}), DecisaoPerseguir)
     with pytest.raises(ValueError):
         criar_decisao({"tipo": "persegir"})
+
+
+def test_zigue_zague_desvia_para_o_lado():
+    decisao = DecisaoZigueZague(raio_alerta=120, periodo=0.4, amplitude=0.8)
+    v = visao(avistado(1, Lado.MONSTROS, 0, 0), [avistado(2, Lado.HEROIS, 100, 0)])
+    (comando,) = decisao.decidir(v, random.Random(1))
+    x, y = comando.direcao
+    assert x > 0 and y != 0

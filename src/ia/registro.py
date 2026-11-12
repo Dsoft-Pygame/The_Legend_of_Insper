@@ -27,10 +27,12 @@ from typing import Callable
 
 from ia.decisao_perseguir import DecisaoPerseguir
 from ia.sistema_decisao import SistemaDecisao
+from ia.decisao_zigue_zague import DecisaoZigueZague
 
 SISTEMAS_DECISAO: dict[str, Callable[..., SistemaDecisao]] = {
     "perseguir": DecisaoPerseguir,
-    # "zigue_zague": T46, "chefe": T47
+    "zigue_zague": DecisaoZigueZague
+    # "chefe": T47
 }
 
 

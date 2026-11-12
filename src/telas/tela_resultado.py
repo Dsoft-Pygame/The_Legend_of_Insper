@@ -1,43 +1,19 @@
-"""Classe TelaResultado (herda de Tela): o fim da partida.
-
-O que aparece:
-    - VITÓRIA ou DERROTA.
-    - Nome e classe de cada jogador da Sessao.
-    - Os pontos da partida (inimigos, níveis, chefe, bônus) e o total.
-    - Em que posição ficou no ranking e o ranking ao lado.
-
-O que faz:
-    - ao_entrar(): aplica os bônus finais na Pontuacao e salva a partida
-      no Ranking. Sempre salva, ganhando ou perdendo. Libera os
-      dispositivos dos jogadores.
-    - tratar_entrada(entrada: EntradaMenu): CONFIRMAR volta para
-      TelaInicial.
-    - atualizar(dt): se ninguém apertar nada por alguns segundos, volta
-      sozinha (para o próximo visitante da feira).
-
-Usa: jogo/ranking.py, jogo/pontuacao.py, ui/painel_ranking.py,
-aplicacao/sessao.py.
-"""
 import pygame
 
-from entrada.entrada_menu import AcaoMenu, EntradaMenu
 from settings import ALTURA_TELA, BLACK, GRAY, LARGURA_TELA, YELLOW
 from telas.tela import Tela
-from ui.texto import desenhar_texto
+from ui import desenhar_texto
 
 
 class TelaResultado(Tela):
-    def tratar_entrada(self, entrada: EntradaMenu) -> None:
-        if entrada.tem(AcaoMenu.CONFIRMAR):
-            from telas.tela_inicial import TelaInicial  # aqui dentro: evita o import circular
-            self.aplicacao.trocar_tela(TelaInicial(self.aplicacao))
+    """Fim da partida. Por enquanto só mostra FIM, e o jogo ainda não chega aqui."""
 
-    def atualizar(self, dt: float) -> None:
-        pass
+    def tratar_evento(self, evento):
+        if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+            self.aplicacao.trocar_tela("inicial")
 
-    def desenhar(self, superficie: pygame.Surface) -> None:
+    def desenhar(self, superficie):
         superficie.fill(BLACK)
-        desenhar_texto(superficie, "FIM", (LARGURA_TELA // 2, ALTURA_TELA // 2),
-                       YELLOW, 22, centralizado=True)
-        desenhar_texto(superficie, "ENTER volta", (LARGURA_TELA // 2, ALTURA_TELA // 2 + 24),
-                       GRAY, centralizado=True)
+        meio = (LARGURA_TELA // 2, ALTURA_TELA // 2)
+        desenhar_texto(superficie, "FIM", meio, YELLOW, 22, centralizado=True)
+        desenhar_texto(superficie, "ENTER volta", (meio[0], meio[1] + 24), GRAY, centralizado=True)

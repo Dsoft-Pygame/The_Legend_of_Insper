@@ -1,60 +1,16 @@
-"""Classe Tela (base abstrata, abc.ABC): o molde de todas as telas.
+class Tela:
+    """A mãe de todas as telas. A Aplicacao chama estes três métodos a cada quadro,
+    e cada tela filha troca só os que precisa.
+    """
 
-O que é:
-    Toda tela do jogo é uma classe que herda de Tela. Como todas têm os
-    mesmos métodos, a Aplicacao consegue rodar qualquer uma sem saber qual
-    é. Trocar de tela é só trocar o objeto.
+    def __init__(self, aplicacao):
+        self.aplicacao = aplicacao        # para trocar de tela e guardar o herói escolhido
 
-    As telas não recebem eventos do pygame: recebem uma EntradaMenu
-    (entrada/entrada_menu.py), com ações como CONFIRMAR e VOLTAR e as
-    letras digitadas. Assim funcionam igual com teclado ou com controle, e
-    nenhuma tela importa pygame.event ou pygame.key.
+    def tratar_evento(self, evento):
+        pass                              # um evento do pygame: tecla, texto digitado...
 
-Atributos:
-    - aplicacao: Aplicacao. Para trocar de tela e ler ou gravar a Sessao.
+    def atualizar(self, dt):
+        pass                              # dt: segundos desde o quadro anterior
 
-Métodos (cada tela filha implementa os seus):
-    - tratar_entrada(entrada: EntradaMenu) -> None (abstrato): reage às
-      ações de menu e ao texto digitado.
-    - atualizar(dt: float) -> None (abstrato): avança a lógica da tela.
-      dt = segundos desde o último quadro (usar dt deixa a velocidade
-      igual em PCs rápidos e lentos).
-    - desenhar(superficie: pygame.Surface) -> None (abstrato).
-    - ao_entrar() -> None e ao_sair() -> None (opcionais): preparar e
-      limpar a tela.
-
-Herdam dela: TelaInicial, TelaClasses, TelaJogo e TelaResultado.
-"""
-from __future__ import annotations
-
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
-
-import pygame
-
-from entrada.entrada_menu import EntradaMenu
-
-if TYPE_CHECKING:
-    from aplicacao.aplicacao import Aplicacao
-
-
-class Tela(ABC):
-    def __init__(self, aplicacao: Aplicacao) -> None:
-        self.aplicacao = aplicacao   
-
-    @abstractmethod
-    def tratar_entrada(self, entrada: EntradaMenu) -> None: ...    
-
-    @abstractmethod
-    def atualizar(self, dt: float) -> None: ...                     
-
-    @abstractmethod
-    def desenhar(self, superficie: pygame.Surface) -> None: ...     
-
-    def ao_entrar(self) -> None:
-        pass                                                         
-
-    def ao_sair(self) -> None:
-        pass               
-
-                                            
+    def desenhar(self, superficie):
+        pass

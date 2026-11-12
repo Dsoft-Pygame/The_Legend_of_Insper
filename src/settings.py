@@ -1,9 +1,5 @@
-"""Configurações do jogo (o único arquivo com valores preenchidos).
-
-Tudo que é "número mágico" (resolução, FPS, cores, caminhos, regras de
-pontuação) mora aqui, para ser ajustado sem caçar valores pelo código.
-"""
-from pathlib import Path
+"""Configurações do jogo: cores, tamanhos, pastas, pontuação e a lista de níveis."""
+import os
 
 # Cores (enquanto não tiver sprites)
 BLACK = (16, 16, 24)
@@ -19,22 +15,31 @@ ORANGE = (240, 140, 40)
 CYAN = (80, 210, 210)
 PINK = (240, 120, 180)
 PURPLE = (150, 80, 200)
-MAGENTA = (255, 0, 255)
 
-# Telas
+# Tela
 TITULO = "The Legend of Insper"
-LARGURA_TELA = 240
+LARGURA_TELA = 240        # tudo é desenhado nesta resolução e depois ampliado na janela
 ALTURA_TELA = 160
-ESCALA = 4 
+ESCALA = 4                # janela de 960 x 640
+FPS = 60
 TAMANHO_TILE = 16
 
 # Pastas
-PASTA_SRC = Path(__file__).resolve().parent
-PASTA_DATA = PASTA_SRC / "data"
-PASTA_ASSETS = PASTA_SRC / "assets"
+PASTA_SRC = os.path.dirname(os.path.abspath(__file__))
+PASTA_ASSETS = os.path.join(PASTA_SRC, "assets")
+PASTA_MAPAS = os.path.join(PASTA_SRC, "data", "mapas")
+ARQUIVO_RANKING = os.path.join(PASTA_SRC, "data", "ranking.json")
 
-# Pontuacao
+# Pontuação
 PONTOS_NIVEL = 500
 BONUS_TEMPO_MAXIMO = 3000
-TEMPO_REFERENCIA = 600
+TEMPO_REFERENCIA = 600    # segundos: quem termina depois disso não ganha bônus de tempo
 BONUS_VIDA_MAXIMO = 1000
+
+# Níveis, em ordem: (nome, arquivo em data/mapas/). Por enquanto só o Térreo tem mapa.
+# Os inimigos de cada um são os do temas.json da main.
+NIVEIS = [
+    ("Térreo", "torre_1.txt"),            # 6 slimes
+    ("Biblioteca", "torre_2.txt"),        # 4 slimes e 4 morcegos
+    ("Topo da Torre", "torre_3.txt"),     # 4 esqueletos e o chefe Dragão
+]

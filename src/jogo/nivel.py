@@ -1,223 +1,53 @@
-"""Classe Nivel: um nível em andamento e o tick que move tudo.
-
-O que é:
-    Junta um Mapa com quem está nele: personagens, controladores e
-    projéteis. A cada tick faz as etapas abaixo, sempre nesta ordem, como
-    o Simulacao::tick_atualizar da simulação lobo-coelho. O Nivel não sabe
-    o formato do mapa (só usa a interface Mapa) e não desenha nada.
-
-Atributos:
-    - nome: str. Ex.: "Catacumbas".
-    - numero: int.
-    - mapa: Mapa.
-    - personagens: dict[EntidadeId, Personagem].
-    - controladores: dict[EntidadeId, Controlador]. Quem manda em cada um.
-    - raios_visao: dict[EntidadeId, float]. Até onde cada um enxerga.
-    - projeteis: dict[EntidadeId, Projetil].
-    - fila: FilaComandos.
-    - proximo_id: EntidadeId.
-
-Montagem:
-    - adicionar(personagem: Personagem, controlador: Controlador,
-      raio_visao: float) -> EntidadeId. Quem entra já está no lugar
-      certo (colocar_em), sem posição anterior de outro nível.
-    - trocar_controlador(id: EntidadeId, controlador: Controlador) -> bool:
-      False se o id não existe.
-    - remover(id: EntidadeId) -> Personagem | None: tira do nível (usado
-      para levar os heróis ao próximo nível).
-    - buscar(id: EntidadeId) -> Personagem | None.
-
-Consultas:
-    - observar(id: EntidadeId) -> Visao: monta o retrato do que esse
-      personagem enxerga, como o Mundo::observar da simulação.
-    - herois() -> list[Personagem] e monstros() -> list[Personagem].
-    - esta_limpo() -> bool: nenhum monstro vivo (a saída abre).
-
-O tick:
-    - tick_atualizar(dt: float, tick: int) -> list[Evento]:
-      dt é sempre o PASSO do Mundo (0,05 s a 20 ticks por segundo).
-        0. guardar_posicoes(): cada entidade copia posicao para
-           posicao_anterior, para o render poder interpolar.
-        1. coletar_comandos(tick): para cada personagem vivo, monta a
-           Visao, chama controlador.gerar_comandos e põe na fila. Ninguém
-           altera o mundo nesta etapa.
-        2. executar_comandos(): esvazia a fila e aplica cada comando no
-           personagem, se ele ainda existir e estiver vivo.
-        3. mover_personagens(dt): personagem.movimento.atualizar(...) para
-           cada um, avancar_tempos(dt) e mudar_acao("andando") se a
-           posição mudou ou mudar_acao("parado") se não (respeitando
-           DURACAO_ACAO de um ataque em andamento).
-        4. resolver_combate(dt): ver jogo/combate.py.
-        5. remover_mortos(): tira quem morreu e cria os eventos
-           PersonagemDerrotado.
-        6. checar_saida(): HeroiNaSaida quando um herói encosta na saída
-           com o nível limpo.
-      Devolve os eventos do tick para o Mundo aplicar as regras.
-
-Quem usa: Mundo, RenderizadorNivel (só lê).
-Usa: mapa/mapa.py, controle/, personagens/, jogo/combate.py,
-jogo/eventos.py.
-"""
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
 import pygame
 
-from controle.fila_comandos import FilaComandos
-from jogo import combate
-from jogo.eventos import Evento, HeroiNaSaida, PersonagemDerrotado
-from personagens.tipos import EntidadeId, Lado
-from personagens.visao import Avistado, Visao
-
-if TYPE_CHECKING:
-    from controle.controlador import Controlador
-    from mapa.mapa import Mapa
-    from personagens.personagem import Personagem
-    from personagens.projetil import Projetil
+from jogo.mapa import Mapa
+from settings import BLACK, BROWN, DARK_GRAY, GRAY, YELLOW
 
 
 class Nivel:
-    def __init__(self, nome: str, numero: int, mapa: Mapa) -> None:
+    """Um nível em andamento: o mapa, o herói e os projéteis.
+
+    A cada quadro faz todo mundo andar e tira os projéteis que acabaram.
+    """
+
+    def __init__(self, nome, arquivo, heroi):
         self.nome = nome
-        self.numero = numero
-        self.mapa = mapa
-        self.personagens: dict[EntidadeId, Personagem] = {}
-        self.controladores: dict[EntidadeId, Controlador] = {}
-        self.raios_visao: dict[EntidadeId, float] = {}
-        self.projeteis: dict[EntidadeId, Projetil] = {}
-        self.fila = FilaComandos()
-        self.proximo_id: EntidadeId = 1
+        self.mapa = Mapa(arquivo)
+        self.heroi = heroi
+        self.heroi.posicao = pygame.Vector2(self.mapa.inicio_heroi)
+        self.inimigos = []                # os inimigos entram na próxima etapa
+        self.projeteis = []
+        self.tempo = 0                    # segundos neste nível (a saída pisca com ele)
 
-    # ---- montagem ----
+    def atualizar(self, dt):
+        self.tempo += dt
+        self.heroi.atualizar(dt, self.mapa)          # 1. o herói anda
 
-    def novo_id(self) -> EntidadeId:
-        id_novo = self.proximo_id
-        self.proximo_id += 1
-        return id_novo
+        restantes = []                               # 2. os projéteis andam
+        for projetil in self.projeteis:
+            projetil.atualizar(dt)
+            if not projetil.acabou(self.mapa):       # somem na parede ou no fim do tempo
+                restantes.append(projetil)
+        self.projeteis = restantes
 
-    def adicionar(self, personagem: Personagem, controlador: Controlador, raio_visao: float) -> EntidadeId:
-        id_novo = self.novo_id()
-        personagem.id = id_novo
-        personagem.colocar_em(personagem.posicao)      # zera a posição anterior (podia ser do nível passado)
-        self.personagens[id_novo] = personagem
-        self.controladores[id_novo] = controlador
-        self.raios_visao[id_novo] = raio_visao
-        return id_novo
+    def esta_limpo(self):
+        """Sem inimigos, a saída abre."""
+        return len(self.inimigos) == 0
 
-    def adicionar_projetil(self, projetil: Projetil) -> EntidadeId:
-        id_novo = self.novo_id()
-        projetil.id = id_novo
-        projetil.colocar_em(projetil.posicao)          # nasce sem "deslizar" no desenho
-        self.projeteis[id_novo] = projetil
-        return id_novo
+    def desenhar(self, superficie, camera):
+        superficie.fill(BLACK)
+        chao = pygame.Rect(0, 0, self.mapa.largura, self.mapa.altura)
+        pygame.draw.rect(superficie, DARK_GRAY, camera.para_tela(chao))
+        for parede in self.mapa.paredes:
+            if camera.esta_visivel(parede):
+                pygame.draw.rect(superficie, GRAY, camera.para_tela(parede))
 
-    def trocar_controlador(self, id: EntidadeId, controlador: Controlador) -> bool:
-        if id not in self.personagens:
-            return False
-        self.controladores[id] = controlador
-        return True
+        if self.mapa.saida is not None:
+            cor_saida = BROWN
+            if self.esta_limpo() and int(self.tempo * 4) % 2 == 0:
+                cor_saida = YELLOW                   # aberta, ela pisca
+            pygame.draw.rect(superficie, cor_saida, camera.para_tela(self.mapa.saida))
 
-    def remover(self, id: EntidadeId) -> Personagem | None:
-        self.controladores.pop(id, None)
-        self.raios_visao.pop(id, None)
-        return self.personagens.pop(id, None)
-
-    def buscar(self, id: EntidadeId) -> Personagem | None:
-        return self.personagens.get(id)
-
-    # ---- consultas ----
-
-    def herois(self) -> list[Personagem]:
-        return [p for p in self.personagens.values() if p.lado == Lado.HEROIS]
-
-    def monstros(self) -> list[Personagem]:
-        return [p for p in self.personagens.values() if p.lado == Lado.MONSTROS]
-
-    def esta_limpo(self) -> bool:
-        return not any(m.esta_vivo for m in self.monstros())
-
-    def observar(self, id: EntidadeId, tick: int = 0, dt: float = 0.0) -> Visao:
-        eu = self.personagens[id]
-        raio = self.raios_visao[id]
-        avistados = tuple(avistar(outro) for outro in self.personagens.values()
-                          if outro.id != id and outro.esta_vivo
-                          and outro.posicao.distance_to(eu.posicao) <= raio)
-        return Visao(tick=tick, dt=dt, eu=avistar(eu), direcao_olhar=pygame.Vector2(eu.direcao_olhar),
-                     pode_atacar=eu.pode_atacar(), pode_especial=eu.pode_especial(),
-                     avistados=avistados, mapa=self.mapa)
-
-    # ---- o tick ----
-
-    def guardar_posicoes(self) -> None:
-        for personagem in self.personagens.values():
-            personagem.guardar_posicao()
-        for projetil in self.projeteis.values():
-            projetil.guardar_posicao()
-
-    def coletar_comandos(self, tick: int, dt: float) -> None:
-        # ninguém muda o mundo aqui: todos decidem olhando o mesmo estado
-        for id_personagem, personagem in self.personagens.items():
-            if not personagem.esta_vivo:
-                continue
-            visao = self.observar(id_personagem, tick, dt)
-            for comando in self.controladores[id_personagem].gerar_comandos(visao):
-                self.fila.adicionar(id_personagem, comando)
-
-    def executar_comandos(self) -> None:
-        for id_personagem, comando in self.fila.esvaziar():
-            personagem = self.personagens.get(id_personagem)
-            if personagem is not None and personagem.esta_vivo:
-                comando.aplicar(personagem)
-
-    def mover_personagens(self, dt: float) -> None:
-        for personagem in self.personagens.values():
-            if not personagem.esta_vivo:
-                continue
-            antes = pygame.Vector2(personagem.posicao)
-            personagem.movimento.atualizar(personagem, self.mapa, dt)
-            personagem.avancar_tempos(dt)
-            personagem.mudar_acao("andando" if personagem.posicao != antes else "parado")
-
-    def resolver_combate(self, dt: float) -> None:
-        vivos = [p for p in self.personagens.values() if p.esta_vivo]
-        for projetil in combate.disparar_ataques(vivos):
-            self.adicionar_projetil(projetil)
-        sumir = set(combate.mover_projeteis(self.projeteis.values(), self.mapa, dt))
-        sumir.update(combate.aplicar_acertos(self.projeteis.values(), vivos))
-        combate.aplicar_contato(vivos)
-        for id_projetil in sumir:
-            self.projeteis.pop(id_projetil, None)
-
-    def remover_mortos(self) -> list[Evento]:
-        eventos: list[Evento] = []
-        for id_personagem, personagem in list(self.personagens.items()):   # list(): removemos durante o laço
-            if not personagem.esta_vivo:
-                self.remover(id_personagem)
-                eventos.append(PersonagemDerrotado(id=id_personagem, lado=personagem.lado, nome=personagem.nome,
-                                                   pontos=personagem.pontos, chefe=personagem.chefe,
-                                                   derrotado_por=personagem.ultimo_agressor))
-        return eventos
-
-    def checar_saida(self) -> list[Evento]:
-        saida = self.mapa.saida()
-        if saida is None or not self.esta_limpo():
-            return []
-        return [HeroiNaSaida(heroi.id) for heroi in self.herois() if heroi.caixa.colliderect(saida)]
-
-    def tick_atualizar(self, dt: float, tick: int) -> list[Evento]:
-        self.guardar_posicoes()           # 0
-        self.coletar_comandos(tick, dt)   # 1
-        self.executar_comandos()          # 2
-        self.mover_personagens(dt)        # 3
-        self.resolver_combate(dt)         # 4
-        eventos: list[Evento] = []
-        eventos.extend(self.remover_mortos())   # 5
-        eventos.extend(self.checar_saida())     # 6
-        return eventos
-
-
-def avistar(personagem: Personagem) -> Avistado:
-    """A "foto" de um personagem. O Vector2 é uma cópia: a IA não mexe na posição de verdade."""
-    return Avistado(id=personagem.id, lado=personagem.lado, posicao=pygame.Vector2(personagem.posicao),
-                    vida=personagem.vida, vida_maxima=personagem.vida_maxima, chefe=personagem.chefe)
+        for projetil in self.projeteis:
+            projetil.desenhar(superficie, camera)
+        self.heroi.desenhar(superficie, camera)

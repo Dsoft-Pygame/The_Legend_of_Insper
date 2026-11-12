@@ -23,16 +23,23 @@ class Projetil(Entidade):
     def acabou(self, mapa):
         return self.duracao <= 0 or self.bateu_na_parede(mapa)
 
+    def pode_acertar(self, alvo):
+        """True se encostou num alvo vivo que ainda não levou dano deste projétil."""
+        return (alvo.esta_vivo() and alvo not in self.ja_acertou
+                and self.retangulo().colliderect(alvo.retangulo()))
+
     def bateu_na_parede(self, mapa):
         return not mapa.area_livre(self.retangulo())
 
 
 class Golpe(Projetil):
-    """Golpe corpo a corpo: fica parado, acerta todos na área e some sozinho."""
+    """Golpe corpo a corpo: fica parado e some sozinho. Com atravessa=True acerta todos
+    na área; sem, para no primeiro que acerta.
+    """
 
-    def __init__(self, posicao, tamanho, dano, duracao):
+    def __init__(self, posicao, tamanho, dano, duracao, atravessa):
         super().__init__(posicao, (0, 0), tamanho, YELLOW, dano, duracao, "heroi")
-        self.atravessa = True
+        self.atravessa = atravessa
 
     def bateu_na_parede(self, mapa):
         return False                                   # pode encostar na parede sem sumir

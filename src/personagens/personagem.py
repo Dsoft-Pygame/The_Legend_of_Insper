@@ -2,6 +2,8 @@ import pygame
 
 from personagens.entidade import Entidade
 
+QUINA = 4   # pixels que o personagem desvia sozinho para entrar numa porta estreita
+
 
 class Personagem(Entidade):
     """Tudo que tem vida e anda pelo mapa sem atravessar parede (heróis e inimigos)."""
@@ -16,14 +18,41 @@ class Personagem(Entidade):
         self.tempo_invulneravel = 0               # o herói usa 0.8
 
     def mover(self, direcao, dt, mapa):
-        """Anda um eixo de cada vez: se entrou na parede, desfaz só aquele eixo."""
+        """Anda um eixo de cada vez: o eixo que entraria na parede não anda.
+
+        Andando reto contra a quina de uma porta, escorrega para o lado, como o
+        MovimentoLivre da main, para não precisar acertar a porta no pixel.
+        """
         passo = direcao * self.velocidade * dt
-        self.posicao.x += passo.x
-        if not mapa.area_livre(self.retangulo()):
-            self.posicao.x -= passo.x
-        self.posicao.y += passo.y
-        if not mapa.area_livre(self.retangulo()):
-            self.posicao.y -= passo.y
+        andou_x = self.andar(pygame.Vector2(passo.x, 0), mapa)
+        andou_y = self.andar(pygame.Vector2(0, passo.y), mapa)
+        if not andou_x and passo.y == 0:
+            self.contornar_quina(pygame.Vector2(passo.x, 0), pygame.Vector2(0, 1), mapa)
+        if not andou_y and passo.x == 0:
+            self.contornar_quina(pygame.Vector2(0, passo.y), pygame.Vector2(1, 0), mapa)
+
+    def cabe(self, posicao, mapa):
+        """True se o personagem cabe nessa posição sem entrar na parede."""
+        retangulo = self.retangulo()
+        retangulo.center = (round(posicao.x), round(posicao.y))
+        return mapa.area_livre(retangulo)
+
+    def andar(self, deslocamento, mapa):
+        """Anda o deslocamento se couber. Devolve True se andou."""
+        if not self.cabe(self.posicao + deslocamento, mapa):
+            return False
+        self.posicao += deslocamento
+        return True
+
+    def contornar_quina(self, frente, lado, mapa):
+        """Bateu andando reto: procura o menor desvio para o lado, até QUINA pixels, que
+        deixa dar o passo em frente, e escorrega para lá (no máximo um passo por quadro).
+        """
+        for desvio in range(1, QUINA + 1):
+            for sentido in (-1, 1):
+                if self.cabe(self.posicao + frente + lado * sentido * desvio, mapa):
+                    self.andar(lado * sentido * min(desvio, frente.length()), mapa)
+                    return
 
     def esta_vivo(self):
         return self.vida > 0

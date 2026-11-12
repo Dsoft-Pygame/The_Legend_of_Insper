@@ -65,6 +65,8 @@ from typing import TYPE_CHECKING
 import pygame
 
 from controle.fila_comandos import FilaComandos
+from jogo import combate
+from jogo.eventos import Evento, HeroiNaSaida, PersonagemDerrotado
 from personagens.tipos import EntidadeId, Lado
 from personagens.visao import Avistado, Visao
 
@@ -72,6 +74,7 @@ if TYPE_CHECKING:
     from controle.controlador import Controlador
     from mapa.mapa import Mapa
     from personagens.personagem import Personagem
+    from personagens.projetil import Projetil
 
 
 class Nivel:
@@ -82,7 +85,7 @@ class Nivel:
         self.personagens: dict[EntidadeId, Personagem] = {}
         self.controladores: dict[EntidadeId, Controlador] = {}
         self.raios_visao: dict[EntidadeId, float] = {}
-        self.projeteis: dict = {}                      # id -> Projetil (T41)
+        self.projeteis: dict[EntidadeId, Projetil] = {}
         self.fila = FilaComandos()
         self.proximo_id: EntidadeId = 1
 
@@ -100,6 +103,13 @@ class Nivel:
         self.personagens[id_novo] = personagem
         self.controladores[id_novo] = controlador
         self.raios_visao[id_novo] = raio_visao
+        return id_novo
+
+    def adicionar_projetil(self, projetil: Projetil) -> EntidadeId:
+        id_novo = self.novo_id()
+        projetil.id = id_novo
+        projetil.colocar_em(projetil.posicao)          # nasce sem "deslizar" no desenho
+        self.projeteis[id_novo] = projetil
         return id_novo
 
     def trocar_controlador(self, id: EntidadeId, controlador: Controlador) -> bool:
@@ -169,13 +179,42 @@ class Nivel:
             personagem.avancar_tempos(dt)
             personagem.mudar_acao("andando" if personagem.posicao != antes else "parado")
 
-    def tick_atualizar(self, dt: float, tick: int) -> list:
+    def resolver_combate(self, dt: float) -> None:
+        vivos = [p for p in self.personagens.values() if p.esta_vivo]
+        for projetil in combate.disparar_ataques(vivos):
+            self.adicionar_projetil(projetil)
+        sumir = set(combate.mover_projeteis(self.projeteis.values(), self.mapa, dt))
+        sumir.update(combate.aplicar_acertos(self.projeteis.values(), vivos))
+        combate.aplicar_contato(vivos)
+        for id_projetil in sumir:
+            self.projeteis.pop(id_projetil, None)
+
+    def remover_mortos(self) -> list[Evento]:
+        eventos: list[Evento] = []
+        for id_personagem, personagem in list(self.personagens.items()):   # list(): removemos durante o laço
+            if not personagem.esta_vivo:
+                self.remover(id_personagem)
+                eventos.append(PersonagemDerrotado(id=id_personagem, lado=personagem.lado, nome=personagem.nome,
+                                                   pontos=personagem.pontos, chefe=personagem.chefe,
+                                                   derrotado_por=personagem.ultimo_agressor))
+        return eventos
+
+    def checar_saida(self) -> list[Evento]:
+        saida = self.mapa.saida()
+        if saida is None or not self.esta_limpo():
+            return []
+        return [HeroiNaSaida(heroi.id) for heroi in self.herois() if heroi.caixa.colliderect(saida)]
+
+    def tick_atualizar(self, dt: float, tick: int) -> list[Evento]:
         self.guardar_posicoes()           # 0
         self.coletar_comandos(tick, dt)   # 1
         self.executar_comandos()          # 2
         self.mover_personagens(dt)        # 3
-        # etapas 4 a 6 (combate, mortos, saída): T43
-        return []
+        self.resolver_combate(dt)         # 4
+        eventos: list[Evento] = []
+        eventos.extend(self.remover_mortos())   # 5
+        eventos.extend(self.checar_saida())     # 6
+        return eventos
 
 
 def avistar(personagem: Personagem) -> Avistado:

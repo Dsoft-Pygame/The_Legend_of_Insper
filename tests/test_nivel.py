@@ -1,10 +1,12 @@
 import pygame
 
-from controle.comandos import Mover
+from controle.comandos import Atacar, Mover
 from controle.controlador import Controlador
+from jogo.eventos import HeroiNaSaida, PersonagemDerrotado
 from jogo.nivel import Nivel
 from mapa.carregador_texto import CarregadorTexto
 from movimento.movimento_livre import MovimentoLivre
+from personagens.ataques.ataque_projetil import AtaqueProjetil
 from personagens.personagem import Personagem
 from personagens.tipos import Lado
 
@@ -64,3 +66,25 @@ def test_tick_move_quem_pediu(tmp_path):
     assert heroi.posicao == pygame.Vector2(28, 24)
     assert heroi.posicao_anterior == pygame.Vector2(24, 24)
     assert heroi.acao_atual == "andando"
+
+
+def test_tick_tira_o_morto_e_devolve_evento(tmp_path):
+    nivel = criar_nivel(tmp_path, SALA)
+    flecha = AtaqueProjetil(recarga=0.3, dano=100, velocidade=200, duracao=1.0)
+    nivel.adicionar(criar_personagem(Lado.HEROIS, 24, 40, ataque=flecha), ControladorFixo([Atacar()]), 160)
+    id_slime = nivel.adicionar(criar_personagem(Lado.MONSTROS, 60, 40, vida=20), ControladorFixo(), 96)
+    eventos = []
+    for tick in range(10):
+        eventos += nivel.tick_atualizar(0.05, tick)
+    assert nivel.buscar(id_slime) is None
+    assert any(isinstance(e, PersonagemDerrotado) and e.id == id_slime for e in eventos)
+    assert nivel.esta_limpo()
+
+
+def test_heroi_na_saida_com_nivel_limpo(tmp_path):
+    nivel = criar_nivel(tmp_path, "#####\n#..S#\n#####\n")
+    id_heroi = nivel.adicionar(criar_personagem(Lado.HEROIS, 40, 24), ControladorFixo([Mover((1, 0))]), 160)
+    eventos = []
+    for tick in range(5):
+        eventos += nivel.tick_atualizar(0.05, tick)
+    assert HeroiNaSaida(id_heroi) in eventos

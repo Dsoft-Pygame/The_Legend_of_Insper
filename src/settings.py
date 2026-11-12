@@ -36,9 +36,10 @@ BONUS_TEMPO_MAXIMO = 3000
 TEMPO_REFERENCIA = 600    # segundos: quem termina depois disso não ganha bônus de tempo
 BONUS_VIDA_MAXIMO = 1000
 
-# Níveis, em ordem: (nome, arquivo em data/mapas/)
+# Níveis, em ordem: (nome, arquivo em data/mapas/). Por enquanto só o Térreo tem mapa.
+# Os inimigos de cada um são os do temas.json da main.
 NIVEIS = [
-    ("Térreo", "torre_1.txt"),
-    ("Biblioteca", "torre_2.txt"),
-    ("Topo da Torre", "torre_3.txt"),
+    ("Térreo", "torre_1.txt"),            # 6 slimes
+    ("Biblioteca", "torre_2.txt"),        # 4 slimes e 4 morcegos
+    ("Topo da Torre", "torre_3.txt"),     # 4 esqueletos e o chefe Dragão
 ]

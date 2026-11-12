@@ -16,6 +16,7 @@ class Heroi(Personagem):
         self.nome = nome
         self.descricao = descricao
         self.tempo_invulneravel = 0.8
+        self.dano = 0                      # dano do ataque normal (aparece no cartão da classe)
         self.tempo_ataque = 0.5            # segundos entre um ataque e outro
         self.tempo_especial = 4
         self.recarga_ataque = 0            # quanto falta para poder atacar de novo
@@ -65,12 +66,13 @@ class Mago(Heroi):
 
     def __init__(self, x, y):
         super().__init__(x, y, BLUE, 60, 70, "Mago", "Frágil, mas com dano alto à distância.")
+        self.dano = 30
         self.tempo_ataque = 0.6
         self.tempo_especial = 5
 
     def atacar(self):
         velocidade = self.direcao * 90
-        bola = Projetil(self.posicao, velocidade, tamanho=8, cor=RED, dano=30, duracao=1.5, dono="heroi")
+        bola = Projetil(self.posicao, velocidade, tamanho=8, cor=RED, dano=self.dano, duracao=1.5, dono="heroi")
         return [bola]
 
     def especial(self):
@@ -87,12 +89,13 @@ class Arqueiro(Heroi):
 
     def __init__(self, x, y):
         super().__init__(x, y, GREEN, 80, 100, "Arqueiro", "Ágil, ataca rápido de longe.")
+        self.dano = 10
         self.tempo_ataque = 0.3
         self.tempo_especial = 3
 
     def atacar(self):
         velocidade = self.direcao * 200
-        flecha = Projetil(self.posicao, velocidade, tamanho=4, cor=WHITE, dano=10, duracao=1, dono="heroi")
+        flecha = Projetil(self.posicao, velocidade, tamanho=4, cor=WHITE, dano=self.dano, duracao=1, dono="heroi")
         return [flecha]
 
     def especial(self):
@@ -109,12 +112,13 @@ class Barbaro(Heroi):
 
     def __init__(self, x, y):
         super().__init__(x, y, ORANGE, 140, 75, "Bárbaro", "Resistente, luta de perto.")
+        self.dano = 35
         self.tempo_ataque = 0.5
         self.tempo_especial = 4
 
     def atacar(self):
         centro = self.posicao + self.direcao * 15   # metade do herói (6) + metade do golpe (9)
-        return [Golpe(centro, tamanho=18, dano=35, duracao=0.1, atravessa=False)]
+        return [Golpe(centro, tamanho=18, dano=self.dano, duracao=0.1, atravessa=False)]
 
     def especial(self):
         tamanho = 12 + 2 * 32                       # o herói (12) mais 32 px de cada lado

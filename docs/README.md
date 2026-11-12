@@ -4,6 +4,10 @@ Jogo de ação top-down em Python com [pygame-ce](https://pyga.me/). O jogador e
 
 O código usa só classes normais com herança simples e `super()`. A organização está em [ARQUITETURA.md](ARQUITETURA.md).
 
+## Simplificação
+
+O código foi simplificado a pedido do professor, com ajuda de IA: saíram os decoradores, as classes abstratas, as anotações de tipo, o tratamento de exceções e os testes com pytest. O que mudou e como foi feito está em [SIMPLIFICACAO.md](SIMPLIFICACAO.md).
+
 ## Como rodar
 
 Requisitos: Python 3.10 ou mais novo.

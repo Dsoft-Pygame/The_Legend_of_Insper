@@ -1,7 +1,0 @@
-{
-  "teclado_wasd":  {"tipo": "teclado", "cima": "w", "baixo": "s", "esquerda": "a", "direita": "d",
-                    "ataque": "space", "especial": "left shift"},
-  "teclado_setas": {"tipo": "teclado", "cima": "up", "baixo": "down", "esquerda": "left", "direita": "right",
-                    "ataque": "right ctrl", "especial": "right shift"},
-  "gamepad":       {"tipo": "gamepad", "zona_morta": 0.2, "ataque": 0, "especial": 1}
-}

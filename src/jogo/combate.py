@@ -81,3 +81,29 @@ def mover_projeteis(projeteis: Iterable[Projetil], mapa: Mapa, dt: float) -> lis
         if projetil.acabou() and projetil.id not in sumir:
             sumir.append(projetil.id)
     return sumir
+
+
+def aplicar_acertos(projeteis: Iterable[Projetil], personagens: Iterable[Personagem]) -> list[EntidadeId]:
+    sumir: list[EntidadeId] = []
+    alvos = list(personagens)                               # vai percorrer várias vezes
+    for projetil in projeteis:
+        for alvo in alvos:
+            if alvo.lado == projetil.lado or not alvo.esta_vivo or alvo.id in projetil.ja_acertou:
+                continue
+            if any(caixa.colliderect(alvo.caixa) for caixa in projetil.caixas_do_tick):
+                projetil.ja_acertou.add(alvo.id)
+                alvo.receber_dano(projetil.dano, projetil.dono)
+                if not projetil.atravessa:
+                    sumir.append(projetil.id)
+                    break                                   # não acerta mais ninguém
+    return sumir
+
+
+def aplicar_contato(personagens: Iterable[Personagem]) -> None:
+    todos = list(personagens)
+    monstros = [p for p in todos if p.lado == Lado.MONSTROS and p.esta_vivo and p.dano_contato > 0]
+    herois = [p for p in todos if p.lado == Lado.HEROIS and p.esta_vivo]
+    for monstro in monstros:
+        for heroi in herois:
+            if monstro.caixa.colliderect(heroi.caixa):
+                heroi.receber_dano(monstro.dano_contato, monstro.id)

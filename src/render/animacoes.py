@@ -42,3 +42,49 @@ Formato no JSON: ver src/data/README.md, seção aparencias.json.
 
 Quem usa: Aparencias.
 """
+from dataclasses import dataclass
+import pygame
+
+
+
+@dataclass(frozen=True)
+class Animacao:
+  quadros: tuple[pygame.Surface, ...]    # as imagens, em ordem
+  por_segundo: float                     # quantas imagens por segundo
+  repete: bool = True                    # False: para na última (ataque, "atingido")
+
+  def quadro_em(self,tempo:float) -> pygame.surface:
+      indice = int(tempo*self.por_segundo)
+
+      if self.repete:
+        indice %= len(self.quadro)
+      else:
+          indice = min(indice, len(self.quadros)-1)
+
+      return self.quadros[indice]
+
+  def duracao(self) -> float:
+      return(len(self.quadros))/self.por_segundo
+
+class ConjuntoAnimacoes:
+  def __init__(self, animacoes: dict[str,Animacao]):
+      self.animacoes = animacoes
+
+  def escolher(self,acao: str):
+     return self.animacoes.get(acao, self.animacoes["parado"])
+
+  @classmethod
+  def de_folha(cls,folha:pygame.surface, config: dict) -> conjuntoAnimacoes:
+    largura, altura = config["tamanho_quadro"]
+    animacoes = {}
+
+    for acao, dados in config["animacoes"].items():
+      # Recorta os quadros da linha correspondente à ação
+      quadros = tuple(
+        folha.subsurface(pygame.Rect(i * largura, dados["linha"] * altura, largura, altura))
+        for i in range(dados["quadros"])  
+      )
+
+      animacoes[acao] = Animacao(quadros, dados["por_segundo"], dados.get("repete", True))
+
+    return cls(animacoes)

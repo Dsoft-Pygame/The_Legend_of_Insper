@@ -32,6 +32,7 @@ Usa: render/animacoes.py, settings.py, assets/.
 from pathlib import Path
 import pygame
 from settings import MAGENTA, PASTA_ASSETS
+from render.animacoes import ConjuntoAnimacoes
 Visual = pygame.Surface | tuple[int, int, int]   # uma imagem OU uma cor RGB
 
 import settings
@@ -42,7 +43,7 @@ class Aparencias:
     def __init__(self) -> None:
         self.cores: dict[str, tuple[int, int, int]] = {}
         self.sprites: dict[str, pygame.Surface] = {}
-        self.animacoes: dict = {}
+        self.animacoes: dict[str, ConjuntoAnimacoes] = {}
         self.padrao = MAGENTA
 
     @classmethod
@@ -65,8 +66,9 @@ class Aparencias:
                 ).convert_alpha()
 
             if "folha" in entrada:
-                # folhas de animação: T62
-                pass
+                folha = pygame.image.load(pasta_assets / entrada["folha"]).convert_alpha()
+
+                aparencias.animacoes[chave] = ConjuntoAnimacoes.de_folha(folha, entrada)
 
         return aparencias
 
@@ -74,18 +76,19 @@ class Aparencias:
         if chave in self.sprites:
             return self.sprites[chave]
 
+        if chave in self.animacoes:
+            return self.animacoes[chave].escolher("parado").quadros[0]
+
         return self.cores.get(chave, self.padrao)
 
     def quadro(self, chave: str, acao: str, tempo: float) -> Visual:
+        if chave in self.animacoes:
+            return self.animacoes[chave].escolher(acao).quadro_em(tempo)
+        
         return self.obter(chave)
 
 
-def desenhar_visual(
-    superficie: pygame.Surface,
-    visual: Visual,
-    retangulo: pygame.Rect,
-    espelhar: bool = False
-) -> None:
+def desenhar_visual( superficie: pygame.Surface, visual: Visual,retangulo: pygame.Rect, espelhar: bool = False) -> None:
     if isinstance(visual, pygame.Surface):
         if espelhar:
             visual = pygame.transform.flip(visual, True, False)

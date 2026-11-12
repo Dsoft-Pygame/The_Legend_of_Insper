@@ -43,3 +43,30 @@ def test_projetil_rapido_nao_atravessa_parede():
     flecha.id = 99
     assert combate.mover_projeteis([flecha], mapa, 0.05) == [99]
     assert flecha.posicao.x < 64
+
+
+def test_acerto_tira_vida_uma_vez_e_some():
+    alvo = criar_personagem(Lado.MONSTROS, 60, 40)
+    flecha = Projetil(Lado.HEROIS, 1, pygame.Vector2(40, 40), pygame.Vector2(4, 4), "flecha",
+                      pygame.Vector2(400, 0), dano=10, duracao=1)
+    flecha.id = 5
+    combate.mover_projeteis([flecha], mapa_aberto(), 0.05)   # passa por cima do alvo neste tick
+    assert combate.aplicar_acertos([flecha], [alvo]) == [5]
+    assert alvo.vida == 90 and alvo.ultimo_agressor == 1
+
+
+def test_projetil_nao_acerta_o_proprio_lado():
+    amigo = criar_personagem(Lado.HEROIS, 44, 40)
+    flecha = Projetil(Lado.HEROIS, 1, pygame.Vector2(40, 40), pygame.Vector2(4, 4), "flecha",
+                      pygame.Vector2(100, 0), dano=10, duracao=1)
+    combate.mover_projeteis([flecha], mapa_aberto(), 0.05)
+    assert combate.aplicar_acertos([flecha], [amigo]) == []
+    assert amigo.vida == 100
+
+
+def test_contato_machuca_heroi_com_invulnerabilidade():
+    heroi = criar_personagem(Lado.HEROIS, 40, 40, invulneravel=0.8)
+    slime = criar_personagem(Lado.MONSTROS, 44, 40, dano_contato=10)
+    combate.aplicar_contato([heroi, slime])
+    combate.aplicar_contato([heroi, slime])
+    assert heroi.vida == 90                           # só uma vez, por causa da invulnerabilidade

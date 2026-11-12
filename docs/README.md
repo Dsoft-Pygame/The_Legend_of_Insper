@@ -17,12 +17,6 @@ pip install -r requirements.txt
 python src/main.py
 ```
 
-Teste das regras de arquitetura:
-
-```
-python -m pytest tests/
-```
-
 ## Controles planejados
 
 Configuráveis em `src/data/controles.json`.
@@ -53,11 +47,8 @@ src/
 ├── mapa/          interface do mapa e carregadores
 ├── assets/        arte e sons
 └── data/          conteúdo do jogo em JSON e mapas em texto
-tests/             teste das camadas
 ```
 
 ## Documentação
 
 - [ARQUITETURA.md](ARQUITETURA.md): camadas, classes, fluxo do input até a ação, ciclo do tick, telas, co-op e ordem de implementação.
-- [COMO_TROCAR.md](COMO_TROCAR.md): como trocar o mapa, o movimento, um inimigo, a IA, o controle, e como adicionar o segundo jogador.
-- [src/data/README.md](../src/data/README.md): formato dos arquivos de conteúdo.

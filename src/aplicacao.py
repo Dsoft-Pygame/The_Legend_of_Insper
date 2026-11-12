@@ -10,7 +10,7 @@ from telas.tela_resultado import TelaResultado
 
 class Aplicacao:
     """Abre a janela, roda o loop e troca de tela. Guarda o que passa de uma tela
-    para outra: o nome do jogador, o herói escolhido, a pontuação e o ranking.
+    para outra: o herói escolhido e o ranking.
     """
 
     def __init__(self):
@@ -20,11 +20,8 @@ class Aplicacao:
         self.tela_jogo = pygame.Surface((LARGURA_TELA, ALTURA_TELA))   # tudo é desenhado aqui e depois ampliado
         self.relogio = pygame.time.Clock()
         self.rodando = True
-        self.nome_jogador = ""
         self.heroi = None                 # escolhido na TelaClasses
-        self.pontuacao = None             # criada na TelaJogo
-        self.venceu = False
-        self.ranking = Ranking()
+        self.ranking = Ranking()          # lido do arquivo ao abrir o jogo, como na main
         self.tela_atual = None
         self.trocar_tela("inicial")
 

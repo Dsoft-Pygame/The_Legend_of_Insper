@@ -6,7 +6,7 @@ from settings import BLUE, GREEN, ORANGE, RED, WHITE
 
 
 class Heroi(Personagem):
-    """O personagem do jogador: anda com WASD, ataca com ESPAÇO e usa o especial com SHIFT.
+    """O personagem do jogador: anda com WASD, ataca com ESPAÇO e usa o especial com o SHIFT esquerdo.
 
     Cada classe filha muda os números e troca os métodos atacar e especial.
     """
@@ -47,7 +47,7 @@ class Heroi(Personagem):
         return self.atacar()
 
     def usar_especial(self):
-        """A TelaJogo chama quando aperta SHIFT."""
+        """A TelaJogo chama quando aperta o SHIFT esquerdo."""
         if self.recarga_especial > 0:
             return []
         self.recarga_especial = self.tempo_especial

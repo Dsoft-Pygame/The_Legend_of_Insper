@@ -4,7 +4,7 @@ class Tela:
     """
 
     def __init__(self, aplicacao):
-        self.aplicacao = aplicacao        # para trocar de tela e guardar nome, herói e pontos
+        self.aplicacao = aplicacao        # para trocar de tela e guardar o herói escolhido
 
     def tratar_evento(self, evento):
         pass                              # um evento do pygame: tecla, texto digitado...

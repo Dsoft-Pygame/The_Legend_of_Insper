@@ -2,7 +2,6 @@ import pygame
 
 from jogo.camera import Camera
 from jogo.nivel import Nivel
-from jogo.pontuacao import Pontuacao
 from settings import ALTURA_TELA, LARGURA_TELA, NIVEIS, YELLOW
 from telas.tela import Tela
 from ui import desenhar_texto
@@ -14,9 +13,6 @@ class TelaJogo(Tela):
     def __init__(self, aplicacao):
         super().__init__(aplicacao)
         self.heroi = aplicacao.heroi
-        self.pontuacao = Pontuacao()
-        aplicacao.pontuacao = self.pontuacao
-        self.tempo = 0                    # segundos de partida (para o bônus de tempo)
         self.indice_nivel = 0             # posição na lista NIVEIS do settings.py
         self.carregar_nivel()
 
@@ -31,11 +27,10 @@ class TelaJogo(Tela):
         if evento.type == pygame.KEYDOWN:
             if evento.key == pygame.K_SPACE:
                 self.nivel.projeteis.extend(self.heroi.usar_ataque())
-            elif evento.key in (pygame.K_LSHIFT, pygame.K_RSHIFT):
+            elif evento.key == pygame.K_LSHIFT:
                 self.nivel.projeteis.extend(self.heroi.usar_especial())
 
     def atualizar(self, dt):
-        self.tempo += dt
         self.aviso_nivel = max(0, self.aviso_nivel - dt)
         self.nivel.atualizar(dt)
         self.camera.seguir(self.heroi.posicao)

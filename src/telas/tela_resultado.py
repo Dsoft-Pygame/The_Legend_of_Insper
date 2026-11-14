@@ -1,26 +1,59 @@
 import pygame
 
-from settings import BLACK, GRAY, GREEN, LARGURA_TELA, RED, WHITE
+from settings import BLACK, GRAY, GREEN, RED, WHITE, YELLOW
 from telas.tela import Tela
-from ui import desenhar_texto
+from ui import desenhar_ranking, desenhar_texto
+
+TEMPO_VOLTAR_SOZINHA = 20   # segundos parada até voltar sozinha para o início (para o próximo jogador)
 
 
 class TelaResultado(Tela):
-    """Fim da partida: VITÓRIA ou DERROTA e os pontos. Enter volta para a tela inicial."""
+    """Fim da partida: vitória ou derrota, o extrato dos pontos e o ranking com a partida em destaque.
+
+    Ganhando ou perdendo, a partida é salva no ranking assim que a tela abre.
+    """
+
+    def __init__(self, aplicacao):
+        super().__init__(aplicacao)
+        self.tempo_parada = 0
+        pontos = aplicacao.pontuacao.total
+        self.posicao = aplicacao.ranking.adicionar(aplicacao.nome_jogador, aplicacao.heroi.nome, pontos,
+                                                   aplicacao.venceu)
 
     def tratar_evento(self, evento):
         if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.aplicacao.trocar_tela("inicial")
 
+    def atualizar(self, dt):
+        self.tempo_parada += dt
+        if self.tempo_parada >= TEMPO_VOLTAR_SOZINHA:
+            self.aplicacao.trocar_tela("inicial")
+
     def desenhar(self, superficie):
         superficie.fill(BLACK)
-        meio = LARGURA_TELA // 2
+        pontuacao = self.aplicacao.pontuacao
         titulo = "DERROTA"
         cor = RED
         if self.aplicacao.venceu:
             titulo = "VITÓRIA!"
             cor = GREEN
-        desenhar_texto(superficie, titulo, (meio, 40), cor, 24, centralizado=True)
-        pontos = self.aplicacao.pontuacao.total
-        desenhar_texto(superficie, f"Pontos: {pontos}", (meio, 80), WHITE, 18, centralizado=True)
-        desenhar_texto(superficie, "ENTER volta", (meio, 120), GRAY, centralizado=True)
+        desenhar_texto(superficie, titulo, (72, 12), cor, 24, centralizado=True)
+
+        nome = f"{self.aplicacao.nome_jogador} ({self.aplicacao.heroi.nome})"
+        desenhar_texto(superficie, nome, (6, 28), WHITE, 12)
+        y = 40
+        texto = f"Inimigos: {pontuacao.inimigos_derrotados} +{pontuacao.pontos_inimigos}"
+        desenhar_texto(superficie, texto, (6, y), WHITE, 12)
+        for linha in pontuacao.extrato:          # "Térreo concluído +500", os bônus...
+            y += 10
+            desenhar_texto(superficie, linha, (6, y), WHITE, 12)
+        desenhar_texto(superficie, f"TOTAL: {pontuacao.total}", (6, y + 14), YELLOW, 18)
+
+        desenhar_texto(superficie, f"Sua posição: {self.posicao}", (6, 134), YELLOW, 14)
+        desenhar_texto(superficie, "ENTER volta", (6, 146), GRAY, 14)
+
+        destaque = None
+        if self.posicao <= 10:
+            destaque = self.posicao - 1          # a linha desta partida, se ela está entre as 10
+        quadro = pygame.Rect(138, 8, 96, 144)
+        desenhar_ranking(superficie, quadro, self.aplicacao.ranking.melhores(10), destaque)

@@ -2,17 +2,21 @@ import pygame
 
 from jogo.camera import Camera
 from jogo.nivel import Nivel
+from jogo.pontuacao import Pontuacao
 from settings import ALTURA_TELA, LARGURA_TELA, NIVEIS, YELLOW
 from telas.tela import Tela
 from ui import desenhar_texto
 
 
 class TelaJogo(Tela):
-    """Onde se joga: carrega o nível, passa os ataques para o herói e faz a câmera seguir."""
+    """Onde se joga: carrega o nível, passa os ataques para o herói e faz a câmera seguir,
+    e leva para o próximo nível quando o herói chega na saída.
+    """
 
     def __init__(self, aplicacao):
         super().__init__(aplicacao)
         self.heroi = aplicacao.heroi
+        self.pontuacao = Pontuacao()      # os pontos da partida inteira
         self.indice_nivel = 0                      # posição na lista NIVEIS do settings.py
         self.pausado = False            
         self.carregar_nivel()
@@ -20,7 +24,7 @@ class TelaJogo(Tela):
     def carregar_nivel(self):
         """Monta o nível atual e uma câmera do tamanho do mapa dele."""
         nome, arquivo = NIVEIS[self.indice_nivel]
-        self.nivel = Nivel(nome, arquivo, self.heroi)
+        self.nivel = Nivel(nome, arquivo, self.heroi, self.pontuacao)
         self.camera = Camera(self.nivel.mapa.largura, self.nivel.mapa.altura)
         self.aviso_nivel = 2              # segundos com o nome do nível no meio da tela
 
@@ -42,6 +46,15 @@ class TelaJogo(Tela):
         self.aviso_nivel = max(0, self.aviso_nivel - dt)
         self.nivel.atualizar(dt)
         self.camera.seguir(self.heroi.posicao)
+        tem_proximo = self.indice_nivel + 1 < len(NIVEIS)
+        if self.nivel.heroi_na_saida() and tem_proximo:
+            self.passar_de_nivel()
+
+    def passar_de_nivel(self):
+        """Soma os pontos do nível e carrega o próximo. O herói continua com a vida que sobrou."""
+        self.pontuacao.nivel_concluido(self.nivel.nome)
+        self.indice_nivel += 1
+        self.carregar_nivel()
 
     def desenhar(self, superficie):
         self.nivel.desenhar(superficie, self.camera)

@@ -23,6 +23,8 @@ class Aplicacao:
         self.rodando = True
         self.som = Som()                  # as telas tocam com self.aplicacao.som.tocar("...")
         self.heroi = None                 # escolhido na TelaClasses
+        self.pontuacao = None             # os pontos da partida que acabou (a TelaJogo guarda aqui)
+        self.venceu = False
         self.ranking = Ranking()          # lido do arquivo ao abrir o jogo, como na main
         self.tela_atual = None
         self.trocar_tela("inicial")

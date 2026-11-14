@@ -1,6 +1,7 @@
 import pygame
 
 from jogo.mapa import Mapa
+from personagens.inimigos import Dragao, Esqueleto, Morcego, Slime
 from settings import BLACK, BROWN, DARK_GRAY, GRAY, YELLOW
 
 
@@ -15,9 +16,23 @@ class Nivel:
         self.mapa = Mapa(arquivo)
         self.heroi = heroi
         self.heroi.posicao = pygame.Vector2(self.mapa.inicio_heroi)
-        self.inimigos = []                # como na main, começa vazio: criar os inimigos do mapa é a T51
+        self.inimigos = []
+        for letra, x, y in self.mapa.inimigos:
+            self.inimigos.append(self.criar_inimigo(letra, x, y))
+        self.chefe = None                 # o Dragão, só no nível que tem C no mapa
+        if self.mapa.chefe is not None:
+            self.chefe = Dragao(self.mapa.chefe[0], self.mapa.chefe[1])
+            self.inimigos.append(self.chefe)
         self.projeteis = []
         self.tempo = 0                    # segundos neste nível (a saída pisca com ele)
+
+    def criar_inimigo(self, letra, x, y):
+        """Cria o inimigo de uma letra do mapa: s slime, e esqueleto, m morcego."""
+        if letra == "e":
+            return Esqueleto(x, y)
+        if letra == "m":
+            return Morcego(x, y)
+        return Slime(x, y)                # "s" e qualquer letra desconhecida viram slime
 
     def atualizar(self, dt):
         self.tempo += dt

@@ -19,6 +19,7 @@ class TelaJogo(Tela):
         self.pontuacao = Pontuacao()      # os pontos da partida inteira
         self.indice_nivel = 0                      # posição na lista NIVEIS do settings.py
         self.pausado = False            
+        self.tempo = 0                    # segundos de partida (dá o bônus de tempo)
         self.carregar_nivel()
 
     def carregar_nivel(self):
@@ -43,18 +44,31 @@ class TelaJogo(Tela):
     def atualizar(self, dt):
         if self.pausado:
             return                                   # nada anda: nem o tempo da partida
+        self.tempo += dt
         self.aviso_nivel = max(0, self.aviso_nivel - dt)
         self.nivel.atualizar(dt)
         self.camera.seguir(self.heroi.posicao)
         tem_proximo = self.indice_nivel + 1 < len(NIVEIS)
         if self.nivel.heroi_na_saida() and tem_proximo:
             self.passar_de_nivel()
+        if not self.heroi.esta_vivo():
+            self.terminar(False)                     # derrota: a vida acabou
+        elif self.nivel.chefe is not None and not self.nivel.chefe.esta_vivo():
+            self.terminar(True)                      # vitória: o chefe caiu
 
     def passar_de_nivel(self):
         """Soma os pontos do nível e carrega o próximo. O herói continua com a vida que sobrou."""
         self.pontuacao.nivel_concluido(self.nivel.nome)
         self.indice_nivel += 1
         self.carregar_nivel()
+
+    def terminar(self, venceu):
+        """Fim da partida: aplica o bônus, guarda o resultado na Aplicacao e vai para o resultado."""
+        vida_restante = self.heroi.vida / self.heroi.vida_maxima      # de 0 a 1
+        self.pontuacao.aplicar_bonus(venceu, self.tempo, vida_restante)
+        self.aplicacao.pontuacao = self.pontuacao
+        self.aplicacao.venceu = venceu
+        self.aplicacao.trocar_tela("resultado")
 
     def desenhar(self, superficie):
         self.nivel.desenhar(superficie, self.camera)

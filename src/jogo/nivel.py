@@ -11,10 +11,11 @@ class Nivel:
     A cada quadro faz todo mundo andar, resolve os golpes e tira quem morreu.
     """
 
-    def __init__(self, nome, arquivo, heroi):
+    def __init__(self, nome, arquivo, heroi, pontuacao):
         self.nome = nome
         self.mapa = Mapa(arquivo)
         self.heroi = heroi
+        self.pontuacao = pontuacao        # a mesma da partida inteira: passa de um nível para o outro
         self.heroi.posicao = pygame.Vector2(self.mapa.inicio_heroi)
         self.inimigos = []
         for letra, x, y in self.mapa.inimigos:
@@ -83,11 +84,15 @@ class Nivel:
                 self.heroi.receber_dano(inimigo.dano_contato)
 
     def remover_mortos(self):
-        """Os inimigos sem vida saem do nível. Somar os pontos deles é a T51."""
+        """Os inimigos sem vida saem do nível e somam os pontos deles."""
         vivos = []
         for inimigo in self.inimigos:
             if inimigo.esta_vivo():
                 vivos.append(inimigo)
+            elif inimigo is self.chefe:
+                self.pontuacao.chefe_derrotado(inimigo.nome, inimigo.pontos)
+            else:
+                self.pontuacao.inimigo_derrotado(inimigo.nome, inimigo.pontos)
         self.inimigos = vivos
 
     def esta_limpo(self):
@@ -95,7 +100,7 @@ class Nivel:
         return len(self.inimigos) == 0
 
     def heroi_na_saida(self):
-        """True quando o herói encosta na saída aberta. Passar de nível com isso é a T51."""
+        """True quando o herói encosta na saída aberta."""
         if self.mapa.saida is None or not self.esta_limpo():
             return False
         return self.heroi.retangulo().colliderect(self.mapa.saida)

@@ -2,6 +2,7 @@ import pygame
 
 from jogo.ranking import Ranking
 from settings import ALTURA_TELA, ESCALA, FPS, LARGURA_TELA, TITULO
+from sons import Som
 from telas.tela_classes import TelaClasses
 from telas.tela_inicial import TelaInicial
 from telas.tela_jogo import TelaJogo
@@ -20,6 +21,7 @@ class Aplicacao:
         self.tela_jogo = pygame.Surface((LARGURA_TELA, ALTURA_TELA))   # tudo é desenhado aqui e depois ampliado
         self.relogio = pygame.time.Clock()
         self.rodando = True
+        self.som = Som()                  # as telas tocam com self.aplicacao.som.tocar("...")
         self.heroi = None                 # escolhido na TelaClasses
         self.ranking = Ranking()          # lido do arquivo ao abrir o jogo, como na main
         self.tela_atual = None

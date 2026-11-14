@@ -67,6 +67,7 @@ import pygame
 from controle.fila_comandos import FilaComandos
 from personagens.tipos import EntidadeId, Lado
 from personagens.visao import Avistado, Visao
+from personagens.inimigos import Dragao, Esqueleto, Morcego, Slime
 
 if TYPE_CHECKING:
     from controle.controlador import Controlador
@@ -85,6 +86,21 @@ class Nivel:
         self.projeteis: dict = {}                      # id -> Projetil (T41)
         self.fila = FilaComandos()
         self.proximo_id: EntidadeId = 1
+        self.inimigos = []
+        for letra, x, y in self.mapa.inimigos:
+            self.inimigos.append(self.criar_inimigo(letra, x, y))
+        self.chefe = None                 # o Dragão, só no nível que tem C no mapa
+        if self.mapa.chefe is not None:
+            self.chefe = Dragao(self.mapa.chefe[0], self.mapa.chefe[1])
+            self.inimigos.append(self.chefe)
+
+    def criar_inimigo(self, letra, x, y):
+        """Cria o inimigo de uma letra do mapa: s slime, e esqueleto, m morcego."""
+        if letra == "e":
+            return Esqueleto(x, y)
+        if letra == "m":
+            return Morcego(x, y)
+        return Slime(x, y)                # "s" e qualquer letra desconhecida viram slime
 
     # ---- montagem ----
 

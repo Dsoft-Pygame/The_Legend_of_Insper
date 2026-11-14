@@ -3,6 +3,7 @@ import pygame
 from settings import BLACK, GRAY, RED, WHITE, YELLOW
 from telas.tela import Tela
 from ui import CaixaTexto, desenhar_texto
+from ui import CaixaTexto, desenhar_ranking, desenhar_texto
 
 
 
@@ -40,6 +41,8 @@ class TelaInicial(Tela):
         if self.aviso != "" and int(self.tempo * 3) % 2 == 0:
             desenhar_texto(superficie, self.aviso, (8, 98), RED, 14)
         desenhar_texto(superficie, "ENTER para jogar", (64, 140), GRAY, 14, centralizado=True)
+        quadro = pygame.Rect(130, 8, 102, 144)
+        desenhar_ranking(superficie, quadro, self.aplicacao.ranking.melhores(10))
 
     def atualizar(self, dt):
         self.tempo += dt

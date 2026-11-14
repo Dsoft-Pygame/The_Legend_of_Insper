@@ -1,7 +1,7 @@
-"""Peças de interface usadas pelas telas: o texto e a caixa do nome (a caixa fica para a T55)."""
+"""Peças de interface usadas pelas telas: o texto e a caixa do nome "e o quadro do ranking"."""
 import pygame
 
-from settings import DARK_GRAY, WHITE, YELLOW
+from settings import DARK_GRAY, GRAY, WHITE, YELLOW
 
 fontes = {}   # uma fonte por tamanho, criada uma vez só
 
@@ -50,3 +50,25 @@ class CaixaTexto:
             if self.texto != "":
                 x = area.right + 1
             pygame.draw.line(superficie, YELLOW, (x, self.retangulo.y + 3), (x, self.retangulo.bottom - 4))
+
+def desenhar_ranking(superficie, retangulo, partidas, destaque=None):
+    """Quadro do ranking: posição, nome e pontos de cada partida, já em ordem.
+
+    A linha de número destaque (0 = a primeira) fica amarela.
+    """
+    pygame.draw.rect(superficie, DARK_GRAY, retangulo)
+    pygame.draw.rect(superficie, GRAY, retangulo, 1)
+    desenhar_texto(superficie, "RANKING", (retangulo.centerx, retangulo.y + 8), YELLOW, 16, centralizado=True)
+    if len(partidas) == 0:
+        desenhar_texto(superficie, "Ninguém jogou", (retangulo.centerx, retangulo.y + 30), GRAY, 14,
+                       centralizado=True)
+        return
+    for i, partida in enumerate(partidas):
+        y = retangulo.y + 18 + i * 12
+        cor = WHITE
+        if i == destaque:
+            cor = YELLOW
+        desenhar_texto(superficie, f"{i + 1}. {partida['nome'][:8]}", (retangulo.x + 4, y), cor, 14)
+        pontos = str(partida["pontos"])
+        largura = fonte(14).size(pontos)[0]            # para encostar os pontos na borda direita
+        desenhar_texto(superficie, pontos, (retangulo.right - 4 - largura, y), cor, 14)

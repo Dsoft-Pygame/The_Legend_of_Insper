@@ -29,6 +29,11 @@ PASTA_SRC = os.path.dirname(os.path.abspath(__file__))
 PASTA_ASSETS = os.path.join(PASTA_SRC, "assets")
 PASTA_MAPAS = os.path.join(PASTA_SRC, "data", "mapas")
 ARQUIVO_RANKING = os.path.join(PASTA_SRC, "data", "ranking.json")
+PASTA_SONS = os.path.join(PASTA_ASSETS, "sons")
+
+# Som (de 0 a 1)
+VOLUME_MUSICA = 0.5
+VOLUME_EFEITOS = 0.7
 
 # Pontuação
 PONTOS_NIVEL = 500

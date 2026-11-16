@@ -1,5 +1,4 @@
 import random
-
 import pygame
 
 from personagens.personagem import Personagem
@@ -62,13 +61,29 @@ class Esqueleto(Inimigo):
 
 
 class Morcego(Inimigo):
-    """Rápido e frágil. Por enquanto persegue reto como os outros: o zigue-zague
-    ainda está no branch task-46.
-    """
+    """Rápido e frágil. Persegue em zigue-zague"""
 
     def __init__(self, x, y):
         super().__init__(x, y, 12, PINK, 10, 90, "Morcego", 5, 70, 120)
         self.tempo_vagando = 1
+        self.tempo_desvio = 0.4            # segundos desviando para o mesmo lado
+        self.forca_desvio = 0.8            # quanto desvia: 0 iria reto até o herói
+        self.lado = 1                      # 1 desvia para um lado, -1 para o outro
+        self.falta_trocar = self.tempo_desvio
+        
+    def atualizar(self, dt, heroi, mapa):
+        caminho = heroi.posicao - self.posicao
+        if caminho.length() == 0 or caminho.length() > self.raio_alerta:
+            return super().atualizar(dt, heroi, mapa)
+        self.falta_trocar -= dt
+        if self.falta_trocar <= 0:
+            self.lado = -self.lado         # troca o lado do desvio
+            self.falta_trocar = self.tempo_desvio
+        frente = caminho.normalize()
+        lado = pygame.Vector2(-frente.y, frente.x) * self.lado * self.forca_desvio
+        self.direcao = (frente + lado).normalize()
+        self.mover(self.direcao, dt, mapa)
+        return []
 
 
 class Dragao(Inimigo):

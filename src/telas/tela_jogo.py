@@ -17,7 +17,7 @@ class TelaJogo(Tela):
         super().__init__(aplicacao)
         self.heroi = aplicacao.heroi
         self.pontuacao = Pontuacao()      # os pontos da partida inteira
-        self.indice_nivel = 0                      # posição na lista NIVEIS do settings.py
+        self.indice_nivel = 2                      # posição na lista NIVEIS do settings.py
         self.pausado = False            
         self.tempo = 0                    # segundos de partida (dá o bônus de tempo)
         self.carregar_nivel()

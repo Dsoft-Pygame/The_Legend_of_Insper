@@ -1,9 +1,9 @@
 import random
-
 import pygame
 
 from personagens.personagem import Personagem
-from settings import CYAN, PINK, PURPLE, WHITE
+from personagens.projetil import Projetil
+from settings import CYAN, PINK, PURPLE, RED, WHITE
 
 
 class Inimigo(Personagem):
@@ -72,9 +72,41 @@ class Morcego(Inimigo):
 
 
 class Dragao(Inimigo):
-    """O chefe do Topo da Torre, maior que os outros. Por enquanto só tem os números:
-    os ataques e o jeito de lutar do chefe ainda faltam.
-    """
+    """O chefe do Topo da Torre, maior que os outros. 2 fases"""
 
     def __init__(self, x, y):
         super().__init__(x, y, 24, PURPLE, 600, 45, "Dragão Ancião", 25, 2000, 240)
+        self.distancia_tiro = 64           # cospe fogo quando o herói está mais perto que isso
+        self.tempo_tiro = 1                # segundos entre uma bola de fogo e outra
+        self.tempo_anel = 3                # segundos entre um anel de fogo e outro (fase 2)
+        self.recarga_tiro = 0
+        self.recarga_anel = self.tempo_anel
+
+    def fase(self): #2 fases
+        if self.vida > self.vida_maxima / 2:
+            return 1
+        return 2
+
+    def atualizar(self, dt, heroi, mapa):
+        self.recarga_tiro = max(0, self.recarga_tiro - dt)
+        caminho = heroi.posicao - self.posicao
+        if caminho.length() == 0:
+            return []
+        self.direcao = caminho.normalize()
+        bolas = []
+        if self.fase() == 1:
+            self.mover(self.direcao * 0.5, dt, mapa)      # fase 1: metade da velocidade
+        else:
+            self.mover(self.direcao, dt, mapa)
+            self.recarga_anel -= dt
+            if self.recarga_anel <= 0:
+                self.recarga_anel = self.tempo_anel
+                for i in range(12):                       # uma bola a cada 30 graus
+                    bolas.append(self.bola_de_fogo(self.direcao.rotate(i * 30), 100))
+        if caminho.length() <= self.distancia_tiro and self.recarga_tiro == 0:
+            self.recarga_tiro = self.tempo_tiro
+            bolas.append(self.bola_de_fogo(self.direcao, 120))
+        return bolas
+
+    def bola_de_fogo(self, direcao, rapidez):
+        return Projetil(self.posicao, direcao * rapidez, tamanho=8, cor=RED, dano=15, duracao=2, dono="inimigo")

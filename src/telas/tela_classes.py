@@ -50,7 +50,10 @@ class TelaClasses(Tela):
         pygame.draw.rect(superficie, borda, cartao, grossura)
         icone = pygame.Rect(0, 0, 16, 16)
         icone.center = (cartao.centerx, cartao.y + 16)
-        pygame.draw.rect(superficie, heroi.cor, icone)
+        if heroi.imagem is None:
+            pygame.draw.rect(superficie, heroi.cor, icone)
+        else:
+            superficie.blit(heroi.imagem, icone)
         desenhar_texto(superficie, heroi.nome, (cartao.centerx, cartao.y + 32), cor, 16, centralizado=True)
         desenhar_texto(superficie, f"Vida: {heroi.vida_maxima}", (cartao.x + 6, cartao.y + 46), WHITE, 14)
         desenhar_texto(superficie, f"Vel: {heroi.velocidade}", (cartao.x + 6, cartao.y + 58), WHITE, 14)

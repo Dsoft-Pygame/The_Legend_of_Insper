@@ -1,7 +1,7 @@
 import random
-
 import pygame
 
+from ui import carregar_imagem
 from personagens.personagem import Personagem
 from settings import CYAN, PINK, PURPLE, WHITE
 
@@ -51,7 +51,7 @@ class Slime(Inimigo):
 
     def __init__(self, x, y):
         super().__init__(x, y, 12, CYAN, 20, 30, "Slime", 10, 50, 80)
-
+        self.imagem = carregar_imagem("slime.png")
 
 class Esqueleto(Inimigo):
     """Mais forte e mais rápido que o slime, e percebe o herói de mais longe."""
@@ -59,7 +59,7 @@ class Esqueleto(Inimigo):
     def __init__(self, x, y):
         super().__init__(x, y, 12, WHITE, 40, 55, "Esqueleto", 15, 80, 112)
         self.tempo_vagando = 1
-
+        self.imagem = carregar_imagem("esqueleto.png")
 
 class Morcego(Inimigo):
     """Rápido e frágil. Por enquanto persegue reto como os outros: o zigue-zague
@@ -69,7 +69,7 @@ class Morcego(Inimigo):
     def __init__(self, x, y):
         super().__init__(x, y, 12, PINK, 10, 90, "Morcego", 5, 70, 120)
         self.tempo_vagando = 1
-
+        self.imagem = carregar_imagem("morcego.png")
 
 class Dragao(Inimigo):
     """O chefe do Topo da Torre, maior que os outros. Por enquanto só tem os números:
@@ -78,3 +78,4 @@ class Dragao(Inimigo):
 
     def __init__(self, x, y):
         super().__init__(x, y, 24, PURPLE, 600, 45, "Dragão Ancião", 25, 2000, 240)
+        self.imagem = carregar_imagem("dragao.png")

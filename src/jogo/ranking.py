@@ -17,7 +17,7 @@ class Ranking:
     def __init__(self, arquivo=ARQUIVO_RANKING):
         self.arquivo = arquivo
         self.partidas = []
-        if os.path.exists(arquivo):
+        if os.path.exists(arquivo) and os.path.getsize(arquivo) > 0:   # arquivo vazio = ranking vazio
             with open(arquivo, encoding="utf-8") as dados:
                 self.partidas = json.load(dados)
         self.partidas.sort(key=pegar_pontos, reverse=True)

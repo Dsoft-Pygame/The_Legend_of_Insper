@@ -33,9 +33,9 @@ python src/main.py
 
 | Classe | Vida | Velocidade | Dano | Ataque (Espaço) | Especial (Shift esquerdo) |
 |---|---|---|---|---|---|
-| Mago | 60 | 70 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo |
-| Arqueiro | 80 | 100 | 10 | flecha rápida | 3 flechas em leque |
-| Bárbaro | 140 | 75 | 35 | machadada logo na frente | giro que acerta todos em volta |
+| Mago | 60 | 140 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo |
+| Arqueiro | 80 | 200 | 10 | flecha rápida | 3 flechas em leque |
+| Bárbaro | 140 | 150 | 35 | machadada logo na frente | giro que acerta todos em volta |
 
 ## Inimigos
 
@@ -46,7 +46,7 @@ Os inimigos já existem como classes em `personagens/inimigos.py`, com os númer
 | Slime | 20 | 10 | 50 | lento; persegue quando o herói chega perto |
 | Esqueleto | 40 | 15 | 80 | mais rápido e percebe o herói de mais longe |
 | Morcego | 10 | 5 | 70 | muito rápido; o zigue-zague ainda está no branch task-46 |
-| Dragão Ancião | 600 | 25 | 2000 | o chefe do Topo da Torre; os ataques de chefe ainda faltam |
+| Dragão Ancião | 450 | 25 | 2000 | o chefe do Topo da Torre; os ataques de chefe ainda faltam |
 
 ## Pastas
 

@@ -18,11 +18,11 @@ PURPLE = (150, 80, 200)
 
 # Tela
 TITULO = "The Legend of Insper"
-LARGURA_TELA = 240        # tudo é desenhado nesta resolução e depois ampliado na janela
-ALTURA_TELA = 160
-ESCALA = 4                # janela de 960 x 640
+LARGURA_TELA = 480        # tudo é desenhado nesta resolução e depois ampliado na janela
+ALTURA_TELA = 320
+ESCALA = 2                # janela de 960 x 640
 FPS = 60
-TAMANHO_TILE = 16
+TAMANHO_TILE = 32
 
 # Pastas
 PASTA_SRC = os.path.dirname(os.path.abspath(__file__))
@@ -42,9 +42,9 @@ TEMPO_REFERENCIA = 600    # segundos: quem termina depois disso não ganha bônu
 BONUS_VIDA_MAXIMO = 1000
 
 # Níveis, em ordem: (nome, arquivo em data/mapas/).
-# Os inimigos de cada um são os do temas.json da main.
+# Os inimigos de cada um são as letras do mapa.
 NIVEIS = [
     ("Térreo", "torre_1.txt"),            # 6 slimes
-    ("Biblioteca", "torre_2.txt"),        # 4 slimes e 4 morcegos
-    ("Topo da Torre", "torre_3.txt"),     # 4 esqueletos e o chefe Dragão
+    ("Biblioteca", "torre_2.txt"),        # 6 slimes, 5 esqueletos e 5 morcegos
+    ("Topo da Torre", "torre_3.txt"),     # 4 esqueletos, 2 morcegos e o chefe Dragão
 ]

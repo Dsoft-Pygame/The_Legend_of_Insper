@@ -2,7 +2,7 @@ import pygame
 
 from personagens.entidade import Entidade
 
-QUINA = 4   # pixels que o personagem desvia sozinho para entrar numa porta estreita
+QUINA = 8   # pixels que o personagem desvia sozinho para entrar numa porta estreita
 
 
 class Personagem(Entidade):

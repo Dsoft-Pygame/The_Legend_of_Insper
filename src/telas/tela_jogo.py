@@ -28,12 +28,17 @@ class TelaJogo(Tela):
         self.nivel = Nivel(nome, arquivo, self.heroi, self.pontuacao)
         self.camera = Camera(self.nivel.mapa.largura, self.nivel.mapa.altura)
         self.aviso_nivel = 2              # segundos com o nome do nível no meio da tela
+        if self.nivel.chefe is not None:
+            self.aplicacao.som.tocar_musica("chefe")
+        else:
+            self.aplicacao.som.tocar_musica("torre")   # do Térreo para a Biblioteca não reinicia
 
     def tratar_evento(self, evento):
         if evento.type != pygame.KEYDOWN:
             return
         if evento.key == pygame.K_ESCAPE:
             self.pausado = not self.pausado          # ESC pausa e ESC de novo continua
+            self.aplicacao.som.pausar_musica(self.pausado)
         elif self.pausado:
             return                                   # pausado, as outras teclas não fazem nada
         elif evento.key == pygame.K_SPACE:
@@ -76,7 +81,7 @@ class TelaJogo(Tela):
         if self.pausado:
             self.desenhar_pausa(superficie)
         elif self.aviso_nivel > 0:
-            desenhar_texto(superficie, self.nivel.nome, (LARGURA_TELA // 2, ALTURA_TELA // 2), YELLOW, 24,
+            desenhar_texto(superficie, self.nivel.nome, (LARGURA_TELA // 2, ALTURA_TELA // 2), YELLOW, 48,
                            centralizado=True)
 
     def desenhar_pausa(self, superficie):
@@ -85,27 +90,27 @@ class TelaJogo(Tela):
         sombra.fill((0, 0, 0, 160))                  # preto com 160 de 255 de opacidade
         superficie.blit(sombra, (0, 0))
         meio = (LARGURA_TELA // 2, ALTURA_TELA // 2)
-        desenhar_texto(superficie, "PAUSADO", meio, WHITE, 24, centralizado=True)
-        desenhar_texto(superficie, "ESC continua", (meio[0], meio[1] + 16), WHITE, 14, centralizado=True)
+        desenhar_texto(superficie, "PAUSADO", meio, WHITE, 48, centralizado=True)
+        desenhar_texto(superficie, "ESC continua", (meio[0], meio[1] + 32), WHITE, 28, centralizado=True)
 
     def desenhar_hud(self, superficie):
         """O que fica parado por cima do jogo: vida, nível, pontos, saída e a vida do chefe."""
         heroi = self.heroi
-        desenhar_texto(superficie, self.aplicacao.nome_jogador, (3, 3), WHITE, 12)
+        desenhar_texto(superficie, self.aplicacao.nome_jogador, (6, 6), WHITE, 24)
         cor = GREEN
         if heroi.vida < heroi.vida_maxima * 0.3:
             cor = RED                                # pouca vida: a barra fica vermelha
-        desenhar_barra(superficie, pygame.Rect(3, 13, 50, 4), heroi.vida, heroi.vida_maxima, cor)
+        desenhar_barra(superficie, pygame.Rect(6, 26, 100, 8), heroi.vida, heroi.vida_maxima, cor)
 
-        desenhar_texto(superficie, self.nivel.nome, (LARGURA_TELA // 2, 7), WHITE, 14, centralizado=True)
+        desenhar_texto(superficie, self.nivel.nome, (LARGURA_TELA // 2, 14), WHITE, 28, centralizado=True)
         texto = f"{self.pontuacao.total} pts"
-        largura = fonte(14).size(texto)[0]
-        desenhar_texto(superficie, texto, (LARGURA_TELA - 3 - largura, 3), YELLOW, 14)
+        largura = fonte(28).size(texto)[0]
+        desenhar_texto(superficie, texto, (LARGURA_TELA - 6 - largura, 6), YELLOW, 28)
 
         if self.nivel.mapa.saida is not None and self.nivel.esta_limpo():
-            desenhar_texto(superficie, "Saída aberta!", (LARGURA_TELA // 2, 20), YELLOW, 14, centralizado=True)
+            desenhar_texto(superficie, "Saída aberta!", (LARGURA_TELA // 2, 40), YELLOW, 28, centralizado=True)
 
         chefe = self.nivel.chefe
         if chefe is not None and chefe.esta_vivo():
-            desenhar_texto(superficie, chefe.nome, (LARGURA_TELA // 2, 140), WHITE, 12, centralizado=True)
-            desenhar_barra(superficie, pygame.Rect(40, 146, 160, 6), chefe.vida, chefe.vida_maxima, RED)
+            desenhar_texto(superficie, chefe.nome, (LARGURA_TELA // 2, 280), WHITE, 24, centralizado=True)
+            desenhar_barra(superficie, pygame.Rect(80, 292, 320, 12), chefe.vida, chefe.vida_maxima, RED)

@@ -15,6 +15,7 @@ class TelaResultado(Tela):
 
     def __init__(self, aplicacao):
         super().__init__(aplicacao)
+        aplicacao.som.tocar_musica("resultado")
         self.tempo_parada = 0
         pontos = aplicacao.pontuacao.total
         self.posicao = aplicacao.ranking.adicionar(aplicacao.nome_jogador, aplicacao.heroi.nome, pontos,

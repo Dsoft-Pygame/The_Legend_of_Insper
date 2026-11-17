@@ -11,6 +11,7 @@ class TelaClasses(Tela):
 
     def __init__(self, aplicacao):
         super().__init__(aplicacao)
+        aplicacao.som.tocar_musica("menu")    # já vem tocando da TelaInicial, então não corta
         self.herois = [Mago(0, 0), Arqueiro(0, 0), Barbaro(0, 0)]   # o Nivel põe o escolhido no lugar
         self.selecionado = 0
 

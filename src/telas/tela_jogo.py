@@ -28,12 +28,17 @@ class TelaJogo(Tela):
         self.nivel = Nivel(nome, arquivo, self.heroi, self.pontuacao)
         self.camera = Camera(self.nivel.mapa.largura, self.nivel.mapa.altura)
         self.aviso_nivel = 2              # segundos com o nome do nível no meio da tela
+        if self.nivel.chefe is not None:
+            self.aplicacao.som.tocar_musica("chefe")
+        else:
+            self.aplicacao.som.tocar_musica("torre")   # do Térreo para a Biblioteca não reinicia
 
     def tratar_evento(self, evento):
         if evento.type != pygame.KEYDOWN:
             return
         if evento.key == pygame.K_ESCAPE:
             self.pausado = not self.pausado          # ESC pausa e ESC de novo continua
+            self.aplicacao.som.pausar_musica(self.pausado)
         elif self.pausado:
             return                                   # pausado, as outras teclas não fazem nada
         elif evento.key == pygame.K_SPACE:

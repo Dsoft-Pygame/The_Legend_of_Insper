@@ -2,9 +2,7 @@ import pygame
 
 from settings import BLACK, GRAY, RED, WHITE, YELLOW
 from telas.tela import Tela
-from ui import CaixaTexto, desenhar_texto
 from ui import CaixaTexto, desenhar_ranking, desenhar_texto
-
 
 
 class TelaInicial(Tela):

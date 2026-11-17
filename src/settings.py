@@ -18,11 +18,11 @@ PURPLE = (150, 80, 200)
 
 # Tela
 TITULO = "The Legend of Insper"
-LARGURA_TELA = 240        # tudo é desenhado nesta resolução e depois ampliado na janela
-ALTURA_TELA = 160
-ESCALA = 4                # janela de 960 x 640
+LARGURA_TELA = 480        # tudo é desenhado nesta resolução e depois ampliado na janela
+ALTURA_TELA = 320
+ESCALA = 2                # janela de 960 x 640
 FPS = 60
-TAMANHO_TILE = 16
+TAMANHO_TILE = 32
 
 # Pastas
 PASTA_SRC = os.path.dirname(os.path.abspath(__file__))

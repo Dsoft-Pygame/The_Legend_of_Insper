@@ -38,23 +38,23 @@ class TelaResultado(Tela):
         if self.aplicacao.venceu:
             titulo = "VITÓRIA!"
             cor = GREEN
-        desenhar_texto(superficie, titulo, (72, 12), cor, 24, centralizado=True)
+        desenhar_texto(superficie, titulo, (144, 24), cor, 48, centralizado=True)
 
         nome = f"{self.aplicacao.nome_jogador} ({self.aplicacao.heroi.nome})"
-        desenhar_texto(superficie, nome, (6, 28), WHITE, 12)
-        y = 40
+        desenhar_texto(superficie, nome, (12, 56), WHITE, 24)
+        y = 80
         texto = f"Inimigos: {pontuacao.inimigos_derrotados} +{pontuacao.pontos_inimigos}"
-        desenhar_texto(superficie, texto, (6, y), WHITE, 12)
+        desenhar_texto(superficie, texto, (12, y), WHITE, 24)
         for linha in pontuacao.extrato:          # "Térreo concluído +500", os bônus...
-            y += 10
-            desenhar_texto(superficie, linha, (6, y), WHITE, 12)
-        desenhar_texto(superficie, f"TOTAL: {pontuacao.total}", (6, y + 14), YELLOW, 18)
+            y += 20
+            desenhar_texto(superficie, linha, (12, y), WHITE, 24)
+        desenhar_texto(superficie, f"TOTAL: {pontuacao.total}", (12, y + 28), YELLOW, 36)
 
-        desenhar_texto(superficie, f"Sua posição: {self.posicao}", (6, 134), YELLOW, 14)
-        desenhar_texto(superficie, "ENTER volta", (6, 146), GRAY, 14)
+        desenhar_texto(superficie, f"Sua posição: {self.posicao}", (12, 268), YELLOW, 28)
+        desenhar_texto(superficie, "ENTER volta", (12, 292), GRAY, 28)
 
         destaque = None
         if self.posicao <= 10:
             destaque = self.posicao - 1          # a linha desta partida, se ela está entre as 10
-        quadro = pygame.Rect(138, 8, 96, 144)
+        quadro = pygame.Rect(276, 16, 192, 288)
         desenhar_ranking(superficie, quadro, self.aplicacao.ranking.melhores(10), destaque)

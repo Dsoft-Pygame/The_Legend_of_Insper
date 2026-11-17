@@ -81,6 +81,6 @@ Faltam:
 ## Créditos
 
 - Sprites dos heróis (`src/assets/mago.png`, `arqueiro.png` e `barbaro.png`): Thiago A. Gomes.
-- Sons e músicas (`src/assets/sons/`): feitos pelo grupo, gerados por código. Detalhes em `src/assets/sons/CREDITOS.md`.
+- Sons e músicas (`src/assets/sons/`): gerados por código pelo Claude (assistente de IA da Anthropic). Detalhes em `src/assets/sons/CREDITOS.md`.
 
 Os outros desenhos (chão, parede, saída e inimigos) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.

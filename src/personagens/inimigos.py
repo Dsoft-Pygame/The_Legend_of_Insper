@@ -91,7 +91,7 @@ class Dragao(Inimigo):
     """O chefe do Topo da Torre, maior que os outros. 2 fases"""
 
     def __init__(self, x, y):
-        super().__init__(x, y, 24, PURPLE, 600, 45, "Dragão Ancião", 25, 2000, 240)
+        super().__init__(x, y, 24, PURPLE, 450, 45, "Dragão Ancião", 25, 2000, 240)
         self.distancia_tiro = 64           # cospe fogo quando o herói está mais perto que isso
         self.tempo_tiro = 1                # segundos entre uma bola de fogo e outra
         self.tempo_anel = 3                # segundos entre um anel de fogo e outro (fase 2)

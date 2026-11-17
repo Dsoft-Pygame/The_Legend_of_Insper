@@ -11,6 +11,7 @@ class TelaInicial(Tela):
         self.caixa_nome = CaixaTexto(pygame.Rect(8, 76, 112, 16))
         self.aviso = ""                   # aparece se apertar Enter sem nome
         self.tempo = 0                    # segundos nesta tela: faz o cursor e o aviso piscarem
+        aplicacao.som.tocar_musica("menu")    # se já está tocando (veio de outra tela), continua sem cortar
 
     def tratar_evento(self, evento):
         if evento.type == pygame.TEXTINPUT:

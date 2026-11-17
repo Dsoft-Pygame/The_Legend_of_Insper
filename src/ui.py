@@ -79,3 +79,11 @@ def desenhar_ranking(superficie, retangulo, partidas, destaque=None):
         pontos = str(partida["pontos"])
         largura = fonte(14).size(pontos)[0]            # para encostar os pontos na borda direita
         desenhar_texto(superficie, pontos, (retangulo.right - 4 - largura, y), cor, 14)
+    
+def desenhar_barra(superficie, retangulo, valor, maximo, cor):
+    """Barra de vida: a parte colorida mostra quanto sobra de valor, de 0 até maximo."""
+    pygame.draw.rect(superficie, DARK_GRAY, retangulo)
+    cheia = retangulo.copy()
+    cheia.width = round(retangulo.width * max(0, valor) / maximo)
+    pygame.draw.rect(superficie, cor, cheia)
+    pygame.draw.rect(superficie, WHITE, retangulo, 1) 

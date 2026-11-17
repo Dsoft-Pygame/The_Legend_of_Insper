@@ -77,3 +77,10 @@ Faltam:
 - o nome do jogador na tela inicial (T55), o quadro do ranking e a tela de resultado com os pontos;
 - o HUD e a pausa (T65);
 - os mapas dos andares 2 e 3, o zigue-zague do morcego e os ataques do chefe.
+
+## Créditos
+
+- Sprites dos heróis (`src/assets/mago.png`, `arqueiro.png` e `barbaro.png`): Thiago A. Gomes.
+- Sons e músicas (`src/assets/sons/`): feitos pelo grupo, gerados por código. Detalhes em `src/assets/sons/CREDITOS.md`.
+
+Os outros desenhos (chão, parede, saída e inimigos) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.

@@ -68,3 +68,9 @@ class Personagem(Entidade):
         if self.invulneravel > 0 and int(self.invulneravel * 10) % 2 == 0:
             return                                # pisca enquanto está invulnerável
         super().desenhar(superficie, camera)
+
+    def imagem_atual(self): #espelha a imagem da direira pra esquerda e vice versa
+        imagem = super().imagem_atual()
+        if imagem is not None and self.direcao.x < 0:
+            imagem = pygame.transform.flip(imagem, True, False)   # True: espelha na horizontal
+        return imagem

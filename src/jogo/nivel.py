@@ -2,8 +2,8 @@ import pygame
 
 from jogo.mapa import Mapa
 from personagens.inimigos import Dragao, Esqueleto, Morcego, Slime
-from settings import BLACK, BROWN, DARK_GRAY, GRAY, YELLOW
-
+from settings import BLACK, BROWN, DARK_GRAY, GRAY, YELLOW, TAMANHO_TILE
+from ui import carregar_imagem
 
 class Nivel:
     """Um nível em andamento: o mapa, o herói, os inimigos e os projéteis.
@@ -18,6 +18,11 @@ class Nivel:
         self.pontuacao = pontuacao        # a mesma da partida inteira: passa de um nível para o outro
         self.heroi.posicao = pygame.Vector2(self.mapa.inicio_heroi)
         self.inimigos = []
+        self.imagem_chao = carregar_imagem("chao.png")
+        self.imagem_parede = carregar_imagem("parede.png")
+        self.imagem_saida = carregar_imagem("saida.png")
+        self.imagem_saida_aberta = carregar_imagem("saida_aberta.png")
+
         for letra, x, y in self.mapa.inimigos:
             self.inimigos.append(self.criar_inimigo(letra, x, y))
         self.chefe = None                 # o Dragão, só no nível que tem C no mapa
@@ -104,23 +109,34 @@ class Nivel:
         if self.mapa.saida is None or not self.esta_limpo():
             return False
         return self.heroi.retangulo().colliderect(self.mapa.saida)
-
+        
     def desenhar(self, superficie, camera):
         superficie.fill(BLACK)
-        chao = pygame.Rect(0, 0, self.mapa.largura, self.mapa.altura)
-        pygame.draw.rect(superficie, DARK_GRAY, camera.para_tela(chao))
+        for x in range(0, self.mapa.largura, TAMANHO_TILE):        # o chão, tile por tile
+            for y in range(0, self.mapa.altura, TAMANHO_TILE):
+                tile = pygame.Rect(x, y, TAMANHO_TILE, TAMANHO_TILE)
+                if camera.esta_visivel(tile):
+                    self.desenhar_tile(superficie, camera, tile, self.imagem_chao, DARK_GRAY)
         for parede in self.mapa.paredes:
             if camera.esta_visivel(parede):
-                pygame.draw.rect(superficie, GRAY, camera.para_tela(parede))
+                self.desenhar_tile(superficie, camera, parede, self.imagem_parede, GRAY)
 
         if self.mapa.saida is not None:
-            cor_saida = BROWN
-            if self.esta_limpo() and int(self.tempo * 4) % 2 == 0:
-                cor_saida = YELLOW                   # aberta, ela pisca
-            pygame.draw.rect(superficie, cor_saida, camera.para_tela(self.mapa.saida))
-
+            if self.esta_limpo() and int(self.tempo * 4) % 2 == 0:   # aberta, ela pisca
+                self.desenhar_tile(superficie, camera, self.mapa.saida, self.imagem_saida_aberta, YELLOW)
+            else:
+                self.desenhar_tile(superficie, camera, self.mapa.saida, self.imagem_saida, BROWN)
+                # Desenha as entidades por cima do cenário
+        
         for inimigo in self.inimigos:
             inimigo.desenhar(superficie, camera)
+
         for projetil in self.projeteis:
             projetil.desenhar(superficie, camera)
+
         self.heroi.desenhar(superficie, camera)
+    def desenhar_tile(self, superficie, camera, tile, imagem, cor): #usa imagem se existir
+        if imagem is None:
+            pygame.draw.rect(superficie, cor, camera.para_tela(tile))
+        else:
+            superficie.blit(imagem, camera.para_tela(tile))

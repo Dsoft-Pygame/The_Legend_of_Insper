@@ -9,6 +9,7 @@ class Entidade:
         self.largura = largura
         self.altura = altura
         self.cor = cor
+        self.imagem = None                    # sem imagem, desenha um retângulo com a cor
 
     def retangulo(self):
         """O retângulo de colisão, em volta da posição."""
@@ -16,5 +17,15 @@ class Entidade:
         retangulo.center = (round(self.posicao.x), round(self.posicao.y))
         return retangulo
 
+    def imagem_atual(self):
+        """A imagem que aparece agora. As classes filhas trocam este método para virar ou animar."""
+        return self.imagem
+
     def desenhar(self, superficie, camera):
-        pygame.draw.rect(superficie, self.cor, camera.para_tela(self.retangulo()))
+        retangulo = camera.para_tela(self.retangulo())
+        imagem = self.imagem_atual()
+        
+        if imagem is None:
+            pygame.draw.rect(superficie, self.cor, retangulo)
+        else:
+            superficie.blit(imagem, imagem.get_rect(center=retangulo.center))   # imagem no meio do retângulo

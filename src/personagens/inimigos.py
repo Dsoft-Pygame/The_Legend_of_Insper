@@ -1,6 +1,7 @@
 import random
 import pygame
 
+from ui import carregar_imagem
 from personagens.personagem import Personagem
 from personagens.projetil import Projetil
 from settings import CYAN, PINK, PURPLE, RED, WHITE
@@ -51,7 +52,7 @@ class Slime(Inimigo):
 
     def __init__(self, x, y):
         super().__init__(x, y, 24, CYAN, 20, 60, "Slime", 10, 50, 160)
-
+        self.imagem = carregar_imagem("slime.png")
 
 class Esqueleto(Inimigo):
     """Mais forte e mais rápido que o slime, e percebe o herói de mais longe."""
@@ -59,7 +60,7 @@ class Esqueleto(Inimigo):
     def __init__(self, x, y):
         super().__init__(x, y, 24, WHITE, 40, 110, "Esqueleto", 15, 80, 224)
         self.tempo_vagando = 1
-
+        self.imagem = carregar_imagem("esqueleto.png")
 
 class Morcego(Inimigo):
     """Rápido e frágil. Persegue em zigue-zague"""
@@ -71,6 +72,7 @@ class Morcego(Inimigo):
         self.forca_desvio = 0.8            # quanto desvia: 0 iria reto até o herói
         self.lado = 1                      # 1 desvia para um lado, -1 para o outro
         self.falta_trocar = self.tempo_desvio
+        self.imagem = carregar_imagem("morcego.png")
         
     def atualizar(self, dt, heroi, mapa):
         caminho = heroi.posicao - self.posicao
@@ -97,6 +99,7 @@ class Dragao(Inimigo):
         self.tempo_anel = 3                # segundos entre um anel de fogo e outro (fase 2)
         self.recarga_tiro = 0
         self.recarga_anel = self.tempo_anel
+        self.imagem = carregar_imagem("dragao.png")
 
     def fase(self): #2 fases
         if self.vida > self.vida_maxima / 2:

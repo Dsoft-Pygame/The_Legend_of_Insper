@@ -1,16 +1,23 @@
 """Peças de interface usadas pelas telas: o texto e a caixa do nome "e o quadro do ranking"."""
 import pygame
-
-from settings import DARK_GRAY, GRAY, WHITE, YELLOW
+import os
+from settings import DARK_GRAY, GRAY, WHITE, YELLOW, PASTA_ASSETS
 
 fontes = {}   # uma fonte por tamanho, criada uma vez só
-
+imagens = {}  # cada imagem de src/assets/ é lida do disco uma vez só
 
 def fonte(tamanho):
     if tamanho not in fontes:
         fontes[tamanho] = pygame.font.Font(None, tamanho)   # None = a fonte padrão do pygame
     return fontes[tamanho]
 
+def carregar_imagem(nome): #carrrega imagem se ela existir
+    if nome not in imagens:
+        caminho = os.path.join(PASTA_ASSETS, nome)
+        imagens[nome] = None
+        if os.path.exists(caminho):
+            imagens[nome] = pygame.image.load(caminho).convert_alpha()   # convert_alpha: fundo transparente
+    return imagens[nome]
 
 def desenhar_texto(superficie, texto, posicao, cor=WHITE, tamanho=32, centralizado=False):
     """Escreve o texto na tela e devolve o retângulo que ele ocupou."""

@@ -3,7 +3,7 @@ import pygame
 from personagens.personagem import Personagem
 from personagens.projetil import Golpe, Projetil
 from settings import BLUE, GREEN, ORANGE, RED, WHITE
-
+from ui import carregar_imagem
 
 class Heroi(Personagem):
     """O personagem do jogador: anda com WASD, ataca com ESPAÇO e usa o especial com o SHIFT esquerdo.
@@ -69,6 +69,7 @@ class Mago(Heroi):
         self.dano = 30
         self.tempo_ataque = 0.6
         self.tempo_especial = 5
+        self.imagem = carregar_imagem("mago.png")
 
     def atacar(self):
         velocidade = self.direcao * 180
@@ -92,6 +93,7 @@ class Arqueiro(Heroi):
         self.dano = 10
         self.tempo_ataque = 0.3
         self.tempo_especial = 3
+        self.imagem = carregar_imagem("arqueiro.png")
 
     def atacar(self):
         velocidade = self.direcao * 400
@@ -115,6 +117,7 @@ class Barbaro(Heroi):
         self.dano = 35
         self.tempo_ataque = 0.5
         self.tempo_especial = 4
+        self.imagem = carregar_imagem("barbaro.png")
 
     def atacar(self):
         centro = self.posicao + self.direcao * 30   # metade do herói (12) + metade do golpe (18)

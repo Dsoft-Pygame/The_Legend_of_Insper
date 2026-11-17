@@ -33,9 +33,9 @@ python src/main.py
 
 | Classe | Vida | Velocidade | Dano | Ataque (Espaço) | Especial (Shift esquerdo) |
 |---|---|---|---|---|---|
-| Mago | 60 | 70 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo |
-| Arqueiro | 80 | 100 | 10 | flecha rápida | 3 flechas em leque |
-| Bárbaro | 140 | 75 | 35 | machadada logo na frente | giro que acerta todos em volta |
+| Mago | 60 | 140 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo |
+| Arqueiro | 80 | 200 | 10 | flecha rápida | 3 flechas em leque |
+| Bárbaro | 140 | 150 | 35 | machadada logo na frente | giro que acerta todos em volta |
 
 ## Inimigos
 

@@ -2,13 +2,16 @@ import pygame
 
 from personagens.entidade import Entidade
 from settings import YELLOW
+from ui import carregar_imagem
 
 
 class Projetil(Entidade):
     """Tudo que voa e dá dano, como flecha e bola de fogo. Some na parede ou quando o tempo acaba."""
 
-    def __init__(self, posicao, velocidade, tamanho, cor, dano, duracao, dono):
+    def __init__(self, posicao, velocidade, tamanho, cor, dano, duracao, dono, imagem=None):
         super().__init__(posicao.x, posicao.y, tamanho, tamanho, cor)
+        if imagem is not None:
+            self.imagem = carregar_imagem(imagem)       # o desenho aponta para a direita
         self.velocidade = pygame.Vector2(velocidade)   # direção e rapidez, em pixels por segundo
         self.dano = dano
         self.duracao = duracao                         # segundos até sumir
@@ -30,6 +33,14 @@ class Projetil(Entidade):
 
     def bateu_na_parede(self, mapa):
         return not mapa.area_livre(self.retangulo())
+
+    def imagem_atual(self):
+        """Gira o desenho para o lado em que o projétil está voando."""
+        imagem = super().imagem_atual()
+        if imagem is None or self.velocidade.length() == 0:
+            return imagem
+        angulo = pygame.Vector2(1, 0).angle_to(self.velocidade)
+        return pygame.transform.rotate(imagem, -angulo)   # o rotate gira ao contrário do eixo y da tela
 
 
 class Golpe(Projetil):

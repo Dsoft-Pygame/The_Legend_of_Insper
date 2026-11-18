@@ -14,6 +14,7 @@ Todos os sons desta pasta foram gerados por código (síntese de ondas quadrada,
 | `porta.wav` | subida rápida, como teletransporte | gerado pelo Claude |
 | `menu_mover.wav` | bip curtinho | gerado pelo Claude |
 | `menu_confirmar.wav` | dois bips subindo | gerado pelo Claude |
+| `especial_pronto.wav` | "plim" de três notas subindo, quando o especial recarrega | gerado pelo Claude |
 
 ## Músicas (`.ogg`, tocam em loop)
 

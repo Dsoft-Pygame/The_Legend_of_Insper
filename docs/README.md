@@ -82,5 +82,6 @@ Faltam:
 
 - Sprites dos heróis (`src/assets/mago.png`, `arqueiro.png` e `barbaro.png`): Thiago A. Gomes.
 - Sons e músicas (`src/assets/sons/`): gerados por código pelo Claude (assistente de IA da Anthropic). Detalhes em `src/assets/sons/CREDITOS.md`.
+- Tiles de chão e parede (`src/assets/tiles/`): pedra (Térreo e Topo da Torre) e biblioteca (Biblioteca), 4 variantes de cada, gerados por código (`gerar_tiles.py`, na pasta de sprites do grupo).
 
-Os outros desenhos (chão, parede, saída e inimigos) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.
+Os outros desenhos (saída e inimigos) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.

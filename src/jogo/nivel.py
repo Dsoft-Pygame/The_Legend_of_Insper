@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 from jogo.mapa import Mapa
@@ -11,15 +13,16 @@ class Nivel:
     A cada quadro faz todo mundo andar, resolve os golpes e tira quem morreu.
     """
 
-    def __init__(self, nome, arquivo, heroi, pontuacao):
+    def __init__(self, nome, arquivo, chao, parede, heroi, pontuacao):
         self.nome = nome
         self.mapa = Mapa(arquivo)
         self.heroi = heroi
         self.pontuacao = pontuacao        # a mesma da partida inteira: passa de um nível para o outro
         self.heroi.posicao = pygame.Vector2(self.mapa.inicio_heroi)
         self.inimigos = []
-        self.imagem_chao = carregar_imagem("chao.png")
-        self.imagem_parede = carregar_imagem("parede.png")
+        self.chao = []                    # (tile, imagem) de cada tile de chão, com a variante já escolhida
+        self.paredes = []                 # o mesmo para as paredes
+        self.montar_tiles(chao, parede)
         self.imagem_saida = carregar_imagem("saida.png")
         self.imagem_saida_aberta = carregar_imagem("saida_aberta.png")
 
@@ -31,6 +34,31 @@ class Nivel:
             self.inimigos.append(self.chefe)
         self.projeteis = []
         self.tempo = 0                    # segundos neste nível (a saída pisca com ele)
+
+    def montar_tiles(self, chao, parede):
+        """Escolhe uma vez só o desenho de cada tile do chão e de cada parede."""
+        imagens_chao = self.carregar_variantes(chao)
+        imagens_parede = self.carregar_variantes(parede)
+        for x in range(0, self.mapa.largura, TAMANHO_TILE):
+            for y in range(0, self.mapa.altura, TAMANHO_TILE):
+                tile = pygame.Rect(x, y, TAMANHO_TILE, TAMANHO_TILE)
+                self.chao.append((tile, self.sortear_variante(imagens_chao, tile)))
+        for tile in self.mapa.paredes:
+            self.paredes.append((tile, self.sortear_variante(imagens_parede, tile)))
+
+    def carregar_variantes(self, nome):
+        """As 4 variantes de um tile: "chao" carrega tiles/chao_1.png até tiles/chao_4.png."""
+        imagens = []
+        for numero in range(1, 5):
+            imagens.append(carregar_imagem("tiles/" + nome + "_" + str(numero) + ".png"))
+        return imagens
+
+    def sortear_variante(self, imagens, tile):
+        """Escolhe a variante pela posição do tile, então o mesmo lugar sempre tem o mesmo desenho.
+        A primeira (a lisa) aparece 3 vezes mais que as outras, para o chão não ficar poluído.
+        """
+        sorteio = random.Random(tile.x * 10000 + tile.y)   # a posição é a semente
+        return sorteio.choices(imagens, weights=[3, 1, 1, 1])[0]
 
     def criar_inimigo(self, letra, x, y):
         """Cria o inimigo de uma letra do mapa: s slime, e esqueleto, m morcego."""
@@ -112,14 +140,12 @@ class Nivel:
         
     def desenhar(self, superficie, camera):
         superficie.fill(BLACK)
-        for x in range(0, self.mapa.largura, TAMANHO_TILE):        # o chão, tile por tile
-            for y in range(0, self.mapa.altura, TAMANHO_TILE):
-                tile = pygame.Rect(x, y, TAMANHO_TILE, TAMANHO_TILE)
-                if camera.esta_visivel(tile):
-                    self.desenhar_tile(superficie, camera, tile, self.imagem_chao, DARK_GRAY)
-        for parede in self.mapa.paredes:
-            if camera.esta_visivel(parede):
-                self.desenhar_tile(superficie, camera, parede, self.imagem_parede, GRAY)
+        for tile, imagem in self.chao:                 # o chão, tile por tile
+            if camera.esta_visivel(tile):
+                self.desenhar_tile(superficie, camera, tile, imagem, DARK_GRAY)
+        for tile, imagem in self.paredes:
+            if camera.esta_visivel(tile):
+                self.desenhar_tile(superficie, camera, tile, imagem, GRAY)
 
         if self.mapa.saida is not None:
             if self.esta_limpo() and int(self.tempo * 4) % 2 == 0:   # aberta, ela pisca

@@ -82,7 +82,7 @@ Cada nível é um `.txt` em `src/data/mapas/`, e cada letra é um tile de 32 x 3
 | `s`, `e`, `m` | slime, esqueleto, morcego (por enquanto viram chão: T51) |
 | `C` | chefe |
 
-O `Mapa` guarda as paredes, a saída e onde nasce cada um. A lista de níveis fica em `NIVEIS`, no `settings.py`, com os inimigos de cada andar anotados. Por enquanto só o Térreo tem mapa.
+O `Mapa` guarda as paredes, a saída e onde nasce cada um. A lista de níveis fica em `NIVEIS`, no `settings.py`, com os inimigos de cada andar anotados e os tiles de chão e parede de cada um. O `Nivel` escolhe uma das 4 variantes de cada tile pela posição dele, então o desenho não muda de um quadro para o outro. Por enquanto só o Térreo tem mapa.
 
 Para criar um inimigo novo: escreva uma classe filha de `Inimigo` em `personagens/inimigos.py`, chame `super().__init__(...)` com os números dele e escolha uma letra para o mapa.
 

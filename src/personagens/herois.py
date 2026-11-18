@@ -154,9 +154,9 @@ class Barbaro(Heroi):
         self.duracao_animacao = 1
 
     def atacar(self):
-        centro = self.posicao + self.direcao * 25   # metade do herói (12) + metade do golpe (13)
+        centro = self.posicao + self.direcao * 30   # metade do herói (12) + metade do golpe (18)
         self.animar("corte", self.tempo_corte)
-        return [Golpe(centro, tamanho=25, dano=self.dano, duracao=0.1, atravessa=False,
+        return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False,
                       origem=self.posicao, empurrao=self.empurrao_ataque)]
 
     def especial(self):

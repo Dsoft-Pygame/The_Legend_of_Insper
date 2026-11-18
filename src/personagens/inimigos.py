@@ -23,6 +23,27 @@ class Inimigo(Personagem):
         self.tempo_vagando = 1.5           # segundos andando para um lado antes de sortear outro
         self.tempo_sorteio = 0             # quanto falta para sortear de novo
         self.direcao_vagando = pygame.Vector2(0, 0)
+        self.quadros = []                  # imagens da animação, em ordem (vazio: imagem parada)
+        self.tempo_quadro = 0.15           # segundos em cada quadro
+        self.tempo_animacao = random.uniform(0, 1)   # cada um começa num quadro, para não mexerem juntos
+
+    def carregar_quadros(self, nome, ordem):
+        """Carrega a animação: carregar_quadros("slime", [1, 2]) usa slime_1.png e slime_2.png.
+        Se faltar algum PNG, fica sem animação (e sem imagem, desenha o quadrado).
+        """
+        quadros = []
+        for numero in ordem:
+            quadros.append(carregar_imagem(nome + "_" + str(numero) + ".png"))
+        if None not in quadros:
+            self.quadros = quadros
+            self.imagem = quadros[0]
+
+    def animar(self, dt):
+        """Passa o tempo da animação e troca a imagem pelo quadro da vez."""
+        if len(self.quadros) == 0:
+            return
+        self.tempo_animacao += dt
+        self.imagem = self.quadros[int(self.tempo_animacao / self.tempo_quadro) % len(self.quadros)]
 
     def atualizar(self, dt, heroi, mapa):
         """Persegue o herói se ele estiver perto; senão, vaga. Devolve os projéteis que criou."""
@@ -52,7 +73,8 @@ class Slime(Inimigo):
 
     def __init__(self, x, y):
         super().__init__(x, y, 24, CYAN, 20, 60, "Slime", 10, 50, 160)
-        self.imagem = carregar_imagem("slime.png")
+        self.carregar_quadros("slime", [1, 2, 1, 3])   # normal, achata, normal, estica: quica no lugar
+        self.tempo_quadro = 0.2
 
 class Esqueleto(Inimigo):
     """Mais forte e mais rápido que o slime, e percebe o herói de mais longe."""
@@ -72,7 +94,8 @@ class Morcego(Inimigo):
         self.forca_desvio = 0.8            # quanto desvia: 0 iria reto até o herói
         self.lado = 1                      # 1 desvia para um lado, -1 para o outro
         self.falta_trocar = self.tempo_desvio
-        self.imagem = carregar_imagem("morcego.png")
+        self.carregar_quadros("morcego", [1, 2, 3, 2])  # asas em cima, no meio, embaixo, no meio
+        self.tempo_quadro = 0.08
         
     def atualizar(self, dt, heroi, mapa):
         caminho = heroi.posicao - self.posicao

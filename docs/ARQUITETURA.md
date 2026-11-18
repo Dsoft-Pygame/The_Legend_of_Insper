@@ -37,8 +37,8 @@ Entidade                  posição, tamanho, cor, retangulo() e desenhar()
 │   │   ├── Mago          troca atacar() e especial()
 │   │   ├── Arqueiro      troca atacar() e especial()
 │   │   └── Barbaro       troca atacar() e especial()
-│   └── Inimigo           vaga e persegue o herói; dano de contato e pontos (ainda fora do jogo)
-│       ├── Slime         só muda os números
+│   └── Inimigo           vaga e persegue o herói; dano de contato, pontos e animação (quadros que trocam com o tempo)
+│       ├── Slime         só muda os números e quica
 │       ├── Esqueleto     só muda os números
 │       ├── Morcego       só muda os números (o zigue-zague está no branch task-46)
 │       └── Dragao        só muda os números (os ataques de chefe ainda faltam)

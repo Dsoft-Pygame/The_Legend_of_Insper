@@ -74,8 +74,9 @@ class Nivel:
     def atualizar(self, dt):
         self.tempo += dt
         self.heroi.atualizar(dt, self.mapa)          # 1. o herói anda
-        for inimigo in self.inimigos:                # 2. cada inimigo pensa e anda
+        for inimigo in self.inimigos:                # 2. cada inimigo pensa, anda e mexe a animação
             self.projeteis.extend(inimigo.atualizar(dt, self.heroi, self.mapa))
+            inimigo.animar(dt)
         self.mover_projeteis(dt)                     # 3. os projéteis andam
         self.aplicar_acertos()                       # 4. projétil que encosta dá dano
         self.aplicar_contato()                       # 5. inimigo encostado no herói dá dano

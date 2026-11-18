@@ -86,7 +86,7 @@ Faltam:
 
 - Sprites dos heróis (`src/assets/mago.png`, `arqueiro.png` e `barbaro.png`): Thiago A. Gomes.
 - Sons e músicas (`src/assets/sons/`): gerados por código pelo Claude (assistente de IA da Anthropic). Detalhes em `src/assets/sons/CREDITOS.md`.
-- Flecha e bola de fogo (`src/assets/flecha.png` e `bola_fogo.png`) e poção de vida (`src/assets/pocao.png`) e a animação do slime (`slime_1.png` até `slime_3.png`, quicando) e do morcego (`morcego_1.png` até `morcego_3.png`, batendo as asas): feitas pelo Claude (assistente de IA da Anthropic). O jogo gira o desenho para a direção do tiro.
+- Flecha e bola de fogo (`src/assets/flecha.png` e `bola_fogo.png`) e poção de vida (`src/assets/pocao.png`) e a animação do slime (`slime_1.png` até `slime_3.png`, quicando) , do morcego (`morcego_1.png` até `morcego_3.png`, batendo as asas) e do esqueleto (`esqueleto_1.png` e `esqueleto_2.png`, andando): feitas pelo Claude (assistente de IA da Anthropic). O jogo gira o desenho para a direção do tiro.
 - Tiles de chão e parede (`src/assets/tiles/`): pedra (Térreo e Topo da Torre) e biblioteca (Biblioteca), 4 variantes de cada.
 
-Os outros desenhos (saída, esqueleto e dragão) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.
+Os outros desenhos (saída e dragão) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.

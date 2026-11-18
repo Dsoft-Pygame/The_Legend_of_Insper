@@ -82,7 +82,8 @@ class Esqueleto(Inimigo):
     def __init__(self, x, y):
         super().__init__(x, y, 24, WHITE, 40, 110, "Esqueleto", 15, 80, 224)
         self.tempo_vagando = 1
-        self.imagem = carregar_imagem("esqueleto.png")
+        self.carregar_quadros("esqueleto", [1, 2])     # anda trocando as pernas
+        self.tempo_quadro = 0.25
 
 class Morcego(Inimigo):
     """Rápido e frágil. Persegue em zigue-zague"""

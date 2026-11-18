@@ -44,7 +44,7 @@ TEMPO_REFERENCIA = 600    # segundos: quem termina depois disso não ganha bônu
 BONUS_VIDA_MAXIMO = 1000
 
 # Poção de vida
-CHANCE_POCAO = 0.15       # chance de um inimigo derrotado (menos o chefe) deixar uma poção
+CHANCE_POCAO = 0.20       # chance de um inimigo derrotado (menos o chefe) deixar uma poção
 CURA_POCAO = 25           # quanto de vida a poção devolve
 
 # Níveis, em ordem: (nome, arquivo em data/mapas/, tiles do chão, tiles da parede).

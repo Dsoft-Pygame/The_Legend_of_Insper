@@ -76,15 +76,15 @@ class Heroi(Personagem):
 
 
 class Mago(Heroi):
-    """Bola de fogo lenta e forte. Especial: anel com 12 bolas de fogo."""
+    """Bola de fogo lenta e forte. Especial: anel com 8 bolas de fogo."""
 
     def __init__(self, x, y):
         super().__init__(x, y, BLUE, 60, 140, "Mago", "Frágil, mas com dano alto à distância.")
-        self.dano = 30
+        self.dano = 25
         self.tempo_ataque = 0.6
         self.tempo_especial = 9
         self.duracao_especial = 1
-        self.empurrao_ataque = 250         # bola de fogo pesada: empurra bem
+        self.empurrao_ataque = 300         # bola de fogo pesada: empurra bem
         self.imagem = carregar_imagem("mago.png")
 
     def atacar(self):
@@ -95,8 +95,8 @@ class Mago(Heroi):
 
     def especial(self):
         bolas = []
-        for i in range(12):                # uma bola a cada 30 graus
-            velocidade = self.direcao.rotate(i * 30) * 180
+        for i in range(8):                 # uma bola a cada 45 graus
+            velocidade = self.direcao.rotate(i * 45) * 180
             bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=20, duracao=self.duracao_especial,
                             dono="heroi", imagem="bola_fogo.png", empurrao=self.empurrao_ataque)
             bolas.append(bola)
@@ -112,7 +112,7 @@ class Arqueiro(Heroi):
         self.tempo_ataque = 0.3
         self.tempo_especial = 5
         self.duracao_especial = 1.2        # as flechas do especial vão mais longe que as normais
-        self.empurrao_ataque = 120         # flecha leve: empurra pouco
+        self.empurrao_ataque = 144         # flecha leve: empurra pouco
         self.imagem = carregar_imagem("arqueiro.png")
 
     def atacar(self):
@@ -141,7 +141,7 @@ class Barbaro(Heroi):
         self.tempo_ataque = 0.5
         self.tempo_especial = 7
         self.duracao_especial = 0.3        # o giro fica pouco tempo na tela
-        self.empurrao_ataque = 380         # machadada: a que empurra mais
+        self.empurrao_ataque = 456         # machadada: a que empurra mais
         self.imagem = carregar_imagem("barbaro.png")
 
     def atacar(self):

@@ -172,7 +172,7 @@ class Nivel:
                 self.desenhar_tile(superficie, camera, tile, imagem, GRAY)
 
         if self.mapa.saida is not None:
-            if self.esta_limpo() and int(self.tempo * 4) % 2 == 0:   # aberta, ela pisca
+            if self.esta_limpo():                    # sem inimigos, a porta fica aberta
                 self.desenhar_tile(superficie, camera, self.mapa.saida, self.imagem_saida_aberta, YELLOW)
             else:
                 self.desenhar_tile(superficie, camera, self.mapa.saida, self.imagem_saida, BROWN)

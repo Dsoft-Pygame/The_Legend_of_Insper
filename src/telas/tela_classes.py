@@ -11,6 +11,7 @@ class TelaClasses(Tela):
 
     def __init__(self, aplicacao):
         super().__init__(aplicacao)
+        aplicacao.som.tocar_musica("menu")    # já vem tocando da TelaInicial, então não corta
         self.herois = [Mago(0, 0), Arqueiro(0, 0), Barbaro(0, 0)]   # o Nivel põe o escolhido no lugar
         self.selecionado = 0
 
@@ -32,29 +33,32 @@ class TelaClasses(Tela):
 
     def desenhar(self, superficie):
         superficie.fill(BLACK)
-        desenhar_texto(superficie, "Escolha sua classe", (LARGURA_TELA // 2, 10), YELLOW, 18, centralizado=True)
+        desenhar_texto(superficie, "Escolha sua classe", (LARGURA_TELA // 2, 20), YELLOW, 36, centralizado=True)
         for i, heroi in enumerate(self.herois):
-            cartao = pygame.Rect(6 + i * 78, 22, 72, 90)
+            cartao = pygame.Rect(12 + i * 156, 44, 144, 180)
             self.desenhar_cartao(superficie, heroi, cartao, i == self.selecionado)
         descricao = self.herois[self.selecionado].descricao
-        desenhar_texto(superficie, descricao, (LARGURA_TELA // 2, 124), WHITE, 14, centralizado=True)
-        desenhar_texto(superficie, "ENTER escolhe   ESC volta", (LARGURA_TELA // 2, ALTURA_TELA - 12), GRAY, 14,
+        desenhar_texto(superficie, descricao, (LARGURA_TELA // 2, 248), WHITE, 28, centralizado=True)
+        desenhar_texto(superficie, "ENTER escolhe   ESC volta", (LARGURA_TELA // 2, ALTURA_TELA - 24), GRAY, 28,
                        centralizado=True)
 
     def desenhar_cartao(self, superficie, heroi, cartao, selecionado):
         cor = WHITE
         borda = GRAY
-        grossura = 1
+        grossura = 2
         if selecionado:
             cor = YELLOW
             borda = YELLOW
-            grossura = 2
+            grossura = 4
         pygame.draw.rect(superficie, DARK_GRAY, cartao)
         pygame.draw.rect(superficie, borda, cartao, grossura)
-        icone = pygame.Rect(0, 0, 16, 16)
-        icone.center = (cartao.centerx, cartao.y + 16)
-        pygame.draw.rect(superficie, heroi.cor, icone)
-        desenhar_texto(superficie, heroi.nome, (cartao.centerx, cartao.y + 32), cor, 16, centralizado=True)
-        desenhar_texto(superficie, f"Vida: {heroi.vida_maxima}", (cartao.x + 6, cartao.y + 46), WHITE, 14)
-        desenhar_texto(superficie, f"Vel: {heroi.velocidade}", (cartao.x + 6, cartao.y + 58), WHITE, 14)
-        desenhar_texto(superficie, f"Dano: {heroi.dano}", (cartao.x + 6, cartao.y + 70), WHITE, 14)
+        icone = pygame.Rect(0, 0, 32, 32)
+        icone.center = (cartao.centerx, cartao.y + 32)
+        if heroi.imagem is None:
+            pygame.draw.rect(superficie, heroi.cor, icone)
+        else:
+            superficie.blit(heroi.imagem, icone)
+        desenhar_texto(superficie, heroi.nome, (cartao.centerx, cartao.y + 64), cor, 32, centralizado=True)
+        desenhar_texto(superficie, f"Vida: {heroi.vida_maxima}", (cartao.x + 12, cartao.y + 92), WHITE, 28)
+        desenhar_texto(superficie, f"Vel: {heroi.velocidade}", (cartao.x + 12, cartao.y + 116), WHITE, 28)
+        desenhar_texto(superficie, f"Dano: {heroi.dano}", (cartao.x + 12, cartao.y + 140), WHITE, 28)

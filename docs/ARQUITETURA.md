@@ -8,7 +8,7 @@ A `Aplicacao` (`src/aplicacao.py`) abre a janela e roda o loop a 60 quadros por 
 
 1. lê os eventos com `pygame.event.get()` e entrega cada um para a tela atual (`tratar_evento`);
 2. chama `atualizar(dt)` da tela, com `dt` = segundos desde o quadro anterior;
-3. chama `desenhar(superficie)` numa superfície de 240 x 160 e amplia 4 vezes na janela.
+3. chama `desenhar(superficie)` numa superfície de 480 x 320 e amplia 2 vezes na janela.
 
 As telas não importam umas às outras. Para trocar, uma tela pede `self.aplicacao.trocar_tela("nome")`, e a `Aplicacao` cria a tela nova:
 
@@ -67,11 +67,11 @@ Depois de levar dano, o herói fica 0,8 s invulnerável e piscando, por isso um 
 
 O `Personagem.mover()` anda um eixo de cada vez, e o eixo que entraria na parede não anda. Assim, andando na diagonal, o herói escorrega pela parede.
 
-Andando reto contra a quina de uma porta, ele desvia até 4 pixels para o lado (`contornar_quina`), como o `MovimentoLivre` da main. É isso que deixa o herói, de 12 pixels, passar nas portas de 1 tile (16 pixels) sem precisar acertar o pixel.
+Andando reto contra a quina de uma porta, ele desvia até 8 pixels para o lado (`contornar_quina`), como o `MovimentoLivre` da main. É isso que deixa o herói, de 24 pixels, passar nas portas de 1 tile (32 pixels) sem precisar acertar o pixel.
 
 ## Os mapas
 
-Cada nível é um `.txt` em `src/data/mapas/`, e cada letra é um tile de 16 x 16 pixels:
+Cada nível é um `.txt` em `src/data/mapas/`, e cada letra é um tile de 32 x 32 pixels:
 
 | Letra | O que é |
 |---|---|
@@ -82,7 +82,7 @@ Cada nível é um `.txt` em `src/data/mapas/`, e cada letra é um tile de 16 x 1
 | `s`, `e`, `m` | slime, esqueleto, morcego (por enquanto viram chão: T51) |
 | `C` | chefe |
 
-O `Mapa` guarda as paredes, a saída e onde nasce cada um. A lista de níveis fica em `NIVEIS`, no `settings.py`, com os inimigos de cada andar anotados. Por enquanto só o Térreo tem mapa.
+O `Mapa` guarda as paredes, a saída e onde nasce cada um. A lista de níveis fica em `NIVEIS`, no `settings.py`, com os inimigos de cada andar anotados e os tiles de chão e parede de cada um. O `Nivel` escolhe uma das 4 variantes de cada tile pela posição dele, então o desenho não muda de um quadro para o outro. Por enquanto só o Térreo tem mapa.
 
 Para criar um inimigo novo: escreva uma classe filha de `Inimigo` em `personagens/inimigos.py`, chame `super().__init__(...)` com os números dele e escolha uma letra para o mapa.
 

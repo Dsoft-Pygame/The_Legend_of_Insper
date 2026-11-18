@@ -1,9 +1,11 @@
+import random
+
 import pygame
 
 from jogo.mapa import Mapa
 from personagens.inimigos import Dragao, Esqueleto, Morcego, Slime
-from settings import BLACK, BROWN, DARK_GRAY, GRAY, YELLOW
-
+from settings import BLACK, BROWN, DARK_GRAY, GRAY, YELLOW, TAMANHO_TILE
+from ui import carregar_imagem
 
 class Nivel:
     """Um nível em andamento: o mapa, o herói, os inimigos e os projéteis.
@@ -19,6 +21,12 @@ class Nivel:
         self.som = som                    # o Som da Aplicacao, para tocar os acertos e as mortes
         self.heroi.posicao = pygame.Vector2(self.mapa.inicio_heroi)
         self.inimigos = []
+        self.chao = []                    # (tile, imagem) de cada tile de chão, com a variante já escolhida
+        self.paredes = []                 # o mesmo para as paredes
+        self.montar_tiles(chao, parede)
+        self.imagem_saida = carregar_imagem("saida.png")
+        self.imagem_saida_aberta = carregar_imagem("saida_aberta.png")
+
         for letra, x, y in self.mapa.inimigos:
             self.inimigos.append(self.criar_inimigo(letra, x, y))
         self.chefe = None                 # o Dragão, só no nível que tem C no mapa
@@ -27,6 +35,31 @@ class Nivel:
             self.inimigos.append(self.chefe)
         self.projeteis = []
         self.tempo = 0                    # segundos neste nível (a saída pisca com ele)
+
+    def montar_tiles(self, chao, parede):
+        """Escolhe uma vez só o desenho de cada tile do chão e de cada parede."""
+        imagens_chao = self.carregar_variantes(chao)
+        imagens_parede = self.carregar_variantes(parede)
+        for x in range(0, self.mapa.largura, TAMANHO_TILE):
+            for y in range(0, self.mapa.altura, TAMANHO_TILE):
+                tile = pygame.Rect(x, y, TAMANHO_TILE, TAMANHO_TILE)
+                self.chao.append((tile, self.sortear_variante(imagens_chao, tile)))
+        for tile in self.mapa.paredes:
+            self.paredes.append((tile, self.sortear_variante(imagens_parede, tile)))
+
+    def carregar_variantes(self, nome):
+        """As 4 variantes de um tile: "chao" carrega tiles/chao_1.png até tiles/chao_4.png."""
+        imagens = []
+        for numero in range(1, 5):
+            imagens.append(carregar_imagem("tiles/" + nome + "_" + str(numero) + ".png"))
+        return imagens
+
+    def sortear_variante(self, imagens, tile):
+        """Escolhe a variante pela posição do tile, então o mesmo lugar sempre tem o mesmo desenho.
+        A primeira (a lisa) aparece 3 vezes mais que as outras, para o chão não ficar poluído.
+        """
+        sorteio = random.Random(tile.x * 10000 + tile.y)   # a posição é a semente
+        return sorteio.choices(imagens, weights=[3, 1, 1, 1])[0]
 
     def criar_inimigo(self, letra, x, y):
         """Cria o inimigo de uma letra do mapa: s slime, e esqueleto, m morcego."""
@@ -108,23 +141,32 @@ class Nivel:
         if self.mapa.saida is None or not self.esta_limpo():
             return False
         return self.heroi.retangulo().colliderect(self.mapa.saida)
-
+        
     def desenhar(self, superficie, camera):
         superficie.fill(BLACK)
-        chao = pygame.Rect(0, 0, self.mapa.largura, self.mapa.altura)
-        pygame.draw.rect(superficie, DARK_GRAY, camera.para_tela(chao))
-        for parede in self.mapa.paredes:
-            if camera.esta_visivel(parede):
-                pygame.draw.rect(superficie, GRAY, camera.para_tela(parede))
+        for tile, imagem in self.chao:                 # o chão, tile por tile
+            if camera.esta_visivel(tile):
+                self.desenhar_tile(superficie, camera, tile, imagem, DARK_GRAY)
+        for tile, imagem in self.paredes:
+            if camera.esta_visivel(tile):
+                self.desenhar_tile(superficie, camera, tile, imagem, GRAY)
 
         if self.mapa.saida is not None:
-            cor_saida = BROWN
-            if self.esta_limpo() and int(self.tempo * 4) % 2 == 0:
-                cor_saida = YELLOW                   # aberta, ela pisca
-            pygame.draw.rect(superficie, cor_saida, camera.para_tela(self.mapa.saida))
-
+            if self.esta_limpo() and int(self.tempo * 4) % 2 == 0:   # aberta, ela pisca
+                self.desenhar_tile(superficie, camera, self.mapa.saida, self.imagem_saida_aberta, YELLOW)
+            else:
+                self.desenhar_tile(superficie, camera, self.mapa.saida, self.imagem_saida, BROWN)
+                # Desenha as entidades por cima do cenário
+        
         for inimigo in self.inimigos:
             inimigo.desenhar(superficie, camera)
+
         for projetil in self.projeteis:
             projetil.desenhar(superficie, camera)
+
         self.heroi.desenhar(superficie, camera)
+    def desenhar_tile(self, superficie, camera, tile, imagem, cor): #usa imagem se existir
+        if imagem is None:
+            pygame.draw.rect(superficie, cor, camera.para_tela(tile))
+        else:
+            superficie.blit(imagem, camera.para_tela(tile))

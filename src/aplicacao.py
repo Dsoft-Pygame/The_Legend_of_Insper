@@ -22,6 +22,7 @@ class Aplicacao:
         self.relogio = pygame.time.Clock()
         self.rodando = True
         self.som = Som()                  # as telas tocam com self.aplicacao.som.tocar("...")
+        self.nome_jogador = ""            # digitado na TelaInicial
         self.heroi = None                 # escolhido na TelaClasses
         self.pontuacao = None             # os pontos da partida que acabou (a TelaJogo guarda aqui)
         self.venceu = False

@@ -44,7 +44,7 @@ BONUS_VIDA_MAXIMO = 1000
 # Níveis, em ordem: (nome, arquivo em data/mapas/).
 # Os inimigos de cada um são as letras do mapa.
 NIVEIS = [
-    ("Térreo", "torre_1.txt"),            # 6 slimes
-    ("Biblioteca", "torre_2.txt"),        # 6 slimes, 5 esqueletos e 5 morcegos
-    ("Topo da Torre", "torre_3.txt"),     # 4 esqueletos, 2 morcegos e o chefe Dragão
+    ("Térreo", "torre_1.txt"),            # 4 slimes
+    ("Biblioteca", "torre_2.txt"),        # 3 slimes, 3 esqueletos e 2 morcegos
+    ("Topo da Torre", "torre_3.txt"),     # 2 esqueletos, 1 morcego e o chefe Dragão
 ]

@@ -55,7 +55,7 @@ A `TelaJogo` transforma Espaço e Shift esquerdo em `heroi.usar_ataque()` e `her
 1. o herói anda;
 2. cada inimigo pensa e anda (o `atualizar` devolve os projéteis que ele criar, para o chefe poder atirar);
 3. os projéteis andam e somem os que bateram na parede ou acabaram o tempo;
-4. projétil do herói que encosta num inimigo dá dano, e projétil de inimigo dá dano no herói; cada projétil acerta cada alvo uma vez só;
+4. projétil do herói que encosta num inimigo dá dano e empurra o inimigo (knockback: a força é o `empurrao_ataque` da classe, e a `resistencia` do inimigo diminui, de 0 no slime e no morcego até 0,85 no Dragão), e projétil de inimigo dá dano no herói; cada projétil acerta cada alvo uma vez só; o inimigo empurrado desliza sem atravessar parede e vai freando;
 5. inimigo encostado no herói dá dano de contato;
 6. os inimigos mortos saem da lista.
 

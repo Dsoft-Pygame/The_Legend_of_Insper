@@ -74,6 +74,7 @@ class Nivel:
         self.heroi.atualizar(dt, self.mapa)          # 1. o herói anda
         for inimigo in self.inimigos:                # 2. cada inimigo pensa e anda
             self.projeteis.extend(inimigo.atualizar(dt, self.heroi, self.mapa))
+            inimigo.deslizar(dt, self.mapa)          # o knockback que levou
         self.mover_projeteis(dt)                     # 3. os projéteis andam
         self.aplicar_acertos()                       # 4. projétil que encosta dá dano
         self.aplicar_contato()                       # 5. inimigo encostado no herói dá dano
@@ -102,6 +103,8 @@ class Nivel:
             for alvo in alvos:
                 if not sumiu and projetil.pode_acertar(alvo, self.mapa):
                     alvo.receber_dano(projetil.dano)
+                    if projetil.dono == "heroi":
+                        alvo.empurrar(projetil.direcao_empurrao(alvo), projetil.empurrao)
                     projetil.ja_acertou.append(alvo)
                     self.som.tocar("acerto")
                     if not projetil.atravessa:

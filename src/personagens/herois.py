@@ -19,6 +19,7 @@ class Heroi(Personagem):
         self.dano = 0                      # dano do ataque normal (aparece no cartão da classe)
         self.tempo_ataque = 0.5            # segundos entre um ataque e outro
         self.tempo_especial = 4
+        self.empurrao_ataque = 0           # knockback dos ataques, em pixels por segundo (cada classe tem o seu)
         self.recarga_ataque = 0            # quanto falta para poder atacar de novo
         self.recarga_especial = 0
 
@@ -69,18 +70,21 @@ class Mago(Heroi):
         self.dano = 30
         self.tempo_ataque = 0.6
         self.tempo_especial = 5
+        self.empurrao_ataque = 250         # bola de fogo pesada: empurra bem
         self.imagem = carregar_imagem("mago.png")
 
     def atacar(self):
         velocidade = self.direcao * 180
-        bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=self.dano, duracao=1.5, dono="heroi")
+        bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=self.dano, duracao=1.5, dono="heroi",
+                        empurrao=self.empurrao_ataque)
         return [bola]
 
     def especial(self):
         bolas = []
         for i in range(12):                # uma bola a cada 30 graus
             velocidade = self.direcao.rotate(i * 30) * 180
-            bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=20, duracao=1, dono="heroi")
+            bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=20, duracao=1, dono="heroi",
+                            empurrao=self.empurrao_ataque)
             bolas.append(bola)
         return bolas
 
@@ -93,18 +97,21 @@ class Arqueiro(Heroi):
         self.dano = 10
         self.tempo_ataque = 0.3
         self.tempo_especial = 3
+        self.empurrao_ataque = 120         # flecha leve: empurra pouco
         self.imagem = carregar_imagem("arqueiro.png")
 
     def atacar(self):
         velocidade = self.direcao * 400
-        flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=self.dano, duracao=1, dono="heroi")
+        flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=self.dano, duracao=1, dono="heroi",
+                          empurrao=self.empurrao_ataque)
         return [flecha]
 
     def especial(self):
         flechas = []
         for angulo in (-15, 0, 15):
             velocidade = self.direcao.rotate(angulo) * 400
-            flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=10, duracao=1, dono="heroi")
+            flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=10, duracao=1, dono="heroi",
+                              empurrao=self.empurrao_ataque)
             flechas.append(flecha)
         return flechas
 
@@ -117,14 +124,15 @@ class Barbaro(Heroi):
         self.dano = 35
         self.tempo_ataque = 0.5
         self.tempo_especial = 4
+        self.empurrao_ataque = 380         # machadada: a que empurra mais
         self.imagem = carregar_imagem("barbaro.png")
 
     def atacar(self):
         centro = self.posicao + self.direcao * 30   # metade do herói (12) + metade do golpe (18)
         return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False,
-                      origem=self.posicao)]
+                      origem=self.posicao, empurrao=self.empurrao_ataque)]
 
     def especial(self):
         tamanho = 24 + 2 * 64                       # o herói (24) mais 64 px de cada lado
         return [Golpe(self.posicao, tamanho=tamanho, dano=25, duracao=0.3, atravessa=True,
-                      origem=self.posicao)]
+                      origem=self.posicao, empurrao=self.empurrao_ataque * 1.2)]   # o giro joga mais longe

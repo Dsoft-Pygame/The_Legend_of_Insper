@@ -16,6 +16,8 @@ class Personagem(Entidade):
         self.direcao = pygame.Vector2(1, 0)       # para onde está olhando
         self.invulneravel = 0                     # segundos piscando depois de levar dano
         self.tempo_invulneravel = 0               # o herói usa 0.8
+        self.empurrao = pygame.Vector2(0, 0)      # knockback que ainda falta, em pixels por segundo
+        self.resistencia = 0                      # de 0 (voa longe) até 1 (não sai do lugar)
 
     def mover(self, direcao, dt, mapa):
         """Anda um eixo de cada vez: o eixo que entraria na parede não anda.
@@ -53,6 +55,22 @@ class Personagem(Entidade):
                 if self.cabe(self.posicao + frente + lado * sentido * desvio, mapa):
                     self.andar(lado * sentido * min(desvio, frente.length()), mapa)
                     return
+
+    def empurrar(self, direcao, forca):
+        """Leva um knockback na direção dada; a resistência diminui a força."""
+        self.empurrao += direcao * forca * (1 - self.resistencia)
+
+    def deslizar(self, dt, mapa):
+        """Anda o knockback que sobrou, sem atravessar parede, e vai freando até parar."""
+        if self.empurrao.length() < 5:
+            self.empurrao = pygame.Vector2(0, 0)
+            return
+        passo = self.empurrao * dt
+        if not self.andar(pygame.Vector2(passo.x, 0), mapa):
+            self.empurrao.x = 0                   # bateu na parede: para nesse eixo
+        if not self.andar(pygame.Vector2(0, passo.y), mapa):
+            self.empurrao.y = 0
+        self.empurrao *= max(0, 1 - 10 * dt)      # perde 10% da força a cada centésimo de segundo
 
     def esta_vivo(self):
         return self.vida > 0

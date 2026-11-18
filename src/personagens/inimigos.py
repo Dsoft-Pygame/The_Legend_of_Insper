@@ -59,6 +59,7 @@ class Esqueleto(Inimigo):
 
     def __init__(self, x, y):
         super().__init__(x, y, 24, WHITE, 40, 110, "Esqueleto", 15, 80, 224)
+        self.resistencia = 0.3             # mais pesado que o slime e o morcego: voa um pouco menos
         self.tempo_vagando = 1
         self.imagem = carregar_imagem("esqueleto.png")
 
@@ -94,6 +95,7 @@ class Dragao(Inimigo):
 
     def __init__(self, x, y):
         super().__init__(x, y, 48, PURPLE, 450, 90, "Dragão Ancião", 25, 2000, 480)
+        self.resistencia = 0.85            # o chefe quase não sai do lugar
         self.distancia_tiro = 128          # cospe fogo quando o herói está mais perto que isso
         self.tempo_tiro = 1                # segundos entre uma bola de fogo e outra
         self.tempo_anel = 3                # segundos entre um anel de fogo e outro (fase 2)

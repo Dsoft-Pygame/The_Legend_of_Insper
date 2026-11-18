@@ -44,7 +44,7 @@ Entidade                  posição, tamanho, cor, retangulo() e desenhar()
 │       └── Dragao        só muda os números (os ataques de chefe ainda faltam)
 ├── Projetil              anda, some na parede ou quando o tempo acaba; dono "heroi" ou "inimigo"
 │   └── Golpe             corpo a corpo: fica parado e troca bateu_na_parede(); o giro atravessa
-└── Pocao                 poção de vida que cai dos inimigos (por enquanto um quadradinho)
+└── Pocao                 poção de vida que cai dos inimigos
 ```
 
 Sem mãe: `Aplicacao`, `Mapa`, `Camera`, `Nivel`, `Pontuacao`, `Ranking` e `CaixaTexto`.

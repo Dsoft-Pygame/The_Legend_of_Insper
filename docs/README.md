@@ -39,7 +39,7 @@ python src/main.py
 
 Do lado da barra de vida fica o ícone do especial: um quadradinho que enche de azul, de baixo para cima, enquanto recarrega, com os segundos que faltam do lado, e fica amarelo com "SHIFT" quando dá para usar. Quando o especial acaba de recarregar, toca um "plim". A recarga e a duração do especial de cada classe são `tempo_especial` e `duracao_especial`, no `__init__` da classe em `personagens/herois.py`.
 
-Cada inimigo derrotado (menos o chefe) tem 15% de chance de deixar uma poção de vida, um quadradinho magenta por enquanto. Encostar nela devolve 25 de vida, sem passar da vida máxima. Os dois números são `CHANCE_POCAO` e `CURA_POCAO`, no `settings.py`.
+Cada inimigo derrotado (menos o chefe) tem 15% de chance de deixar um frasco de poção de vida. Encostar nela devolve 25 de vida, sem passar da vida máxima. Os dois números são `CHANCE_POCAO` e `CURA_POCAO`, no `settings.py`.
 
 ## Inimigos
 
@@ -86,7 +86,7 @@ Faltam:
 
 - Sprites dos heróis (`src/assets/mago.png`, `arqueiro.png` e `barbaro.png`): Thiago A. Gomes.
 - Sons e músicas (`src/assets/sons/`): gerados por código pelo Claude (assistente de IA da Anthropic). Detalhes em `src/assets/sons/CREDITOS.md`.
-- Flecha e bola de fogo (`src/assets/flecha.png` e `bola_fogo.png`): feitas pelo Claude (assistente de IA da Anthropic). O jogo gira o desenho para a direção do tiro.
+- Flecha e bola de fogo (`src/assets/flecha.png` e `bola_fogo.png`) e poção de vida (`src/assets/pocao.png`): feitas pelo Claude (assistente de IA da Anthropic). O jogo gira o desenho para a direção do tiro.
 - Tiles de chão e parede (`src/assets/tiles/`): pedra (Térreo e Topo da Torre) e biblioteca (Biblioteca), 4 variantes de cada.
 
 Os outros desenhos (saída e inimigos) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.

@@ -21,7 +21,8 @@ MAGENTA = (240, 60, 200)  # a poção de vida
 TITULO = "The Legend of Insper"
 LARGURA_TELA = 480        # tudo é desenhado nesta resolução e depois ampliado na janela
 ALTURA_TELA = 320
-ESCALA = 2                # janela de 960 x 640
+ESCALA = 2                # janela de 960 x 640 (quando não está em tela cheia)
+TELA_CHEIA = True         # abre em tela cheia, com o jogo no meio e tarjas pretas em volta (F11 alterna)
 FPS = 60
 TAMANHO_TILE = 32
 

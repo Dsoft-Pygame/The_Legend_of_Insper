@@ -87,7 +87,8 @@ class Mago(Heroi):
 
     def atacar(self):
         velocidade = self.direcao * 180
-        bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=self.dano, duracao=1.5, dono="heroi")
+        bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=self.dano, duracao=1.5, dono="heroi",
+                        imagem="bola_fogo.png")
         return [bola]
 
     def especial(self):
@@ -95,7 +96,7 @@ class Mago(Heroi):
         for i in range(12):                # uma bola a cada 30 graus
             velocidade = self.direcao.rotate(i * 30) * 180
             bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=20, duracao=self.duracao_especial,
-                            dono="heroi")
+                            dono="heroi", imagem="bola_fogo.png")
             bolas.append(bola)
         return bolas
 
@@ -113,7 +114,8 @@ class Arqueiro(Heroi):
 
     def atacar(self):
         velocidade = self.direcao * 400
-        flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=self.dano, duracao=1, dono="heroi")
+        flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=self.dano, duracao=1, dono="heroi",
+                          imagem="flecha.png")
         return [flecha]
 
     def especial(self):
@@ -121,7 +123,7 @@ class Arqueiro(Heroi):
         for angulo in (-24, -12, 0, 12, 24):
             velocidade = self.direcao.rotate(angulo) * 400
             flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=15,
-                              duracao=self.duracao_especial, dono="heroi")
+                              duracao=self.duracao_especial, dono="heroi", imagem="flecha.png")
             flechas.append(flecha)
         return flechas
 

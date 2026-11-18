@@ -128,4 +128,5 @@ class Dragao(Inimigo):
         return bolas
 
     def bola_de_fogo(self, direcao, rapidez):
-        return Projetil(self.posicao, direcao * rapidez, tamanho=16, cor=RED, dano=15, duracao=2, dono="inimigo")
+        return Projetil(self.posicao, direcao * rapidez, tamanho=16, cor=RED, dano=15, duracao=2, dono="inimigo",
+                        imagem="bola_fogo.png")

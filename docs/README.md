@@ -34,13 +34,13 @@ python src/main.py
 
 | Classe | Vida | Velocidade | Dano | Ataque (Espaço) | Especial (Shift esquerdo) | Recarga do especial |
 |---|---|---|---|---|---|---|
-| Mago | 60 | 140 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo | 9 s |
+| Mago | 60 | 140 | 25 | bola de fogo lenta e forte | anel com 8 bolas de fogo | 9 s |
 | Arqueiro | 80 | 200 | 10 | flecha rápida | 5 flechas em leque, de 15 de dano | 5 s |
 | Bárbaro | 160 | 150 | 40 | machadada logo na frente | giro que acerta todos até 80 px em volta | 7 s |
 
 Do lado da barra de vida fica o ícone do especial: um quadradinho que enche de azul, de baixo para cima, enquanto recarrega, com os segundos que faltam do lado, e fica amarelo com "SHIFT" quando dá para usar. Quando o especial acaba de recarregar, toca um "plim". A recarga e a duração do especial de cada classe são `tempo_especial` e `duracao_especial`, no `__init__` da classe em `personagens/herois.py`.
 
-Cada inimigo derrotado (menos o chefe) tem 15% de chance de deixar um frasco de poção de vida. Encostar nela devolve 25 de vida, sem passar da vida máxima. Os dois números são `CHANCE_POCAO` e `CURA_POCAO`, no `settings.py`.
+Cada inimigo derrotado (menos o chefe) tem 20% de chance de deixar um frasco de poção de vida. Encostar nela devolve 25 de vida, sem passar da vida máxima. Os dois números são `CHANCE_POCAO` e `CURA_POCAO`, no `settings.py`.
 
 ## Inimigos
 
@@ -87,7 +87,7 @@ Faltam:
 
 - Sprites dos heróis (`src/assets/mago.png`, `arqueiro.png` e `barbaro.png`): Thiago A. Gomes.
 - Sons e músicas (`src/assets/sons/`): gerados por código pelo Claude (assistente de IA da Anthropic). Detalhes em `src/assets/sons/CREDITOS.md`.
-- Flecha e bola de fogo (`src/assets/flecha.png` e `bola_fogo.png`) e poção de vida (`src/assets/pocao.png`) e a animação do slime (`slime_1.png` até `slime_3.png`, quicando) , do morcego (`morcego_1.png` até `morcego_3.png`, batendo as asas) e do esqueleto (`esqueleto_1.png` e `esqueleto_2.png`, andando): feitas pelo Claude (assistente de IA da Anthropic). O jogo gira o desenho para a direção do tiro.
+- Flecha e bola de fogo (`src/assets/flecha.png` e `bola_fogo.png`) e poção de vida (`src/assets/pocao.png`) e a animação do slime (`slime_1.png` até `slime_3.png`, quicando) , do morcego (`morcego_1.png` até `morcego_3.png`, batendo as asas), a porta de saída fechada e aberta (`saida.png` e `saida_aberta.png`) e do esqueleto (`esqueleto_1.png` e `esqueleto_2.png`, andando): feitas pelo Claude (assistente de IA da Anthropic). O jogo gira o desenho para a direção do tiro.
 - Tiles de chão e parede (`src/assets/tiles/`): pedra (Térreo e Topo da Torre) e biblioteca (Biblioteca), 4 variantes de cada.
 
-Os outros desenhos (saída e dragão) ainda não existem: sem o PNG, o jogo desenha o quadrado colorido no lugar.
+O desenho do dragão ainda não existe: sem o PNG, o jogo desenha o quadrado colorido no lugar.

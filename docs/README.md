@@ -28,6 +28,7 @@ python src/main.py
 | Jogo | W A S D | andar |
 | | Espaço | ataque |
 | | Shift esquerdo | especial |
+| Qualquer tela | F11 | entra e sai da tela cheia (o jogo abre em tela cheia, no meio, com tarjas pretas em volta) |
 
 ## Classes
 

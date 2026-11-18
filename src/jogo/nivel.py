@@ -4,11 +4,12 @@ import pygame
 
 from jogo.mapa import Mapa
 from personagens.inimigos import Dragao, Esqueleto, Morcego, Slime
-from settings import BLACK, BROWN, DARK_GRAY, GRAY, YELLOW, TAMANHO_TILE
+from personagens.pocao import Pocao
+from settings import BLACK, BROWN, CHANCE_POCAO, DARK_GRAY, GRAY, YELLOW, TAMANHO_TILE
 from ui import carregar_imagem
 
 class Nivel:
-    """Um nível em andamento: o mapa, o herói, os inimigos e os projéteis.
+    """Um nível em andamento: o mapa, o herói, os inimigos, os projéteis e as poções.
 
     A cada quadro faz todo mundo andar, resolve os golpes e tira quem morreu.
     """
@@ -34,6 +35,7 @@ class Nivel:
             self.chefe = Dragao(self.mapa.chefe[0], self.mapa.chefe[1])
             self.inimigos.append(self.chefe)
         self.projeteis = []
+        self.pocoes = []                  # poções de vida que caíram dos inimigos
         self.tempo = 0                    # segundos neste nível (a saída pisca com ele)
 
     def montar_tiles(self, chao, parede):
@@ -72,13 +74,15 @@ class Nivel:
     def atualizar(self, dt):
         self.tempo += dt
         self.heroi.atualizar(dt, self.mapa)          # 1. o herói anda
-        for inimigo in self.inimigos:                # 2. cada inimigo pensa e anda
+        for inimigo in self.inimigos:                # 2. cada inimigo pensa, anda e mexe a animação
             self.projeteis.extend(inimigo.atualizar(dt, self.heroi, self.mapa))
             inimigo.deslizar(dt, self.mapa)          # o knockback que levou
+            inimigo.animar(dt)
         self.mover_projeteis(dt)                     # 3. os projéteis andam
         self.aplicar_acertos()                       # 4. projétil que encosta dá dano
         self.aplicar_contato()                       # 5. inimigo encostado no herói dá dano
-        self.remover_mortos()                        # 6. quem morreu sai do nível
+        self.remover_mortos()                        # 6. quem morreu sai do nível (e às vezes deixa uma poção)
+        self.pegar_pocoes()                          # 7. poção encostada no herói cura
 
     def mover_projeteis(self, dt):
         """Os projéteis andam e somem os que bateram na parede ou acabaram o tempo."""
@@ -133,7 +137,20 @@ class Nivel:
             else:
                 self.pontuacao.inimigo_derrotado(inimigo.nome, inimigo.pontos)
                 self.som.tocar("inimigo_derrotado")
+                if random.random() < CHANCE_POCAO:
+                    self.pocoes.append(Pocao(inimigo.posicao.x, inimigo.posicao.y))
         self.inimigos = vivos
+
+    def pegar_pocoes(self):
+        """O herói que encosta numa poção recupera vida, e a poção some."""
+        restantes = []
+        for pocao in self.pocoes:
+            if pocao.retangulo().colliderect(self.heroi.retangulo()):
+                self.heroi.curar(pocao.cura)
+                self.som.tocar("menu_confirmar")
+            else:
+                restantes.append(pocao)
+        self.pocoes = restantes
 
     def esta_limpo(self):
         """Sem inimigos, a saída abre."""
@@ -161,6 +178,9 @@ class Nivel:
                 self.desenhar_tile(superficie, camera, self.mapa.saida, self.imagem_saida, BROWN)
                 # Desenha as entidades por cima do cenário
         
+        for pocao in self.pocoes:
+            pocao.desenhar(superficie, camera)
+
         for inimigo in self.inimigos:
             inimigo.desenhar(superficie, camera)
 

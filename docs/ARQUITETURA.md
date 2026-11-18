@@ -37,13 +37,14 @@ Entidade                  posição, tamanho, cor, retangulo() e desenhar()
 │   │   ├── Mago          troca atacar() e especial()
 │   │   ├── Arqueiro      troca atacar() e especial()
 │   │   └── Barbaro       troca atacar() e especial()
-│   └── Inimigo           vaga e persegue o herói; dano de contato e pontos (ainda fora do jogo)
-│       ├── Slime         só muda os números
+│   └── Inimigo           vaga e persegue o herói; dano de contato, pontos e animação (quadros que trocam com o tempo)
+│       ├── Slime         só muda os números e quica
 │       ├── Esqueleto     só muda os números
 │       ├── Morcego       só muda os números (o zigue-zague está no branch task-46)
 │       └── Dragao        2 fases, bola e anel de fogo; contorna as paredes até o herói (Mapa.proximo_passo)
-└── Projetil              anda, some na parede ou quando o tempo acaba; dono "heroi" ou "inimigo"
-    └── Golpe             corpo a corpo: fica parado e troca bateu_na_parede(); o giro atravessa inimigos, mas nenhum golpe passa parede
+├── Projetil              anda, some na parede ou quando o tempo acaba; dono "heroi" ou "inimigo"
+│   └── Golpe             corpo a corpo: fica parado e troca bateu_na_parede(); o giro atravessa inimigos, mas nenhum golpe passa parede
+└── Pocao                 poção de vida que cai dos inimigos
 ```
 
 Sem mãe: `Aplicacao`, `Mapa`, `Camera`, `Nivel`, `Pontuacao`, `Ranking` e `CaixaTexto`.
@@ -57,7 +58,8 @@ A `TelaJogo` transforma Espaço e Shift esquerdo em `heroi.usar_ataque()` e `her
 3. os projéteis andam e somem os que bateram na parede ou acabaram o tempo;
 4. projétil do herói que encosta num inimigo dá dano e empurra o inimigo (knockback: a força é o `empurrao_ataque` da classe, e a `resistencia` do inimigo diminui, de 0 no slime e no morcego até 0,85 no Dragão), e projétil de inimigo dá dano no herói; cada projétil acerta cada alvo uma vez só; o inimigo empurrado desliza sem atravessar parede e vai freando;
 5. inimigo encostado no herói dá dano de contato;
-6. os inimigos mortos saem da lista.
+6. os inimigos mortos saem da lista, e cada um (menos o chefe) tem 15% de chance de deixar uma `Pocao` de vida no lugar;
+7. poção encostada no herói devolve 25 de vida, sem passar da vida máxima, e some.
 
 Como na main, a lista de inimigos começa vazia, então hoje só os passos 1 e 3 mudam alguma coisa na tela. A T51 cria os inimigos das letras do mapa, soma os pontos de quem morre e usa o `Nivel.heroi_na_saida()` para passar de nível.
 

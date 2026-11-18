@@ -7,7 +7,7 @@ from ui import desenhar_texto
 
 
 class TelaClasses(Tela):
-    """Escolha da classe: um cartão para cada herói, com nome, vida, velocidade e dano."""
+    """Escolha da classe: um cartão para cada herói, com nome, vida, velocidade, dano e recarga do especial."""
 
     def __init__(self, aplicacao):
         super().__init__(aplicacao)
@@ -59,6 +59,7 @@ class TelaClasses(Tela):
         else:
             superficie.blit(heroi.imagem, icone)
         desenhar_texto(superficie, heroi.nome, (cartao.centerx, cartao.y + 64), cor, 32, centralizado=True)
-        desenhar_texto(superficie, f"Vida: {heroi.vida_maxima}", (cartao.x + 12, cartao.y + 92), WHITE, 28)
-        desenhar_texto(superficie, f"Vel: {heroi.velocidade}", (cartao.x + 12, cartao.y + 116), WHITE, 28)
-        desenhar_texto(superficie, f"Dano: {heroi.dano}", (cartao.x + 12, cartao.y + 140), WHITE, 28)
+        desenhar_texto(superficie, f"Vida: {heroi.vida_maxima}", (cartao.x + 12, cartao.y + 86), WHITE, 28)
+        desenhar_texto(superficie, f"Vel: {heroi.velocidade}", (cartao.x + 12, cartao.y + 108), WHITE, 28)
+        desenhar_texto(superficie, f"Dano: {heroi.dano}", (cartao.x + 12, cartao.y + 130), WHITE, 28)
+        desenhar_texto(superficie, f"Especial: {heroi.tempo_especial}s", (cartao.x + 12, cartao.y + 152), WHITE, 28)

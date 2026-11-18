@@ -24,8 +24,8 @@ class TelaJogo(Tela):
 
     def carregar_nivel(self):
         """Monta o nível atual e uma câmera do tamanho do mapa dele."""
-        nome, arquivo = NIVEIS[self.indice_nivel]
-        self.nivel = Nivel(nome, arquivo, self.heroi, self.pontuacao)
+        nome, arquivo, chao, parede = NIVEIS[self.indice_nivel]
+        self.nivel = Nivel(nome, arquivo, chao, parede, self.heroi, self.pontuacao)
         self.camera = Camera(self.nivel.mapa.largura, self.nivel.mapa.altura)
         self.aviso_nivel = 2              # segundos com o nome do nível no meio da tela
         if self.nivel.chefe is not None:

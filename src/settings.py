@@ -41,10 +41,11 @@ BONUS_TEMPO_MAXIMO = 3000
 TEMPO_REFERENCIA = 600    # segundos: quem termina depois disso não ganha bônus de tempo
 BONUS_VIDA_MAXIMO = 1000
 
-# Níveis, em ordem: (nome, arquivo em data/mapas/).
-# Os inimigos de cada um são as letras do mapa.
+# Níveis, em ordem: (nome, arquivo em data/mapas/, tiles do chão, tiles da parede).
+# Os inimigos de cada um são as letras do mapa. Os tiles são o começo do nome dos PNGs
+# em assets/tiles/: "chao" usa chao_1.png até chao_4.png.
 NIVEIS = [
-    ("Térreo", "torre_1.txt"),            # 4 slimes
-    ("Biblioteca", "torre_2.txt"),        # 3 slimes, 3 esqueletos e 2 morcegos
-    ("Topo da Torre", "torre_3.txt"),     # 2 esqueletos, 1 morcego e o chefe Dragão
+    ("Térreo", "torre_1.txt", "chao", "parede"),                       # 4 slimes
+    ("Biblioteca", "torre_2.txt", "chao_madeira", "parede_biblio"),    # 3 slimes, 3 esqueletos e 2 morcegos
+    ("Topo da Torre", "torre_3.txt", "chao", "parede"),                # 2 esqueletos, 1 morcego e o chefe Dragão
 ]

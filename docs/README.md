@@ -39,6 +39,8 @@ python src/main.py
 
 Embaixo da barra de vida fica a barra do especial: azul enquanto recarrega, com os segundos que faltam do lado, e amarela com "ESPECIAL PRONTO" piscando quando dá para usar. Quando o especial acaba de recarregar, toca um "plim". A recarga e a duração do especial de cada classe são `tempo_especial` e `duracao_especial`, no `__init__` da classe em `personagens/herois.py`.
 
+Cada inimigo derrotado (menos o chefe) tem 15% de chance de deixar uma poção de vida, um quadradinho magenta por enquanto. Encostar nela devolve 25 de vida, sem passar da vida máxima. Os dois números são `CHANCE_POCAO` e `CURA_POCAO`, no `settings.py`.
+
 ## Inimigos
 
 Os inimigos já existem como classes em `personagens/inimigos.py`, com os números do `inimigos.json` da main, mas ainda não aparecem no jogo (T51).

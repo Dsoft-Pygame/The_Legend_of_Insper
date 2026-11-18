@@ -15,6 +15,7 @@ ORANGE = (240, 140, 40)
 CYAN = (80, 210, 210)
 PINK = (240, 120, 180)
 PURPLE = (150, 80, 200)
+MAGENTA = (240, 60, 200)  # a poção de vida
 
 # Tela
 TITULO = "The Legend of Insper"
@@ -40,6 +41,10 @@ PONTOS_NIVEL = 500
 BONUS_TEMPO_MAXIMO = 3000
 TEMPO_REFERENCIA = 600    # segundos: quem termina depois disso não ganha bônus de tempo
 BONUS_VIDA_MAXIMO = 1000
+
+# Poção de vida
+CHANCE_POCAO = 0.15       # chance de um inimigo derrotado (menos o chefe) deixar uma poção
+CURA_POCAO = 25           # quanto de vida a poção devolve
 
 # Níveis, em ordem: (nome, arquivo em data/mapas/, tiles do chão, tiles da parede).
 # Os inimigos de cada um são as letras do mapa. Os tiles são o começo do nome dos PNGs

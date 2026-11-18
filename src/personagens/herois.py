@@ -55,6 +55,10 @@ class Heroi(Personagem):
         self.recarga_especial = self.tempo_especial
         return self.especial()
 
+    def curar(self, quantidade):
+        """Devolve vida, sem passar da vida máxima."""
+        self.vida = min(self.vida_maxima, self.vida + quantidade)
+
     def especial_pronto(self):
         """True quando o especial já recarregou (o HUD mostra ESPECIAL PRONTO)."""
         return self.recarga_especial == 0

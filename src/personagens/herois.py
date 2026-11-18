@@ -79,7 +79,7 @@ class Mago(Heroi):
     """Bola de fogo lenta e forte. Especial: anel com 8 bolas de fogo."""
 
     def __init__(self, x, y):
-        super().__init__(x, y, BLUE, 60, 140, "Mago", "Frágil, mas com dano alto à distância.")
+        super().__init__(x, y, BLUE, 60, 120, "Mago", "Frágil, mas com dano alto à distância.")
         self.dano = 25
         self.tempo_ataque = 0.6
         self.tempo_especial = 9

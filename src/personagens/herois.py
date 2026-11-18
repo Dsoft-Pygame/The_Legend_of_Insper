@@ -86,6 +86,7 @@ class Mago(Heroi):
         self.duracao_especial = 1
         self.empurrao_ataque = 300         # bola de fogo pesada: empurra bem
         self.imagem = carregar_imagem("mago.png")
+        self.desenho_olha_esquerda = True  # o mago.png foi desenhado olhando para a esquerda
 
     def atacar(self):
         velocidade = self.direcao * 180

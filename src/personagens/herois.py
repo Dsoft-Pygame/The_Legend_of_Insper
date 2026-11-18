@@ -126,7 +126,7 @@ class Barbaro(Heroi):
     """Machadada logo na frente. Especial: giro que acerta todos em volta."""
 
     def __init__(self, x, y):
-        super().__init__(x, y, ORANGE, 140, 150, "Bárbaro", "Resistente, luta de perto.")
+        super().__init__(x, y, ORANGE, 160, 150, "Bárbaro", "Resistente, luta de perto.")
         self.dano = 35
         self.tempo_ataque = 0.5
         self.tempo_especial = 7
@@ -138,6 +138,6 @@ class Barbaro(Heroi):
         return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False)]
 
     def especial(self):
-        tamanho = 24 + 2 * 64                       # o herói (24) mais 64 px de cada lado
+        tamanho = 24 + 2 * 80                       # o herói (24) mais 80 px de cada lado
         return [Golpe(self.posicao, tamanho=tamanho, dano=25, duracao=self.duracao_especial,
                       atravessa=True)]

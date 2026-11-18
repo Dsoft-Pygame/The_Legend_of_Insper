@@ -57,7 +57,10 @@ class TelaJogo(Tela):
             return                                   # nada anda: nem o tempo da partida
         self.tempo += dt
         self.aviso_nivel = max(0, self.aviso_nivel - dt)
+        pronto_antes = self.heroi.especial_pronto()
         self.nivel.atualizar(dt)
+        if not pronto_antes and self.heroi.especial_pronto():
+            self.aplicacao.som.tocar("especial_pronto")   # avisa que o especial acabou de recarregar
         self.camera.seguir(self.heroi.posicao)
         tem_proximo = self.indice_nivel + 1 < len(NIVEIS)
         if self.nivel.heroi_na_saida() and tem_proximo:

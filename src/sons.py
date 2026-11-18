@@ -15,6 +15,7 @@ EFEITOS = {
     "porta": "porta.wav",
     "menu_mover": "menu_mover.wav",
     "menu_confirmar": "menu_confirmar.wav",
+    "especial_pronto": "especial_pronto.wav",
 }
 MUSICAS = {
     "menu": "musica_menu.ogg",

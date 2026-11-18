@@ -28,6 +28,7 @@ class TelaInicial(Tela):
             self.aviso = "Digite um nome"
             return
         self.aplicacao.nome_jogador = nome
+        self.aplicacao.som.tocar("menu_confirmar")
         self.aplicacao.trocar_tela("classes")
 
     def desenhar(self, superficie):

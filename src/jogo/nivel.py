@@ -13,7 +13,7 @@ class Nivel:
     A cada quadro faz todo mundo andar, resolve os golpes e tira quem morreu.
     """
 
-    def __init__(self, nome, arquivo, heroi, pontuacao, som):
+    def __init__(self, nome, arquivo, chao, parede, heroi, pontuacao, som):
         self.nome = nome
         self.mapa = Mapa(arquivo)
         self.heroi = heroi

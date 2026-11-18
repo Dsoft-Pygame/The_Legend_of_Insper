@@ -36,7 +36,7 @@ python src/main.py
 |---|---|---|---|---|---|---|
 | Mago | 60 | 120 | 25 | bola de fogo lenta e forte | anel com 8 bolas de fogo | 9 s |
 | Arqueiro | 80 | 200 | 10 | flecha rápida | 5 flechas em leque, de 15 de dano | 5 s |
-| Bárbaro | 160 | 150 | 40 | machadada logo na frente | giro que acerta todos até 80 px em volta | 7 s |
+| Bárbaro | 160 | 150 | 40 | machadada logo na frente | giro que acerta todos até 56 px em volta | 7 s |
 
 Do lado da barra de vida fica o ícone do especial: um quadradinho que enche de azul, de baixo para cima, enquanto recarrega, com os segundos que faltam do lado, e fica amarelo com "SHIFT" quando dá para usar. Quando o especial acaba de recarregar, toca um "plim". A recarga e a duração do especial de cada classe são `tempo_especial` e `duracao_especial`, no `__init__` da classe em `personagens/herois.py`.
 

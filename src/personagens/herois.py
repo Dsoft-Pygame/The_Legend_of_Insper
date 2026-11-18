@@ -144,14 +144,65 @@ class Barbaro(Heroi):
         self.duracao_especial = 0.3        # o giro fica pouco tempo na tela
         self.empurrao_ataque = 456         # machadada: a que empurra mais
         self.imagem = carregar_imagem("barbaro.png")
+        self.quadros_corte = [carregar_imagem("corte_1.png"), carregar_imagem("corte_2.png"),
+                              carregar_imagem("corte_3.png")]
+        self.quadros_giro = [carregar_imagem("giro_1.png"), carregar_imagem("giro_2.png"),
+                             carregar_imagem("giro_3.png"), carregar_imagem("giro_4.png")]
+        self.tempo_corte = 0.2             # segundos da animação da machadada
+        self.animacao = None               # "corte", "giro" ou None
+        self.falta_animacao = 0            # segundos que faltam da animação
+        self.duracao_animacao = 1
 
     def atacar(self):
-        centro = self.posicao + self.direcao * 30   # metade do herói (12) + metade do golpe (18)
-        return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False,
+        centro = self.posicao + self.direcao * 25   # metade do herói (12) + metade do golpe (13)
+        self.animar("corte", self.tempo_corte)
+        return [Golpe(centro, tamanho=25, dano=self.dano, duracao=0.1, atravessa=False,
                       origem=self.posicao, empurrao=self.empurrao_ataque)]
 
     def especial(self):
-        tamanho = 24 + 2 * 80                       # o herói (24) mais 80 px de cada lado
+        tamanho = 24 + 2 * 56                       # o herói (24) mais 56 px de cada lado
+        self.animar("giro", self.duracao_especial)
         return [Golpe(self.posicao, tamanho=tamanho, dano=25, duracao=self.duracao_especial,
                       atravessa=True, origem=self.posicao,
                       empurrao=self.empurrao_ataque * 1.2)]   # o giro joga mais longe
+
+    def animar(self, nome, duracao):
+        self.animacao = nome
+        self.falta_animacao = duracao
+        self.duracao_animacao = duracao
+
+    def atualizar(self, dt, mapa):
+        super().atualizar(dt, mapa)
+        self.falta_animacao = max(0, self.falta_animacao - dt)
+        if self.falta_animacao == 0:
+            self.animacao = None
+
+    def quadro(self, quadros):
+        """O quadro da animação da vez, pelo tempo que já passou."""
+        passou = 1 - self.falta_animacao / self.duracao_animacao      # de 0 a 1
+        return quadros[min(len(quadros) - 1, int(passou * len(quadros)))]
+
+    def imagem_atual(self):
+        """Girando, o Bárbaro vira de um lado para o outro bem rápido."""
+        imagem = super().imagem_atual()
+        if imagem is not None and self.animacao == "giro" and int(self.falta_animacao / 0.05) % 2 == 0:
+            imagem = pygame.transform.flip(imagem, True, False)
+        return imagem
+
+    def desenhar(self, superficie, camera):
+        """O herói com a animação do golpe: o giro por baixo dele e o corte na frente,
+        virado para onde ele olha. Na machadada ele também dá um passinho para a frente.
+        """
+        centro = camera.para_tela(self.retangulo()).center
+        if self.animacao == "giro" and None not in self.quadros_giro:
+            efeito = self.quadro(self.quadros_giro)
+            superficie.blit(efeito, efeito.get_rect(center=centro))
+        posicao = pygame.Vector2(self.posicao)
+        if self.animacao == "corte":
+            self.posicao = self.posicao + self.direcao * 3
+        super().desenhar(superficie, camera)
+        self.posicao = posicao
+        if self.animacao == "corte" and None not in self.quadros_corte:
+            angulo = pygame.Vector2(1, 0).angle_to(self.direcao)
+            efeito = pygame.transform.rotate(self.quadro(self.quadros_corte), -angulo)
+            superficie.blit(efeito, efeito.get_rect(center=centro))

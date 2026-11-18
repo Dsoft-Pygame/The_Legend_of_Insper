@@ -75,3 +75,6 @@ class Golpe(Projetil):
 
     def bateu_na_parede(self, mapa):
         return False                                   # pode encostar na parede sem sumir
+
+    def desenhar(self, superficie, camera):
+        pass                                           # quem mostra o golpe é a animação do Bárbaro

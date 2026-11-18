@@ -11,11 +11,12 @@ class Nivel:
     A cada quadro faz todo mundo andar, resolve os golpes e tira quem morreu.
     """
 
-    def __init__(self, nome, arquivo, heroi, pontuacao):
+    def __init__(self, nome, arquivo, heroi, pontuacao, som):
         self.nome = nome
         self.mapa = Mapa(arquivo)
         self.heroi = heroi
         self.pontuacao = pontuacao        # a mesma da partida inteira: passa de um nível para o outro
+        self.som = som                    # o Som da Aplicacao, para tocar os acertos e as mortes
         self.heroi.posicao = pygame.Vector2(self.mapa.inicio_heroi)
         self.inimigos = []
         for letra, x, y in self.mapa.inimigos:
@@ -69,6 +70,7 @@ class Nivel:
                 if not sumiu and projetil.pode_acertar(alvo):
                     alvo.receber_dano(projetil.dano)
                     projetil.ja_acertou.append(alvo)
+                    self.som.tocar("acerto")
                     if not projetil.atravessa:
                         sumiu = True          # flecha e bola de fogo param no primeiro que acertam
             if not sumiu:
@@ -91,8 +93,10 @@ class Nivel:
                 vivos.append(inimigo)
             elif inimigo is self.chefe:
                 self.pontuacao.chefe_derrotado(inimigo.nome, inimigo.pontos)
+                self.som.tocar("chefe_derrotado")
             else:
                 self.pontuacao.inimigo_derrotado(inimigo.nome, inimigo.pontos)
+                self.som.tocar("inimigo_derrotado")
         self.inimigos = vivos
 
     def esta_limpo(self):

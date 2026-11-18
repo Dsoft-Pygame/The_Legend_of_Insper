@@ -25,7 +25,7 @@ class TelaJogo(Tela):
     def carregar_nivel(self):
         """Monta o nível atual e uma câmera do tamanho do mapa dele."""
         nome, arquivo = NIVEIS[self.indice_nivel]
-        self.nivel = Nivel(nome, arquivo, self.heroi, self.pontuacao)
+        self.nivel = Nivel(nome, arquivo, self.heroi, self.pontuacao, self.aplicacao.som)
         self.camera = Camera(self.nivel.mapa.largura, self.nivel.mapa.altura)
         self.aviso_nivel = 2              # segundos com o nome do nível no meio da tela
 
@@ -37,9 +37,15 @@ class TelaJogo(Tela):
         elif self.pausado:
             return                                   # pausado, as outras teclas não fazem nada
         elif evento.key == pygame.K_SPACE:
-            self.nivel.projeteis.extend(self.heroi.usar_ataque())
+            self.atacar(self.heroi.usar_ataque())
         elif evento.key == pygame.K_LSHIFT:
-            self.nivel.projeteis.extend(self.heroi.usar_especial())
+            self.atacar(self.heroi.usar_especial())
+
+    def atacar(self, projeteis):
+        """Põe os projéteis do ataque no nível. Lista vazia quer dizer que ainda estava recarregando."""
+        if len(projeteis) > 0:
+            self.nivel.projeteis.extend(projeteis)
+            self.aplicacao.som.tocar("ataque")
 
     def atualizar(self, dt):
         if self.pausado:
@@ -59,11 +65,14 @@ class TelaJogo(Tela):
     def passar_de_nivel(self):
         """Soma os pontos do nível e carrega o próximo. O herói continua com a vida que sobrou."""
         self.pontuacao.nivel_concluido(self.nivel.nome)
+        self.aplicacao.som.tocar("porta")
         self.indice_nivel += 1
         self.carregar_nivel()
 
     def terminar(self, venceu):
         """Fim da partida: aplica o bônus, guarda o resultado na Aplicacao e vai para o resultado."""
+        if not venceu:
+            self.aplicacao.som.tocar("heroi_derrotado")
         vida_restante = self.heroi.vida / self.heroi.vida_maxima      # de 0 a 1
         self.pontuacao.aplicar_bonus(venceu, self.tempo, vida_restante)
         self.aplicacao.pontuacao = self.pontuacao

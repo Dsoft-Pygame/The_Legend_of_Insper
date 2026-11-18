@@ -121,8 +121,10 @@ class Barbaro(Heroi):
 
     def atacar(self):
         centro = self.posicao + self.direcao * 30   # metade do herói (12) + metade do golpe (18)
-        return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False)]
+        return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False,
+                      origem=self.posicao)]
 
     def especial(self):
         tamanho = 24 + 2 * 64                       # o herói (24) mais 64 px de cada lado
-        return [Golpe(self.posicao, tamanho=tamanho, dano=25, duracao=0.3, atravessa=True)]
+        return [Golpe(self.posicao, tamanho=tamanho, dano=25, duracao=0.3, atravessa=True,
+                      origem=self.posicao)]

@@ -99,6 +99,9 @@ class Dragao(Inimigo):
         self.tempo_anel = 3                # segundos entre um anel de fogo e outro (fase 2)
         self.recarga_tiro = 0
         self.recarga_anel = self.tempo_anel
+        self.tempo_rota = 0.25             # segundos entre um cálculo do caminho e outro
+        self.recarga_rota = 0
+        self.passo = None                  # próximo ponto do caminho quando há parede no meio
         self.imagem = carregar_imagem("dragao.png")
 
     def fase(self): #2 fases
@@ -111,12 +114,13 @@ class Dragao(Inimigo):
         caminho = heroi.posicao - self.posicao
         if caminho.length() == 0:
             return []
-        self.direcao = caminho.normalize()
+        self.direcao = caminho.normalize()            # olha e atira sempre na direção do herói
+        rumo = self.rumo(dt, heroi, mapa)              # mas anda contornando as paredes
         bolas = []
         if self.fase() == 1:
-            self.mover(self.direcao * 0.5, dt, mapa)      # fase 1: metade da velocidade
+            self.mover(rumo * 0.5, dt, mapa)           # fase 1: metade da velocidade
         else:
-            self.mover(self.direcao, dt, mapa)
+            self.mover(rumo, dt, mapa)
             self.recarga_anel -= dt
             if self.recarga_anel <= 0:
                 self.recarga_anel = self.tempo_anel
@@ -126,6 +130,35 @@ class Dragao(Inimigo):
             self.recarga_tiro = self.tempo_tiro
             bolas.append(self.bola_de_fogo(self.direcao, 240))
         return bolas
+
+    def rumo(self, dt, heroi, mapa):
+        """Direção em que o Dragão anda. Com o caminho livre, vai reto no herói; com parede no
+        meio, segue o mapa.proximo_passo(), recalculado a cada tempo_rota segundos, para não
+        ficar empurrando a parede.
+        """
+        if self.cabe_no_caminho(heroi.posicao, mapa):
+            self.passo = None
+            return self.direcao
+        self.recarga_rota -= dt
+        chegou = self.passo is not None and (self.passo - self.posicao).length() < 4
+        if self.recarga_rota <= 0 or chegou:
+            self.recarga_rota = self.tempo_rota
+            self.passo = mapa.proximo_passo(self.posicao, heroi.posicao, self.largura)
+        if self.passo is None or (self.passo - self.posicao).length() == 0:
+            return pygame.Vector2(0, 0)                # não tem como chegar mais perto: espera
+        return (self.passo - self.posicao).normalize()
+
+    def cabe_no_caminho(self, destino, mapa):
+        """True se o corpo inteiro do Dragão passa em linha reta até destino (confere a cada 8 px)."""
+        caminho = destino - self.posicao
+        passos = int(caminho.length() // 8) + 1
+        for i in range(passos + 1):
+            corpo = self.retangulo()
+            ponto = self.posicao + caminho * (i / passos)
+            corpo.center = (round(ponto.x), round(ponto.y))
+            if not mapa.area_livre(corpo):
+                return False
+        return True
 
     def bola_de_fogo(self, direcao, rapidez):
         return Projetil(self.posicao, direcao * rapidez, tamanho=16, cor=RED, dano=15, duracao=2, dono="inimigo")

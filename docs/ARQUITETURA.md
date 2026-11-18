@@ -41,9 +41,9 @@ Entidade                  posição, tamanho, cor, retangulo() e desenhar()
 │       ├── Slime         só muda os números
 │       ├── Esqueleto     só muda os números
 │       ├── Morcego       só muda os números (o zigue-zague está no branch task-46)
-│       └── Dragao        só muda os números (os ataques de chefe ainda faltam)
+│       └── Dragao        2 fases, bola e anel de fogo; contorna as paredes até o herói (Mapa.proximo_passo)
 └── Projetil              anda, some na parede ou quando o tempo acaba; dono "heroi" ou "inimigo"
-    └── Golpe             corpo a corpo: fica parado e troca bateu_na_parede(); o giro atravessa
+    └── Golpe             corpo a corpo: fica parado e troca bateu_na_parede(); o giro atravessa inimigos, mas nenhum golpe passa parede
 ```
 
 Sem mãe: `Aplicacao`, `Mapa`, `Camera`, `Nivel`, `Pontuacao`, `Ranking` e `CaixaTexto`.

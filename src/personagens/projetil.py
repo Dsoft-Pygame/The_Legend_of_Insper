@@ -23,7 +23,7 @@ class Projetil(Entidade):
     def acabou(self, mapa):
         return self.duracao <= 0 or self.bateu_na_parede(mapa)
 
-    def pode_acertar(self, alvo):
+    def pode_acertar(self, alvo, mapa):
         """True se encostou num alvo vivo que ainda não levou dano deste projétil."""
         return (alvo.esta_vivo() and alvo not in self.ja_acertou
                 and self.retangulo().colliderect(alvo.retangulo()))
@@ -37,9 +37,16 @@ class Golpe(Projetil):
     na área; sem, para no primeiro que acerta.
     """
 
-    def __init__(self, posicao, tamanho, dano, duracao, atravessa):
+    def __init__(self, posicao, tamanho, dano, duracao, atravessa, origem):
         super().__init__(posicao, (0, 0), tamanho, YELLOW, dano, duracao, "heroi")
         self.atravessa = atravessa
+        self.origem = pygame.Vector2(origem)           # de onde o golpe saiu (o centro do herói)
+
+    def pode_acertar(self, alvo, mapa):
+        """Além de encostar, o alvo tem que estar do mesmo lado da parede que o herói:
+        o golpe não atravessa parede.
+        """
+        return super().pode_acertar(alvo, mapa) and mapa.linha_livre(self.origem, alvo.posicao)
 
     def bateu_na_parede(self, mapa):
         return False                                   # pode encostar na parede sem sumir

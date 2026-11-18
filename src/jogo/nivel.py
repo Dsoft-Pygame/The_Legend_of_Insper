@@ -100,7 +100,7 @@ class Nivel:
                 alvos = [self.heroi]
             sumiu = False
             for alvo in alvos:
-                if not sumiu and projetil.pode_acertar(alvo):
+                if not sumiu and projetil.pode_acertar(alvo, self.mapa):
                     alvo.receber_dano(projetil.dano)
                     projetil.ja_acertou.append(alvo)
                     self.som.tocar("acerto")

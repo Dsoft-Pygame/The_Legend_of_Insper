@@ -131,7 +131,7 @@ class Barbaro(Heroi):
 
     def __init__(self, x, y):
         super().__init__(x, y, ORANGE, 160, 150, "Bárbaro", "Resistente, luta de perto.")
-        self.dano = 35
+        self.dano = 40
         self.tempo_ataque = 0.5
         self.tempo_especial = 7
         self.duracao_especial = 0.3        # o giro fica pouco tempo na tela

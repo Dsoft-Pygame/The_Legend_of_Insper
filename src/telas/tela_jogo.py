@@ -1,9 +1,11 @@
+import math
+
 import pygame
 
 from jogo.camera import Camera
 from jogo.nivel import Nivel
 from jogo.pontuacao import Pontuacao
-from settings import ALTURA_TELA, BLUE, GREEN, LARGURA_TELA, NIVEIS, RED, WHITE, YELLOW
+from settings import ALTURA_TELA, BLUE, DARK_GRAY, GREEN, LARGURA_TELA, NIVEIS, RED, WHITE, YELLOW
 from telas.tela import Tela
 from ui import desenhar_barra, desenhar_texto, fonte
 
@@ -106,16 +108,26 @@ class TelaJogo(Tela):
         desenhar_texto(superficie, "ESC continua", (meio[0], meio[1] + 32), WHITE, 28, centralizado=True)
 
     def desenhar_especial(self, superficie):
-        """Barra do especial embaixo da vida: enche enquanto recarrega e fica amarela quando dá para usar."""
+        """Ícone do especial do lado da barra de vida: um quadradinho que enche de baixo para cima
+        enquanto recarrega, com os segundos que faltam, e fica amarelo com "SHIFT" quando dá para usar.
+        """
         heroi = self.heroi
-        barra = pygame.Rect(6, 38, 100, 8)
+        icone = pygame.Rect(110, 23, 14, 14)
+        pygame.draw.rect(superficie, DARK_GRAY, icone)
         if heroi.especial_pronto():
-            desenhar_barra(superficie, barra, 1, 1, YELLOW)
-            if int(self.tempo * 3) % 2 == 0:         # o texto pisca para chamar atenção
-                desenhar_texto(superficie, "ESPECIAL PRONTO", (112, 37), YELLOW, 18)
+            pygame.draw.rect(superficie, YELLOW, icone)
+            borda = WHITE
+            if int(self.tempo * 2) % 2 == 0:         # a borda pisca devagar
+                borda = YELLOW
+            pygame.draw.rect(superficie, borda, icone.inflate(4, 4), 1)
+            desenhar_texto(superficie, "SHIFT", (128, 25), YELLOW, 16)
         else:
-            desenhar_barra(superficie, barra, heroi.carga_especial(), 1, BLUE)
-            desenhar_texto(superficie, f"{heroi.recarga_especial:.1f}s", (112, 37), WHITE, 18)
+            cheio = icone.copy()
+            cheio.height = round(icone.height * heroi.carga_especial())
+            cheio.bottom = icone.bottom                # enche de baixo para cima
+            pygame.draw.rect(superficie, BLUE, cheio)
+            desenhar_texto(superficie, f"{math.ceil(heroi.recarga_especial)}s", (128, 25), WHITE, 16)
+        pygame.draw.rect(superficie, WHITE, icone, 1)
 
     def desenhar_hud(self, superficie):
         """O que fica parado por cima do jogo: vida, especial, nível, pontos, saída e a vida do chefe."""

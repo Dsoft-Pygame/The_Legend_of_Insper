@@ -35,9 +35,9 @@ python src/main.py
 |---|---|---|---|---|---|---|
 | Mago | 60 | 140 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo | 9 s |
 | Arqueiro | 80 | 200 | 10 | flecha rápida | 5 flechas em leque, de 15 de dano | 5 s |
-| Bárbaro | 160 | 150 | 35 | machadada logo na frente | giro que acerta todos até 80 px em volta | 7 s |
+| Bárbaro | 160 | 150 | 40 | machadada logo na frente | giro que acerta todos até 80 px em volta | 7 s |
 
-Embaixo da barra de vida fica a barra do especial: azul enquanto recarrega, com os segundos que faltam do lado, e amarela com "ESPECIAL PRONTO" piscando quando dá para usar. Quando o especial acaba de recarregar, toca um "plim". A recarga e a duração do especial de cada classe são `tempo_especial` e `duracao_especial`, no `__init__` da classe em `personagens/herois.py`.
+Do lado da barra de vida fica o ícone do especial: um quadradinho que enche de azul, de baixo para cima, enquanto recarrega, com os segundos que faltam do lado, e fica amarelo com "SHIFT" quando dá para usar. Quando o especial acaba de recarregar, toca um "plim". A recarga e a duração do especial de cada classe são `tempo_especial` e `duracao_especial`, no `__init__` da classe em `personagens/herois.py`.
 
 Cada inimigo derrotado (menos o chefe) tem 15% de chance de deixar uma poção de vida, um quadradinho magenta por enquanto. Encostar nela devolve 25 de vida, sem passar da vida máxima. Os dois números são `CHANCE_POCAO` e `CURA_POCAO`, no `settings.py`.
 

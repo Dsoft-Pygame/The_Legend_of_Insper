@@ -31,11 +31,13 @@ python src/main.py
 
 ## Classes
 
-| Classe | Vida | Velocidade | Dano | Ataque (Espaço) | Especial (Shift esquerdo) |
-|---|---|---|---|---|---|
-| Mago | 60 | 140 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo |
-| Arqueiro | 80 | 200 | 10 | flecha rápida | 3 flechas em leque |
-| Bárbaro | 140 | 150 | 35 | machadada logo na frente | giro que acerta todos em volta |
+| Classe | Vida | Velocidade | Dano | Ataque (Espaço) | Especial (Shift esquerdo) | Recarga do especial |
+|---|---|---|---|---|---|---|
+| Mago | 60 | 140 | 30 | bola de fogo lenta e forte | anel com 12 bolas de fogo | 9 s |
+| Arqueiro | 80 | 200 | 10 | flecha rápida | 5 flechas em leque, de 15 de dano | 5 s |
+| Bárbaro | 140 | 150 | 35 | machadada logo na frente | giro que acerta todos em volta | 7 s |
+
+Embaixo da barra de vida fica a barra do especial: azul enquanto recarrega, com os segundos que faltam do lado, e amarela com "ESPECIAL PRONTO" piscando quando dá para usar. A recarga e a duração do especial de cada classe são `tempo_especial` e `duracao_especial`, no `__init__` da classe em `personagens/herois.py`.
 
 ## Inimigos
 

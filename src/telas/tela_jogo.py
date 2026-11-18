@@ -3,7 +3,7 @@ import pygame
 from jogo.camera import Camera
 from jogo.nivel import Nivel
 from jogo.pontuacao import Pontuacao
-from settings import ALTURA_TELA, GREEN, LARGURA_TELA, NIVEIS, RED, WHITE, YELLOW
+from settings import ALTURA_TELA, BLUE, GREEN, LARGURA_TELA, NIVEIS, RED, WHITE, YELLOW
 from telas.tela import Tela
 from ui import desenhar_barra, desenhar_texto, fonte
 
@@ -102,14 +102,27 @@ class TelaJogo(Tela):
         desenhar_texto(superficie, "PAUSADO", meio, WHITE, 48, centralizado=True)
         desenhar_texto(superficie, "ESC continua", (meio[0], meio[1] + 32), WHITE, 28, centralizado=True)
 
+    def desenhar_especial(self, superficie):
+        """Barra do especial embaixo da vida: enche enquanto recarrega e fica amarela quando dá para usar."""
+        heroi = self.heroi
+        barra = pygame.Rect(6, 38, 100, 8)
+        if heroi.especial_pronto():
+            desenhar_barra(superficie, barra, 1, 1, YELLOW)
+            if int(self.tempo * 3) % 2 == 0:         # o texto pisca para chamar atenção
+                desenhar_texto(superficie, "ESPECIAL PRONTO", (112, 37), YELLOW, 18)
+        else:
+            desenhar_barra(superficie, barra, heroi.carga_especial(), 1, BLUE)
+            desenhar_texto(superficie, f"{heroi.recarga_especial:.1f}s", (112, 37), WHITE, 18)
+
     def desenhar_hud(self, superficie):
-        """O que fica parado por cima do jogo: vida, nível, pontos, saída e a vida do chefe."""
+        """O que fica parado por cima do jogo: vida, especial, nível, pontos, saída e a vida do chefe."""
         heroi = self.heroi
         desenhar_texto(superficie, self.aplicacao.nome_jogador, (6, 6), WHITE, 24)
         cor = GREEN
         if heroi.vida < heroi.vida_maxima * 0.3:
             cor = RED                                # pouca vida: a barra fica vermelha
         desenhar_barra(superficie, pygame.Rect(6, 26, 100, 8), heroi.vida, heroi.vida_maxima, cor)
+        self.desenhar_especial(superficie)
 
         desenhar_texto(superficie, self.nivel.nome, (LARGURA_TELA // 2, 14), WHITE, 28, centralizado=True)
         texto = f"{self.pontuacao.total} pts"

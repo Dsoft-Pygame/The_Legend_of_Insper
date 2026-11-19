@@ -18,6 +18,7 @@ class Personagem(Entidade):
         self.tempo_invulneravel = 0               # o herói usa 0.8
         self.empurrao = pygame.Vector2(0, 0)      # knockback que ainda falta, em pixels por segundo
         self.resistencia = 0                      # de 0 (voa longe) até 1 (não sai do lugar)
+        self.desenho_olha_esquerda = False        # True se o PNG foi desenhado virado para a esquerda
 
     def mover(self, direcao, dt, mapa):
         """Anda um eixo de cada vez: o eixo que entraria na parede não anda.
@@ -87,8 +88,10 @@ class Personagem(Entidade):
             return                                # pisca enquanto está invulnerável
         super().desenhar(superficie, camera)
 
-    def imagem_atual(self): #espelha a imagem da direira pra esquerda e vice versa
+    def imagem_atual(self):
+        """Espelha a imagem para ela olhar para o lado em que o personagem anda."""
         imagem = super().imagem_atual()
-        if imagem is not None and self.direcao.x < 0:
+        indo_para_esquerda = self.direcao.x < 0
+        if imagem is not None and indo_para_esquerda != self.desenho_olha_esquerda:
             imagem = pygame.transform.flip(imagem, True, False)   # True: espelha na horizontal
         return imagem

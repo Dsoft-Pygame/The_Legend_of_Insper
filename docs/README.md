@@ -51,7 +51,7 @@ Os inimigos já existem como classes em `personagens/inimigos.py`, com os númer
 | Slime | 20 | 10 | 50 | lento; persegue quando o herói chega perto |
 | Esqueleto | 40 | 15 | 80 | mais rápido e percebe o herói de mais longe |
 | Morcego | 10 | 5 | 70 | muito rápido; o zigue-zague ainda está no branch task-46 |
-| Dragão Ancião | 450 | 25 | 2000 | o chefe do Topo da Torre; os ataques de chefe ainda faltam |
+| Dragão Ancião | 360 | 25 | 2000 | o chefe do Topo da Torre: 2 fases, bola e anel de fogo, contorna as paredes |
 
 ## Pastas
 

@@ -311,7 +311,7 @@ E, por fim, os inimigos animados, os golpes, a porta e a poção. O esqueleto pa
 | 17/11 | Sprites dos heróis, tiles de 32 pixels com pedra e biblioteca, música em cada tela, mapas compactos e o primeiro balanceamento. |
 | 18/11 | Efeitos sonoros ligados, ícone do especial no HUD, poção de vida, knockback, sprites animados dos inimigos, flecha e bola de fogo, animação dos golpes do Bárbaro, porta de saída, tela cheia e ajustes no Mago e no Dragão. |
 
-O histórico completo está nos [commits](../../commits/main) e nos [Pull Requests](../../pulls?q=is%3Apr) do repositório.
+O histórico completo está nos [commits](https://github.com/Dsoft-Pygame/The_Legend_of_Insper/commits/main) e nos [Pull Requests](https://github.com/Dsoft-Pygame/The_Legend_of_Insper/pulls?q=is%3Apr) do repositório.
 
 ---
 

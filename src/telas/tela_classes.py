@@ -27,7 +27,7 @@ class TelaClasses(Tela):
         elif evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.aplicacao.som.tocar("menu_confirmar")
             self.aplicacao.heroi = self.herois[self.selecionado]
-            self.aplicacao.trocar_tela("jogo")
+            self.aplicacao.trocar_tela("controles")
         elif evento.key == pygame.K_ESCAPE:
             self.aplicacao.trocar_tela("inicial")
 

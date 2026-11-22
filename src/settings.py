@@ -15,12 +15,14 @@ ORANGE = (240, 140, 40)
 CYAN = (80, 210, 210)
 PINK = (240, 120, 180)
 PURPLE = (150, 80, 200)
+MAGENTA = (240, 60, 200)  # a poção de vida
 
 # Tela
 TITULO = "The Legend of Insper"
 LARGURA_TELA = 480        # tudo é desenhado nesta resolução e depois ampliado na janela
 ALTURA_TELA = 320
-ESCALA = 2                # janela de 960 x 640
+ESCALA = 2                # janela de 960 x 640 (quando não está em tela cheia)
+TELA_CHEIA = True         # abre em tela cheia, com o jogo no meio e tarjas pretas em volta (F11 alterna)
 FPS = 60
 TAMANHO_TILE = 32
 
@@ -40,6 +42,10 @@ PONTOS_NIVEL = 500
 BONUS_TEMPO_MAXIMO = 3000
 TEMPO_REFERENCIA = 600    # segundos: quem termina depois disso não ganha bônus de tempo
 BONUS_VIDA_MAXIMO = 1000
+
+# Poção de vida
+CHANCE_POCAO = 0.30       # chance de um inimigo derrotado (menos o chefe) deixar uma poção
+CURA_POCAO = 25           # quanto de vida a poção devolve
 
 # Níveis, em ordem: (nome, arquivo em data/mapas/, tiles do chão, tiles da parede).
 # Os inimigos de cada um são as letras do mapa. Os tiles são o começo do nome dos PNGs

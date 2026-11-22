@@ -23,6 +23,27 @@ class Inimigo(Personagem):
         self.tempo_vagando = 1.5           # segundos andando para um lado antes de sortear outro
         self.tempo_sorteio = 0             # quanto falta para sortear de novo
         self.direcao_vagando = pygame.Vector2(0, 0)
+        self.quadros = []                  # imagens da animação, em ordem (vazio: imagem parada)
+        self.tempo_quadro = 0.15           # segundos em cada quadro
+        self.tempo_animacao = random.uniform(0, 1)   # cada um começa num quadro, para não mexerem juntos
+
+    def carregar_quadros(self, nome, ordem):
+        """Carrega a animação: carregar_quadros("slime", [1, 2]) usa slime_1.png e slime_2.png.
+        Se faltar algum PNG, fica sem animação (e sem imagem, desenha o quadrado).
+        """
+        quadros = []
+        for numero in ordem:
+            quadros.append(carregar_imagem(nome + "_" + str(numero) + ".png"))
+        if None not in quadros:
+            self.quadros = quadros
+            self.imagem = quadros[0]
+
+    def animar(self, dt):
+        """Passa o tempo da animação e troca a imagem pelo quadro da vez."""
+        if len(self.quadros) == 0:
+            return
+        self.tempo_animacao += dt
+        self.imagem = self.quadros[int(self.tempo_animacao / self.tempo_quadro) % len(self.quadros)]
 
     def atualizar(self, dt, heroi, mapa):
         """Persegue o herói se ele estiver perto; senão, vaga. Devolve os projéteis que criou."""
@@ -52,15 +73,18 @@ class Slime(Inimigo):
 
     def __init__(self, x, y):
         super().__init__(x, y, 24, CYAN, 20, 60, "Slime", 10, 50, 160)
-        self.imagem = carregar_imagem("slime.png")
+        self.carregar_quadros("slime", [1, 2, 1, 3])   # normal, achata, normal, estica: quica no lugar
+        self.tempo_quadro = 0.2
 
 class Esqueleto(Inimigo):
     """Mais forte e mais rápido que o slime, e percebe o herói de mais longe."""
 
     def __init__(self, x, y):
         super().__init__(x, y, 24, WHITE, 40, 110, "Esqueleto", 15, 80, 224)
+        self.resistencia = 0.3             # mais pesado que o slime e o morcego: voa um pouco menos
         self.tempo_vagando = 1
-        self.imagem = carregar_imagem("esqueleto.png")
+        self.carregar_quadros("esqueleto", [1, 2])     # anda trocando as pernas
+        self.tempo_quadro = 0.25
 
 class Morcego(Inimigo):
     """Rápido e frágil. Persegue em zigue-zague"""
@@ -72,7 +96,8 @@ class Morcego(Inimigo):
         self.forca_desvio = 0.8            # quanto desvia: 0 iria reto até o herói
         self.lado = 1                      # 1 desvia para um lado, -1 para o outro
         self.falta_trocar = self.tempo_desvio
-        self.imagem = carregar_imagem("morcego.png")
+        self.carregar_quadros("morcego", [1, 2, 3, 2])  # asas em cima, no meio, embaixo, no meio
+        self.tempo_quadro = 0.08
         
     def atualizar(self, dt, heroi, mapa):
         caminho = heroi.posicao - self.posicao
@@ -93,12 +118,16 @@ class Dragao(Inimigo):
     """O chefe do Topo da Torre, maior que os outros. 2 fases"""
 
     def __init__(self, x, y):
-        super().__init__(x, y, 48, PURPLE, 450, 90, "Dragão Ancião", 25, 2000, 480)
+        super().__init__(x, y, 48, PURPLE, 360, 90, "Dragão Ancião", 25, 2000, 480)
+        self.resistencia = 0.85            # o chefe quase não sai do lugar
         self.distancia_tiro = 128          # cospe fogo quando o herói está mais perto que isso
         self.tempo_tiro = 1                # segundos entre uma bola de fogo e outra
         self.tempo_anel = 3                # segundos entre um anel de fogo e outro (fase 2)
         self.recarga_tiro = 0
         self.recarga_anel = self.tempo_anel
+        self.tempo_rota = 0.25             # segundos entre um cálculo do caminho e outro
+        self.recarga_rota = 0
+        self.passo = None                  # próximo ponto do caminho quando há parede no meio
         self.imagem = carregar_imagem("dragao.png")
         self.tempo_aviso = 0.5             # segundos piscando vermelho antes do anel sair
 
@@ -112,12 +141,13 @@ class Dragao(Inimigo):
         caminho = heroi.posicao - self.posicao
         if caminho.length() == 0:
             return []
-        self.direcao = caminho.normalize()
+        self.direcao = caminho.normalize()            # olha e atira sempre na direção do herói
+        rumo = self.rumo(dt, heroi, mapa)              # mas anda contornando as paredes
         bolas = []
         if self.fase() == 1:
-            self.mover(self.direcao * 0.5, dt, mapa)      # fase 1: metade da velocidade
+            self.mover(rumo * 0.5, dt, mapa)           # fase 1: metade da velocidade
         else:
-            self.mover(self.direcao, dt, mapa)
+            self.mover(rumo, dt, mapa)
             self.recarga_anel -= dt
             if self.recarga_anel <= 0:
                 self.recarga_anel = self.tempo_anel
@@ -128,8 +158,38 @@ class Dragao(Inimigo):
             bolas.append(self.bola_de_fogo(self.direcao, 240))
         return bolas
 
+    def rumo(self, dt, heroi, mapa):
+        """Direção em que o Dragão anda. Com o caminho livre, vai reto no herói; com parede no
+        meio, segue o mapa.proximo_passo(), recalculado a cada tempo_rota segundos, para não
+        ficar empurrando a parede.
+        """
+        if self.cabe_no_caminho(heroi.posicao, mapa):
+            self.passo = None
+            return self.direcao
+        self.recarga_rota -= dt
+        chegou = self.passo is not None and (self.passo - self.posicao).length() < 4
+        if self.recarga_rota <= 0 or chegou:
+            self.recarga_rota = self.tempo_rota
+            self.passo = mapa.proximo_passo(self.posicao, heroi.posicao, self.largura)
+        if self.passo is None or (self.passo - self.posicao).length() == 0:
+            return pygame.Vector2(0, 0)                # não tem como chegar mais perto: espera
+        return (self.passo - self.posicao).normalize()
+
+    def cabe_no_caminho(self, destino, mapa):
+        """True se o corpo inteiro do Dragão passa em linha reta até destino (confere a cada 8 px)."""
+        caminho = destino - self.posicao
+        passos = int(caminho.length() // 8) + 1
+        for i in range(passos + 1):
+            corpo = self.retangulo()
+            ponto = self.posicao + caminho * (i / passos)
+            corpo.center = (round(ponto.x), round(ponto.y))
+            if not mapa.area_livre(corpo):
+                return False
+        return True
+
     def bola_de_fogo(self, direcao, rapidez):
-        return Projetil(self.posicao, direcao * rapidez, tamanho=16, cor=RED, dano=15, duracao=2, dono="inimigo")
+        return Projetil(self.posicao, direcao * rapidez, tamanho=16, cor=RED, dano=15, duracao=2, dono="inimigo",
+                        imagem="bola_fogo.png")
 
     def avisando_anel(self): # avisa que o anel de fogo sera lançado
         """True no meio segundo antes do anel de fogo sair (só na fase 2)."""

@@ -18,7 +18,9 @@ class Heroi(Personagem):
         self.tempo_invulneravel = 0.8
         self.dano = 0                      # dano do ataque normal (aparece no cartão da classe)
         self.tempo_ataque = 0.5            # segundos entre um ataque e outro
-        self.tempo_especial = 4
+        self.tempo_especial = 8            # segundos entre um especial e outro (cada classe tem o seu)
+        self.duracao_especial = 1          # segundos que os projéteis do especial ficam na tela
+        self.empurrao_ataque = 0           # knockback dos ataques, em pixels por segundo (cada classe tem o seu)
         self.recarga_ataque = 0            # quanto falta para poder atacar de novo
         self.recarga_especial = 0
 
@@ -54,6 +56,18 @@ class Heroi(Personagem):
         self.recarga_especial = self.tempo_especial
         return self.especial()
 
+    def curar(self, quantidade):
+        """Devolve vida, sem passar da vida máxima."""
+        self.vida = min(self.vida_maxima, self.vida + quantidade)
+
+    def especial_pronto(self):
+        """True quando o especial já recarregou (o HUD mostra ESPECIAL PRONTO)."""
+        return self.recarga_especial == 0
+
+    def carga_especial(self):
+        """Quanto o especial já recarregou, de 0 (acabou de usar) até 1 (pronto)."""
+        return 1 - self.recarga_especial / self.tempo_especial
+
     def atacar(self):
         return []                          # cada classe troca este método
 
@@ -62,49 +76,59 @@ class Heroi(Personagem):
 
 
 class Mago(Heroi):
-    """Bola de fogo lenta e forte. Especial: anel com 12 bolas de fogo."""
+    """Bola de fogo lenta e forte. Especial: anel com 8 bolas de fogo."""
 
     def __init__(self, x, y):
-        super().__init__(x, y, BLUE, 60, 140, "Mago", "Frágil, mas com dano alto à distância.")
-        self.dano = 30
+        super().__init__(x, y, BLUE, 60, 120, "Mago", "Frágil, mas com dano alto à distância.")
+        self.dano = 25
         self.tempo_ataque = 0.6
-        self.tempo_especial = 5
+        self.tempo_especial = 9
+        self.duracao_especial = 1
+        self.empurrao_ataque = 300         # bola de fogo pesada: empurra bem
         self.imagem = carregar_imagem("mago.png")
+        self.desenho_olha_esquerda = True  # o mago.png foi desenhado olhando para a esquerda
 
     def atacar(self):
         velocidade = self.direcao * 180
-        bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=self.dano, duracao=1.5, dono="heroi")
+        bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=self.dano, duracao=1.5, dono="heroi",
+                        imagem="bola_fogo.png", empurrao=self.empurrao_ataque)
         return [bola]
 
     def especial(self):
         bolas = []
-        for i in range(12):                # uma bola a cada 30 graus
-            velocidade = self.direcao.rotate(i * 30) * 180
-            bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=20, duracao=1, dono="heroi")
+        for i in range(8):                 # uma bola a cada 45 graus
+            velocidade = self.direcao.rotate(i * 45) * 180
+            bola = Projetil(self.posicao, velocidade, tamanho=16, cor=RED, dano=20, duracao=self.duracao_especial,
+                            dono="heroi", imagem="bola_fogo.png", empurrao=self.empurrao_ataque)
             bolas.append(bola)
         return bolas
 
 
 class Arqueiro(Heroi):
-    """Flecha rápida. Especial: três flechas em leque."""
+    """Flecha rápida. Especial: cinco flechas em leque, com a menor recarga das classes."""
 
     def __init__(self, x, y):
         super().__init__(x, y, GREEN, 80, 200, "Arqueiro", "Ágil, ataca rápido de longe.")
         self.dano = 10
         self.tempo_ataque = 0.3
-        self.tempo_especial = 3
+        self.tempo_especial = 5
+        self.duracao_especial = 1.2        # as flechas do especial vão mais longe que as normais
+        self.empurrao_ataque = 144         # flecha leve: empurra pouco
         self.imagem = carregar_imagem("arqueiro.png")
 
     def atacar(self):
         velocidade = self.direcao * 400
-        flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=self.dano, duracao=1, dono="heroi")
+        flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=self.dano, duracao=1, dono="heroi",
+                          imagem="flecha.png", empurrao=self.empurrao_ataque)
         return [flecha]
 
     def especial(self):
         flechas = []
-        for angulo in (-15, 0, 15):
+        for angulo in (-24, -12, 0, 12, 24):
             velocidade = self.direcao.rotate(angulo) * 400
-            flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=10, duracao=1, dono="heroi")
+            flecha = Projetil(self.posicao, velocidade, tamanho=8, cor=WHITE, dano=15,
+                              duracao=self.duracao_especial, dono="heroi", imagem="flecha.png",
+                              empurrao=self.empurrao_ataque)
             flechas.append(flecha)
         return flechas
 
@@ -113,16 +137,72 @@ class Barbaro(Heroi):
     """Machadada logo na frente. Especial: giro que acerta todos em volta."""
 
     def __init__(self, x, y):
-        super().__init__(x, y, ORANGE, 140, 150, "Bárbaro", "Resistente, luta de perto.")
-        self.dano = 35
+        super().__init__(x, y, ORANGE, 160, 150, "Bárbaro", "Resistente, luta de perto.")
+        self.dano = 40
         self.tempo_ataque = 0.5
-        self.tempo_especial = 4
+        self.tempo_especial = 7
+        self.duracao_especial = 0.3        # o giro fica pouco tempo na tela
+        self.empurrao_ataque = 456         # machadada: a que empurra mais
         self.imagem = carregar_imagem("barbaro.png")
+        self.quadros_corte = [carregar_imagem("corte_1.png"), carregar_imagem("corte_2.png"),
+                              carregar_imagem("corte_3.png")]
+        self.quadros_giro = [carregar_imagem("giro_1.png"), carregar_imagem("giro_2.png"),
+                             carregar_imagem("giro_3.png"), carregar_imagem("giro_4.png")]
+        self.tempo_corte = 0.2             # segundos da animação da machadada
+        self.animacao = None               # "corte", "giro" ou None
+        self.falta_animacao = 0            # segundos que faltam da animação
+        self.duracao_animacao = 1
 
     def atacar(self):
         centro = self.posicao + self.direcao * 30   # metade do herói (12) + metade do golpe (18)
-        return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False)]
+        self.animar("corte", self.tempo_corte)
+        return [Golpe(centro, tamanho=36, dano=self.dano, duracao=0.1, atravessa=False,
+                      origem=self.posicao, empurrao=self.empurrao_ataque)]
 
     def especial(self):
-        tamanho = 24 + 2 * 64                       # o herói (24) mais 64 px de cada lado
-        return [Golpe(self.posicao, tamanho=tamanho, dano=25, duracao=0.3, atravessa=True)]
+        tamanho = 24 + 2 * 56                       # o herói (24) mais 56 px de cada lado
+        self.animar("giro", self.duracao_especial)
+        return [Golpe(self.posicao, tamanho=tamanho, dano=25, duracao=self.duracao_especial,
+                      atravessa=True, origem=self.posicao,
+                      empurrao=self.empurrao_ataque * 1.2)]   # o giro joga mais longe
+
+    def animar(self, nome, duracao):
+        self.animacao = nome
+        self.falta_animacao = duracao
+        self.duracao_animacao = duracao
+
+    def atualizar(self, dt, mapa):
+        super().atualizar(dt, mapa)
+        self.falta_animacao = max(0, self.falta_animacao - dt)
+        if self.falta_animacao == 0:
+            self.animacao = None
+
+    def quadro(self, quadros):
+        """O quadro da animação da vez, pelo tempo que já passou."""
+        passou = 1 - self.falta_animacao / self.duracao_animacao      # de 0 a 1
+        return quadros[min(len(quadros) - 1, int(passou * len(quadros)))]
+
+    def imagem_atual(self):
+        """Girando, o Bárbaro vira de um lado para o outro bem rápido."""
+        imagem = super().imagem_atual()
+        if imagem is not None and self.animacao == "giro" and int(self.falta_animacao / 0.05) % 2 == 0:
+            imagem = pygame.transform.flip(imagem, True, False)
+        return imagem
+
+    def desenhar(self, superficie, camera):
+        """O herói com a animação do golpe: o giro por baixo dele e o corte na frente,
+        virado para onde ele olha. Na machadada ele também dá um passinho para a frente.
+        """
+        centro = camera.para_tela(self.retangulo()).center
+        if self.animacao == "giro" and None not in self.quadros_giro:
+            efeito = self.quadro(self.quadros_giro)
+            superficie.blit(efeito, efeito.get_rect(center=centro))
+        posicao = pygame.Vector2(self.posicao)
+        if self.animacao == "corte":
+            self.posicao = self.posicao + self.direcao * 3
+        super().desenhar(superficie, camera)
+        self.posicao = posicao
+        if self.animacao == "corte" and None not in self.quadros_corte:
+            angulo = pygame.Vector2(1, 0).angle_to(self.direcao)
+            efeito = pygame.transform.rotate(self.quadro(self.quadros_corte), -angulo)
+            superficie.blit(efeito, efeito.get_rect(center=centro))

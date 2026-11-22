@@ -13,10 +13,10 @@ A `Aplicacao` (`src/aplicacao.py`) abre a janela e roda o loop a 60 quadros por 
 As telas não importam umas às outras. Para trocar, uma tela pede `self.aplicacao.trocar_tela("nome")`, e a `Aplicacao` cria a tela nova:
 
 ```
-inicial ──Enter──> classes ──Enter──> jogo ──chefe derrotado ou herói sem vida──> resultado
-   ^                  │                                                               │
-   ├──────Esc─────────┘                                                               │
-   └──────────────────────────────Enter (ou 20 s parada)─────────────────────────────┘
+inicial ──Enter──> classes ──Enter──> controles ──Enter──> jogo ──chefe derrotado ou herói sem vida──> resultado
+   ^                │   ^                 │                                                                 │
+   ├─────Esc────────┘   └──────Esc────────┘                                                                 │
+   └────────────────────────────────────────Enter (ou 20 s parada)──────────────────────────────────────────┘
 ```
 
 O que passa de uma tela para outra fica guardado na `Aplicacao`: o nome digitado na TelaInicial, o `heroi` escolhido na TelaClasses, a `pontuacao` e o resultado da partida, e o `ranking`, lido do arquivo quando o jogo abre.
@@ -27,6 +27,7 @@ O que passa de uma tela para outra fica guardado na `Aplicacao`: o nome digitado
 Tela                      telas/tela.py: tratar_evento, atualizar e desenhar vazios
 ├── TelaInicial           título, nome do jogador e ranking; Enter vai para a escolha de classe
 ├── TelaClasses           Mago, Arqueiro ou Bárbaro
+├── TelaControles         as teclas do jogo, antes da partida; Enter começa e Esc volta para a escolha de classe
 ├── TelaJogo              o nível, os ataques, a câmera, o HUD, a pausa e a troca de andar
 └── TelaResultado         vitória ou derrota, extrato dos pontos e ranking
 
@@ -40,7 +41,7 @@ Entidade                  posição, tamanho, cor, retangulo() e desenhar()
 │       ├── Slime         só muda os números e quica
 │       ├── Esqueleto     só muda os números
 │       ├── Morcego       persegue em zigue-zague
-│       └── Dragao        2 fases, bola e anel de fogo; contorna as paredes até o herói (Mapa.proximo_passo)
+│       └── Dragao        2 fases, bola e anel de fogo (pisca vermelho 0,5 s antes do anel); contorna as paredes até o herói (Mapa.proximo_passo)
 ├── Projetil              anda, some na parede ou quando o tempo acaba; dono "heroi" ou "inimigo"
 │   └── Golpe             corpo a corpo: fica parado e troca bateu_na_parede(); o giro atravessa inimigos, mas nenhum golpe passa parede
 └── Pocao                 poção de vida que cai dos inimigos
@@ -103,4 +104,4 @@ O `Ranking` guarda cada partida como um dicionário (nome, classe, pontos, vence
 - Nada de `raise` ou `try`. Quando precisar conferir algo, um `if`.
 - Os números do jogo ficam no `__init__` da classe ou no `settings.py`.
 - Tudo que anda usa `velocidade * dt`, com `dt` em segundos.
-- Docstring de 1 a 3 linhas por classe e comentários curtos em português.
+- Docstring de 1 a 3 linhas em todo arquivo, classe e função, e comentários curtos em português.

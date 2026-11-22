@@ -29,6 +29,7 @@ class Som:
     """Toca os efeitos e as músicas pelo nome. Sem placa de som ou sem o arquivo, fica em silêncio."""
 
     def __init__(self):
+        """Vê se o som está ligado e carrega os efeitos que existem em src/assets/sons/."""
         self.ligado = pygame.mixer.get_init() is not None   # o pygame.init() já tentou ligar o som
         self.efeitos = {}                                   # nome -> pygame.mixer.Sound
         self.musica_atual = None

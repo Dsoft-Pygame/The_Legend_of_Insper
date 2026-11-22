@@ -1,3 +1,5 @@
+"""A câmera que segue o herói pelo mapa."""
+
 import pygame
 
 from settings import ALTURA_TELA, LARGURA_TELA
@@ -7,6 +9,7 @@ class Camera:
     """O pedaço do mapa que aparece na tela: segue o herói e para nas bordas do mapa."""
 
     def __init__(self, largura_mapa, altura_mapa):
+        """Começa no canto de cima à esquerda de um mapa com esse tamanho, em pixels."""
         self.x = 0                        # canto de cima à esquerda do recorte, em pixels do mapa
         self.y = 0
         self.largura_mapa = largura_mapa
@@ -18,6 +21,7 @@ class Camera:
         self.y = self.limitar(posicao.y - ALTURA_TELA / 2, self.altura_mapa - ALTURA_TELA)
 
     def limitar(self, valor, maximo):
+        """Prende o valor entre 0 e maximo. Se o mapa é menor que a tela, centraliza."""
         if maximo < 0:                    # mapa menor que a tela: fica centralizado
             return maximo / 2
         return max(0, min(valor, maximo))
@@ -27,4 +31,5 @@ class Camera:
         return retangulo.move(-round(self.x), -round(self.y))
 
     def esta_visivel(self, retangulo):
+        """True se o retângulo do mapa aparece na tela (o nível só desenha o que aparece)."""
         return self.para_tela(retangulo).colliderect(pygame.Rect(0, 0, LARGURA_TELA, ALTURA_TELA))

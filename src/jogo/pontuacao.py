@@ -1,3 +1,5 @@
+"""Os pontos de uma partida."""
+
 from settings import BONUS_TEMPO_MAXIMO, BONUS_VIDA_MAXIMO, PONTOS_NIVEL, TEMPO_REFERENCIA
 
 
@@ -5,21 +7,25 @@ class Pontuacao:
     """Os pontos de uma partida e o motivo de cada um (o extrato que aparece no fim)."""
 
     def __init__(self):
+        """Começa a partida com zero pontos e o extrato vazio."""
         self.total = 0
         self.inimigos_derrotados = 0
         self.pontos_inimigos = 0
         self.extrato = []                 # textos como "Térreo concluído +500"
 
     def inimigo_derrotado(self, nome, pontos):
+        """Soma os pontos de um inimigo comum e conta mais um derrotado."""
         self.total += pontos
         self.pontos_inimigos += pontos
         self.inimigos_derrotados += 1
 
     def nivel_concluido(self, nome_nivel):
+        """Soma PONTOS_NIVEL por terminar um andar e anota no extrato."""
         self.total += PONTOS_NIVEL
         self.extrato.append(f"{nome_nivel} concluído +{PONTOS_NIVEL}")
 
     def chefe_derrotado(self, nome, pontos):
+        """Soma os pontos do chefe e anota no extrato."""
         self.total += pontos
         self.inimigos_derrotados += 1
         self.extrato.append(f"{nome} derrotado +{pontos}")

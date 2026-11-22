@@ -1,3 +1,5 @@
+"""A Aplicacao: abre a janela, roda o loop do jogo e troca de tela."""
+
 import pygame
 
 from jogo.ranking import Ranking
@@ -16,6 +18,7 @@ class Aplicacao:
     """
 
     def __init__(self):
+        """Liga o pygame, abre a janela, cria o som e o ranking e começa na tela inicial."""
         pygame.init()
         pygame.display.set_caption(TITULO)
         self.tela_cheia = TELA_CHEIA
@@ -48,6 +51,7 @@ class Aplicacao:
         self.area_jogo.center = (largura // 2, altura // 2)
 
     def trocar_tela(self, nome):
+        """Cria a tela pelo nome: "inicial", "classes", "controles", "jogo" ou "resultado"."""
         if nome == "inicial":
             self.tela_atual = TelaInicial(self)
         elif nome == "classes":
@@ -61,6 +65,9 @@ class Aplicacao:
 
 
     def executar(self):
+        """O loop do jogo: a cada quadro lê os eventos, atualiza e desenha a tela atual e amplia a imagem
+        na janela. F11 alterna a tela cheia.
+        """
         while self.rodando:
             dt = min(self.relogio.tick(FPS) / 1000, 0.05)   # segundos desde o quadro anterior
             for evento in pygame.event.get():

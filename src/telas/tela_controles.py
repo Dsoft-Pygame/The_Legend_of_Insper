@@ -1,3 +1,5 @@
+"""Tela de controles: mostra as teclas do jogo depois de escolher a classe, antes da partida começar."""
+
 import pygame
 
 from settings import ALTURA_TELA, BLACK, GRAY, LARGURA_TELA, WHITE, YELLOW
@@ -17,11 +19,13 @@ class TelaControles(Tela):
     """Aparece logo depois de escolher a classe: mostra as teclas para quem nunca jogou."""
 
     def __init__(self, aplicacao):
+        """Guarda o herói escolhido na TelaClasses e zera o tempo usado para piscar o aviso."""
         super().__init__(aplicacao)
         self.heroi = aplicacao.heroi          # o herói escolhido na TelaClasses
         self.tempo = 0                        # para o "ENTER começa" piscar
 
     def tratar_evento(self, evento):
+        """Enter (ou Espaço) começa a partida; Esc volta para a escolha de classe."""
         if evento.type != pygame.KEYDOWN:
             return
         if evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER, pygame.K_SPACE):
@@ -31,9 +35,11 @@ class TelaControles(Tela):
             self.aplicacao.trocar_tela("classes")   # volta para trocar de classe
 
     def atualizar(self, dt):
+        """Só conta o tempo, para o "ENTER começa" piscar."""
         self.tempo += dt
 
     def desenhar(self, superficie):
+        """Desenha o título, a classe escolhida, a lista de teclas e o aviso piscando no rodapé."""
         superficie.fill(BLACK)
         meio = LARGURA_TELA // 2
         desenhar_texto(superficie, "Controles", (meio, 24), YELLOW, 40, centralizado=True)

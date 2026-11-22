@@ -1,3 +1,5 @@
+"""Um andar da torre em andamento: o mapa, o herói, os inimigos, os projéteis e as poções."""
+
 import random
 
 import pygame
@@ -15,6 +17,9 @@ class Nivel:
     """
 
     def __init__(self, nome, arquivo, chao, parede, heroi, pontuacao, som):
+        """Lê o mapa, põe o herói no H, cria os inimigos das letras do mapa e o chefe no C, e escolhe os
+        tiles do chão e das paredes.
+        """
         self.nome = nome
         self.mapa = Mapa(arquivo)
         self.heroi = heroi
@@ -72,6 +77,9 @@ class Nivel:
         return Slime(x, y)                # "s" e qualquer letra desconhecida viram slime
 
     def atualizar(self, dt):
+        """Avança o nível dt segundos, nesta ordem: herói, inimigos, projéteis, acertos, contato, mortos e
+        poções.
+        """
         self.tempo += dt
         self.heroi.atualizar(dt, self.mapa)          # 1. o herói anda
         for inimigo in self.inimigos:                # 2. cada inimigo pensa, anda e mexe a animação
@@ -163,6 +171,9 @@ class Nivel:
         return self.heroi.retangulo().colliderect(self.mapa.saida)
         
     def desenhar(self, superficie, camera):
+        """Desenha pela câmera o chão, as paredes, a saída (aberta ou fechada), as poções, os inimigos, os
+        projéteis e o herói, nessa ordem.
+        """
         superficie.fill(BLACK)
         for tile, imagem in self.chao:                 # o chão, tile por tile
             if camera.esta_visivel(tile):
@@ -189,6 +200,7 @@ class Nivel:
 
         self.heroi.desenhar(superficie, camera)
     def desenhar_tile(self, superficie, camera, tile, imagem, cor): #usa imagem se existir
+        """Desenha um tile com a imagem dele ou, se a imagem não existe, com um quadrado da cor."""
         if imagem is None:
             pygame.draw.rect(superficie, cor, camera.para_tela(tile))
         else:

@@ -1,3 +1,5 @@
+"""Tela do fim da partida: resultado, pontos e ranking."""
+
 import pygame
 
 from settings import BLACK, GRAY, GREEN, RED, WHITE, YELLOW
@@ -14,6 +16,7 @@ class TelaResultado(Tela):
     """
 
     def __init__(self, aplicacao):
+        """Toca a música do resultado e salva a partida no ranking, guardando a posição dela."""
         super().__init__(aplicacao)
         aplicacao.som.tocar_musica("resultado")
         self.tempo_parada = 0
@@ -22,15 +25,20 @@ class TelaResultado(Tela):
                                                    aplicacao.venceu)
 
     def tratar_evento(self, evento):
+        """Enter volta para a tela inicial."""
         if evento.type == pygame.KEYDOWN and evento.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
             self.aplicacao.trocar_tela("inicial")
 
     def atualizar(self, dt):
+        """Volta sozinha para a tela inicial depois de TEMPO_VOLTAR_SOZINHA segundos parada."""
         self.tempo_parada += dt
         if self.tempo_parada >= TEMPO_VOLTAR_SOZINHA:
             self.aplicacao.trocar_tela("inicial")
 
     def desenhar(self, superficie):
+        """Desenha vitória ou derrota, o extrato dos pontos, a posição e o ranking com a partida em
+        destaque.
+        """
         superficie.fill(BLACK)
         pontuacao = self.aplicacao.pontuacao
         titulo = "DERROTA"

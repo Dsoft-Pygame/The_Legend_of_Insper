@@ -1,3 +1,5 @@
+"""Tela de escolha da classe: Mago, Arqueiro ou Bárbaro."""
+
 import pygame
 
 from personagens.herois import Arqueiro, Barbaro, Mago
@@ -10,12 +12,16 @@ class TelaClasses(Tela):
     """Escolha da classe: um cartão para cada herói, com nome, vida, velocidade, dano e recarga do especial."""
 
     def __init__(self, aplicacao):
+        """Cria um herói de cada classe para os cartões e deixa o primeiro selecionado."""
         super().__init__(aplicacao)
         aplicacao.som.tocar_musica("menu")    # já vem tocando da TelaInicial, então não corta
         self.herois = [Mago(0, 0), Arqueiro(0, 0), Barbaro(0, 0)]   # o Nivel põe o escolhido no lugar
         self.selecionado = 0
 
     def tratar_evento(self, evento):
+        """A/D ou setas trocam a classe, Enter vai para a tela de controles com a escolhida e Esc volta para a tela
+        inicial.
+        """
         if evento.type != pygame.KEYDOWN:
             return
         if evento.key in (pygame.K_LEFT, pygame.K_a):
@@ -32,6 +38,7 @@ class TelaClasses(Tela):
             self.aplicacao.trocar_tela("inicial")
 
     def desenhar(self, superficie):
+        """Desenha o título, os três cartões, a descrição da classe selecionada e as teclas."""
         superficie.fill(BLACK)
         desenhar_texto(superficie, "Escolha sua classe", (LARGURA_TELA // 2, 20), YELLOW, 36, centralizado=True)
         for i, heroi in enumerate(self.herois):
@@ -43,6 +50,9 @@ class TelaClasses(Tela):
                        centralizado=True)
 
     def desenhar_cartao(self, superficie, heroi, cartao, selecionado):
+        """Desenha o cartão de um herói: ícone, nome, vida, velocidade, dano e recarga do especial. O
+        selecionado fica com a borda amarela e grossa.
+        """
         cor = WHITE
         borda = GRAY
         grossura = 2

@@ -7,11 +7,15 @@ fontes = {}   # uma fonte por tamanho, criada uma vez só
 imagens = {}  # cada imagem de src/assets/ é lida do disco uma vez só
 
 def fonte(tamanho):
+    """A fonte padrão do pygame nesse tamanho. Cria uma vez só e guarda."""
     if tamanho not in fontes:
         fontes[tamanho] = pygame.font.Font(None, tamanho)   # None = a fonte padrão do pygame
     return fontes[tamanho]
 
 def carregar_imagem(nome): #carrrega imagem se ela existir
+    """Lê uma imagem de src/assets/ uma vez só e guarda. Devolve None se o arquivo não existe (quem chama
+    desenha um quadrado no lugar).
+    """
     if nome not in imagens:
         caminho = os.path.join(PASTA_ASSETS, nome)
         imagens[nome] = None
@@ -35,6 +39,7 @@ class CaixaTexto:
     """Campo onde o jogador digita o nome, com um cursor piscando no fim."""
 
     def __init__(self, retangulo, tamanho_maximo=12):
+        """Uma caixa vazia nesse retângulo, que aceita até tamanho_maximo letras."""
         self.retangulo = retangulo
         self.tamanho_maximo = tamanho_maximo
         self.texto = ""
@@ -46,9 +51,11 @@ class CaixaTexto:
                 self.texto += letra
 
     def apagar(self):
+        """Apaga a última letra (Backspace)."""
         self.texto = self.texto[:-1]
 
     def desenhar(self, superficie, cursor_visivel):
+        """Desenha a caixa, o texto e, se cursor_visivel, o cursor amarelo no fim do texto."""
         pygame.draw.rect(superficie, DARK_GRAY, self.retangulo)
         pygame.draw.rect(superficie, WHITE, self.retangulo, 2)
         area = desenhar_texto(superficie, self.texto, (self.retangulo.x + 6, self.retangulo.y + 6))

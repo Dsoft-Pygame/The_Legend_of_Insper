@@ -1,3 +1,5 @@
+"""Os ataques do jogo: projéteis que voam (flecha, bola de fogo) e golpes corpo a corpo."""
+
 import pygame
 
 from personagens.entidade import Entidade
@@ -9,6 +11,9 @@ class Projetil(Entidade):
     """Tudo que voa e dá dano, como flecha e bola de fogo. Some na parede ou quando o tempo acaba."""
 
     def __init__(self, posicao, velocidade, tamanho, cor, dano, duracao, dono, imagem=None, empurrao=0):
+        """Cria o projétil com centro em posicao, voando com a velocidade dada. dono diz de que lado ele
+        está.
+        """
         super().__init__(posicao.x, posicao.y, tamanho, tamanho, cor)
         if imagem is not None:
             self.imagem = carregar_imagem(imagem)       # o desenho aponta para a direita
@@ -21,10 +26,12 @@ class Projetil(Entidade):
         self.empurrao = empurrao                       # força do knockback, em pixels por segundo
 
     def atualizar(self, dt):
+        """Anda o projétil e diminui o tempo que falta para ele sumir."""
         self.posicao += self.velocidade * dt
         self.duracao -= dt
 
     def acabou(self, mapa):
+        """True se o tempo acabou ou se bateu na parede: o nível tira o projétil."""
         return self.duracao <= 0 or self.bateu_na_parede(mapa)
 
     def pode_acertar(self, alvo, mapa):
@@ -33,6 +40,7 @@ class Projetil(Entidade):
                 and self.retangulo().colliderect(alvo.retangulo()))
 
     def bateu_na_parede(self, mapa):
+        """True se o projétil encostou numa parede ou saiu do mapa."""
         return not mapa.area_livre(self.retangulo())
 
     def direcao_empurrao(self, alvo):
@@ -56,6 +64,7 @@ class Golpe(Projetil):
     """
 
     def __init__(self, posicao, tamanho, dano, duracao, atravessa, origem, empurrao=0):
+        """Cria o golpe parado com centro em posicao. origem é o centro do herói que bateu."""
         super().__init__(posicao, (0, 0), tamanho, YELLOW, dano, duracao, "heroi", empurrao=empurrao)
         self.atravessa = atravessa
         self.origem = pygame.Vector2(origem)           # de onde o golpe saiu (o centro do herói)
@@ -74,7 +83,9 @@ class Golpe(Projetil):
         return caminho.normalize()
 
     def bateu_na_parede(self, mapa):
+        """O golpe nunca some por encostar na parede: só quando o tempo acaba."""
         return False                                   # pode encostar na parede sem sumir
 
     def desenhar(self, superficie, camera):
+        """Não desenha nada: quem mostra o golpe é a animação do Bárbaro."""
         pass                                           # quem mostra o golpe é a animação do Bárbaro

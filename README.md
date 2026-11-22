@@ -9,6 +9,14 @@ O jogador escolhe um herói (**Mago**, **Arqueiro** ou **Bárbaro**) e sobe os *
   <img src="docs/imagens/jogo_chefe.png" width="420" alt="O Bárbaro enfrentando o Dragão Ancião no Topo da Torre">
 </p>
 
+## Vídeo de demonstração
+
+<p align="center">
+  <a href="docs/video/demo.mp4"><img src="docs/video/demo_preview.gif" width="480" alt="O Bárbaro enfrentando o Dragão Ancião (clique para ver o vídeo)"></a>
+</p>
+
+**[▶️ Assistir ao vídeo completo (2 min)](docs/video/demo.mp4)**: uma partida inteira com o Bárbaro, do nome do jogador até a vitória contra o Dragão Ancião, e depois o Arqueiro e o Mago no Térreo, com a tela de controles, o anel de fogo do Mago e a tela de derrota. A trilha são as músicas do próprio jogo.
+
 ## Autores
 
 | | Quem | GitHub | Papel no grupo |
@@ -21,6 +29,7 @@ O que cada um fez está em [Quem fez o quê](#quem-fez-o-quê).
 
 ## Sumário
 
+- [Vídeo de demonstração](#vídeo-de-demonstração)
 - [Como rodar](#como-rodar)
 - [Como jogar](#como-jogar)
 - [O jogo](#o-jogo)
@@ -388,4 +397,5 @@ A explicação completa, com o que acontece em cada quadro, está em [docs/ARQUI
 - **Sons e músicas** (`src/assets/sons/`): gerados por código pelo Claude (assistente de IA da Anthropic) a pedido do grupo. Detalhes em [`src/assets/sons/CREDITOS.md`](src/assets/sons/CREDITOS.md).
 - **Flecha, bola de fogo, poção, porta de saída, animações do slime, do morcego e do esqueleto, e os golpes do Bárbaro:** feitos pelo Claude (assistente de IA da Anthropic) a pedido do grupo.
 - **Tiles de chão e parede** (`src/assets/tiles/`): pedra (Térreo e Topo da Torre) e biblioteca, 4 variantes de cada.
+- **Vídeo de demonstração** (`docs/video/`): gravado pelo grupo; o corte e a trilha com as músicas do jogo foram feitos pelo Claude.
 - **Uso de IA:** o grupo usou o Claude, da Anthropic, para ajudar na simplificação do código, nos sons e em parte da arte. Os commits feitos com a IA trazem a linha `Co-Authored-By: Claude` na mensagem.

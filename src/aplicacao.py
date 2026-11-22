@@ -7,6 +7,7 @@ from telas.tela_classes import TelaClasses
 from telas.tela_inicial import TelaInicial
 from telas.tela_jogo import TelaJogo
 from telas.tela_resultado import TelaResultado
+from telas.tela_controles import TelaControles
 
 
 class Aplicacao:
@@ -51,10 +52,13 @@ class Aplicacao:
             self.tela_atual = TelaInicial(self)
         elif nome == "classes":
             self.tela_atual = TelaClasses(self)
+        elif nome == "controles":
+            self.tela_atual = TelaControles(self)
         elif nome == "jogo":
             self.tela_atual = TelaJogo(self)
         elif nome == "resultado":
             self.tela_atual = TelaResultado(self)
+
 
     def executar(self):
         while self.rodando:

@@ -53,8 +53,10 @@ O arquivo que roda o jogo é o **`src/main.py`**. O jogo abre em tela cheia, com
 | | Backspace | apaga |
 | | Enter | vai para a escolha de classe |
 | Escolha de classe | A / D ou ← / → | trocam a classe |
-| | Enter | começa o jogo |
+| | Enter | vai para a tela de controles |
 | | Esc | volta para a tela inicial |
+| Controles | Enter ou Espaço | começa a partida |
+| | Esc | volta para a escolha de classe |
 | Jogo | W A S D | andar |
 | | Espaço | ataque |
 | | Shift esquerdo | especial |
@@ -72,6 +74,11 @@ O arquivo que roda o jogo é o **`src/main.py`**. O jogo abre em tela cheia, com
 |---|---|
 | ![Tela inicial](docs/imagens/tela_inicial.png) | ![Escolha de classe](docs/imagens/tela_classes.png) |
 | Nome do jogador e as 10 melhores partidas do ranking. | Um cartão por herói, com vida, velocidade, dano e recarga do especial. |
+
+| Controles | Aviso do Dragão |
+|---|---|
+| ![Tela de controles](docs/imagens/tela_controles.png) | ![Dragão piscando vermelho antes do anel de fogo](docs/imagens/jogo_aviso_dragao.png) |
+| Aparece depois de escolher a classe: mostra as teclas para quem nunca jogou. | Na segunda fase, o Dragão pisca vermelho meio segundo antes de soltar o anel de fogo. |
 
 | Jogo | Pausa |
 |---|---|
@@ -102,7 +109,7 @@ Os ataques empurram os inimigos para trás (knockback). Depois de levar dano, o 
 | Morcego | 10 | 5 | 70 | muito rápido; persegue em zigue-zague |
 | Dragão Ancião (chefe) | 360 | 25 | 2000 | 2 fases; contorna as paredes até o herói e cospe fogo |
 
-O Dragão tem duas fases. Na primeira, anda devagar e cospe uma bola de fogo quando o herói chega perto. Com metade da vida, entra na segunda fase: anda na velocidade cheia e solta um anel de 12 bolas de fogo a cada 3 segundos. Para chegar ao herói sem ficar preso nas paredes, ele faz uma busca em largura pela grade do mapa.
+O Dragão tem duas fases. Na primeira, anda devagar e cospe uma bola de fogo quando o herói chega perto. Com metade da vida, entra na segunda fase: anda na velocidade cheia e solta um anel de 12 bolas de fogo a cada 3 segundos. Meio segundo antes de cada anel, ele **pisca vermelho**, para o jogador ter tempo de se afastar. Para chegar ao herói sem ficar preso nas paredes, ele faz uma busca em largura pela grade do mapa.
 
 Cada inimigo comum derrotado tem 30% de chance de deixar uma **poção de vida**, que devolve 25 de vida.
 
@@ -156,6 +163,8 @@ O objetivo da atividade era **aprender o máximo possível**, então cada um con
 As ideias do jogo vieram do Thiago, e ele cuidou da parte artística: o visual, os heróis, os andares e o jeito de cada inimigo se mexer.
 
 - Desenhou os **sprites dos três heróis** (`mago.png`, `arqueiro.png`, `barbaro.png`) e deu ao jogo o suporte a sprites.
+- Desenhou o **sprite do Dragão Ancião** (`dragao.png`), corrigiu o sprite do Mago e fez o **aviso vermelho** antes do anel de fogo.
+- Criou a **tela de controles**, que mostra as teclas antes da partida.
 - Fez os **mapas da Biblioteca e do Topo da Torre**.
 - Criou a **tela de escolha de classe**, com os cartões dos heróis, e a **tela inicial** com o campo do nome.
 - Programou o **zigue-zague do morcego** e as **decisões do Dragão** (as duas fases do chefe).
@@ -176,10 +185,11 @@ O Matheus cuidou das mecânicas, isto é, das regras que fazem o jogo funcionar.
 
 O Audrei, por ser o programador mais experiente do grupo, acabou entregando mais código. Mas a ideia sempre foi que os outros aprendessem junto, e por isso ele atuou como **organizador do projeto**: escreveu as issues e as tasks de um jeito que cada um soubesse exatamente o que fazer, e revisou os Pull Requests.
 
-- Desenhou a **arquitetura** e montou o **backlog**: 79 tasks no GitHub, com issues, quadro do Project, milestones e prazos.
+- Desenhou a **arquitetura** e montou o **backlog**: 79 tasks no GitHub, mais 6 de polimento no fim, com issues, quadro do Project, milestones e prazos.
 - Implementou o núcleo do jogo: a **aplicação** e o loop, o **mapa**, o **personagem**, o **nível**, o **combate** e a **IA de perseguição**.
 - Fez a **simplificação do código** pedida pelo professor (veja [Decisões que tomamos](#decisões-que-tomamos)).
 - Fez o **tocador de som**, a **tela de resultado**, as **vitórias e derrotas** e a passagem de andar.
+- Escreveu as **docstrings** de todos os arquivos, classes e funções.
 - Cuidou do **balanceamento** e do acabamento final: tiles, poção, knockback, animações dos inimigos e dos golpes, porta de saída e tela cheia.
 
 ---
@@ -188,7 +198,7 @@ O Audrei, por ser o programador mais experiente do grupo, acabou entregando mais
 
 ### Planejamento
 
-O jogo foi quebrado em **79 tasks** (T01 a T79), somando **228 story points**. Cada task virou uma **issue no GitHub** e um card no Project "Backlog The Legend Of Insper", com story points, prioridade, data de início e prazo.
+O jogo foi quebrado em **79 tasks** (T01 a T79), somando **228 story points**. Na última semana entraram mais 6 tasks de polimento (T80 a T85), como o sprite do Dragão, o aviso antes do anel de fogo e a tela de controles. Cada task virou uma **issue no GitHub** e um card no Project "Backlog The Legend Of Insper", com story points, prioridade, data de início e prazo.
 
 Toda issue seguia o mesmo modelo:
 
@@ -310,6 +320,8 @@ E, por fim, os inimigos animados, os golpes, a porta e a poção. O esqueleto pa
 | 15/11 a 16/11 | Quadro de vida no HUD, zigue-zague do morcego, decisões do Dragão e suporte a sprites. |
 | 17/11 | Sprites dos heróis, tiles de 32 pixels com pedra e biblioteca, música em cada tela, mapas compactos e o primeiro balanceamento. |
 | 18/11 | Efeitos sonoros ligados, ícone do especial no HUD, poção de vida, knockback, sprites animados dos inimigos, flecha e bola de fogo, animação dos golpes do Bárbaro, porta de saída, tela cheia e ajustes no Mago e no Dragão. |
+| 19/11 a 20/11 | Tasks de polimento (T80 a T85) e README da entrega. |
+| 21/11 | Sprite do Dragão, aviso vermelho antes do anel de fogo, correção do sprite do Mago, tela de controles e docstrings em todo o código. |
 
 O histórico completo está nos [commits](https://github.com/Dsoft-Pygame/The_Legend_of_Insper/commits/main) e nos [Pull Requests](https://github.com/Dsoft-Pygame/The_Legend_of_Insper/pulls?q=is%3Apr) do repositório.
 
@@ -344,7 +356,7 @@ src/
 ├── aplicacao.py         janela, loop principal e troca de tela
 ├── sons.py              toca os efeitos e as músicas pelo nome
 ├── ui.py                texto, caixa do nome, quadro do ranking e barras
-├── telas/               tela inicial, escolha de classe, jogo e resultado
+├── telas/               tela inicial, escolha de classe, controles, jogo e resultado
 ├── jogo/                mapa, câmera, nível, pontuação e ranking
 ├── personagens/         entidade, personagem, heróis, inimigos, projéteis e poção
 ├── assets/              sprites, tiles e sons
@@ -354,7 +366,7 @@ src/
 ```
 
 ```
-Tela                      TelaInicial, TelaClasses, TelaJogo, TelaResultado
+Tela                      TelaInicial, TelaClasses, TelaControles, TelaJogo, TelaResultado
 Entidade
 ├── Personagem
 │   ├── Heroi             Mago, Arqueiro, Barbaro
@@ -364,13 +376,15 @@ Entidade
 └── Pocao
 ```
 
+Todo arquivo, classe e função tem uma **docstring** curta em português explicando o que faz.
+
 A explicação completa, com o que acontece em cada quadro, está em [docs/ARQUITETURA.md](docs/ARQUITETURA.md).
 
 ---
 
 ## Créditos
 
-- **Sprites dos heróis** (`src/assets/mago.png`, `arqueiro.png` e `barbaro.png`): Thiago A. Gomes.
+- **Sprites dos heróis e do Dragão** (`src/assets/mago.png`, `arqueiro.png`, `barbaro.png` e `dragao.png`): Thiago A. Gomes.
 - **Sons e músicas** (`src/assets/sons/`): gerados por código pelo Claude (assistente de IA da Anthropic) a pedido do grupo. Detalhes em [`src/assets/sons/CREDITOS.md`](src/assets/sons/CREDITOS.md).
 - **Flecha, bola de fogo, poção, porta de saída, animações do slime, do morcego e do esqueleto, e os golpes do Bárbaro:** feitos pelo Claude (assistente de IA da Anthropic) a pedido do grupo.
 - **Tiles de chão e parede** (`src/assets/tiles/`): pedra (Térreo e Topo da Torre) e biblioteca, 4 variantes de cada.

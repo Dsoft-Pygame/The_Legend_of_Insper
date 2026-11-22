@@ -1,3 +1,5 @@
+"""O mapa de um andar, lido de um arquivo .txt em src/data/mapas/."""
+
 import os
 from collections import deque
 
@@ -12,6 +14,9 @@ class Mapa:
     """
 
     def __init__(self, arquivo):
+        """Lê o arquivo linha por linha e guarda as paredes, a saída, onde o herói começa, os inimigos e o
+        chefe.
+        """
         self.paredes = []                 # um pygame.Rect por parede
         self.saida = None                 # pygame.Rect do S
         self.inicio_heroi = (0, 0)        # centro do H

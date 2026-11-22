@@ -1,3 +1,5 @@
+"""Tela inicial: o título, o campo do nome do jogador e o ranking."""
+
 import pygame
 
 from settings import BLACK, GRAY, RED, WHITE, YELLOW
@@ -6,7 +8,9 @@ from ui import CaixaTexto, desenhar_ranking, desenhar_texto
 
 
 class TelaInicial(Tela):
+    """Primeira tela do jogo: o jogador digita o nome e vê as 10 melhores partidas."""
     def __init__(self, aplicacao):
+        """Cria a caixa do nome e começa a música do menu."""
         super().__init__(aplicacao)
         self.caixa_nome = CaixaTexto(pygame.Rect(16, 152, 224, 32))
         self.aviso = ""                   # aparece se apertar Enter sem nome
@@ -14,6 +18,7 @@ class TelaInicial(Tela):
         aplicacao.som.tocar_musica("menu")    # se já está tocando (veio de outra tela), continua sem cortar
 
     def tratar_evento(self, evento):
+        """Letras digitadas vão para a caixa do nome, Backspace apaga e Enter confirma."""
         if evento.type == pygame.TEXTINPUT:
             self.caixa_nome.digitar(evento.text)
         elif evento.type == pygame.KEYDOWN:
@@ -23,6 +28,7 @@ class TelaInicial(Tela):
                 self.confirmar()
 
     def confirmar(self):
+        """Guarda o nome na Aplicacao e vai para a escolha de classe. Sem nome, mostra um aviso."""
         nome = self.caixa_nome.texto.strip()   # strip tira os espaços do começo e do fim
         if nome == "":
             self.aviso = "Digite um nome"
@@ -32,6 +38,7 @@ class TelaInicial(Tela):
         self.aplicacao.trocar_tela("classes")
 
     def desenhar(self, superficie):
+        """Desenha o título, a caixa do nome com o cursor piscando, o aviso e o ranking."""
         superficie.fill(BLACK)
         desenhar_texto(superficie, "The Legend", (128, 48), YELLOW, 44, centralizado=True)
         desenhar_texto(superficie, "of Insper", (128, 84), YELLOW, 44, centralizado=True)
@@ -45,4 +52,5 @@ class TelaInicial(Tela):
         desenhar_ranking(superficie, quadro, self.aplicacao.ranking.melhores(10))
 
     def atualizar(self, dt):
+        """Conta o tempo na tela, que faz o cursor e o aviso piscarem."""
         self.tempo += dt

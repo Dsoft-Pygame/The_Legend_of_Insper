@@ -1,3 +1,5 @@
+"""A classe mãe de tudo que aparece no mapa."""
+
 import pygame
 
 
@@ -5,6 +7,7 @@ class Entidade:
     """Tudo que aparece no mapa: tem posição, tamanho e cor, e sabe se desenhar."""
 
     def __init__(self, x, y, largura, altura, cor):
+        """Guarda o centro (x, y), o tamanho e a cor. Começa sem imagem."""
         self.posicao = pygame.Vector2(x, y)   # centro, em pixels do mapa
         self.largura = largura
         self.altura = altura
@@ -22,6 +25,7 @@ class Entidade:
         return self.imagem
 
     def desenhar(self, superficie, camera):
+        """Desenha a imagem atual no lugar da entidade na tela; sem imagem, desenha um retângulo com a cor."""
         retangulo = camera.para_tela(self.retangulo())
         imagem = self.imagem_atual()
         

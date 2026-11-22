@@ -1,3 +1,5 @@
+"""Os inimigos do jogo: Slime, Esqueleto, Morcego e o chefe, o Dragão Ancião."""
+
 import random
 import pygame
 
@@ -15,6 +17,9 @@ class Inimigo(Personagem):
     """
 
     def __init__(self, x, y, tamanho, cor, vida, velocidade, nome, dano_contato, pontos, raio_alerta):
+        """Guarda o nome, o dano de contato, os pontos e o raio de alerta, e sorteia em que quadro da
+        animação começa.
+        """
         super().__init__(x, y, tamanho, cor, vida, velocidade)
         self.nome = nome
         self.dano_contato = dano_contato   # dano quando encosta no herói
@@ -72,6 +77,7 @@ class Slime(Inimigo):
     """Lento e fraco: o inimigo do primeiro andar."""
 
     def __init__(self, x, y):
+        """Slime: 20 de vida, lento (60 px/s), quica no lugar."""
         super().__init__(x, y, 24, CYAN, 20, 60, "Slime", 10, 50, 160)
         self.carregar_quadros("slime", [1, 2, 1, 3])   # normal, achata, normal, estica: quica no lugar
         self.tempo_quadro = 0.2
@@ -80,6 +86,7 @@ class Esqueleto(Inimigo):
     """Mais forte e mais rápido que o slime, e percebe o herói de mais longe."""
 
     def __init__(self, x, y):
+        """Esqueleto: 40 de vida, 110 px/s, percebe o herói a 224 px e anda trocando as pernas."""
         super().__init__(x, y, 24, WHITE, 40, 110, "Esqueleto", 15, 80, 224)
         self.resistencia = 0.3             # mais pesado que o slime e o morcego: voa um pouco menos
         self.tempo_vagando = 1
@@ -90,6 +97,7 @@ class Morcego(Inimigo):
     """Rápido e frágil. Persegue em zigue-zague"""
 
     def __init__(self, x, y):
+        """Morcego: 10 de vida, o mais rápido (180 px/s), bate as asas e guarda o lado do zigue-zague."""
         super().__init__(x, y, 24, PINK, 10, 180, "Morcego", 5, 70, 240)
         self.tempo_vagando = 1
         self.tempo_desvio = 0.4            # segundos desviando para o mesmo lado
@@ -100,6 +108,9 @@ class Morcego(Inimigo):
         self.tempo_quadro = 0.08
         
     def atualizar(self, dt, heroi, mapa):
+        """Perto do herói, vai até ele desviando para um lado e para o outro (zigue-zague); longe, vaga
+        como os outros.
+        """
         caminho = heroi.posicao - self.posicao
         if caminho.length() == 0 or caminho.length() > self.raio_alerta:
             return super().atualizar(dt, heroi, mapa)
@@ -118,6 +129,9 @@ class Dragao(Inimigo):
     """O chefe do Topo da Torre, maior que os outros. 2 fases"""
 
     def __init__(self, x, y):
+        """O chefe: 360 de vida, 48 px, quase não é empurrado; guarda as recargas do tiro, do anel de fogo
+        e do cálculo do caminho.
+        """
         super().__init__(x, y, 48, PURPLE, 360, 90, "Dragão Ancião", 25, 2000, 480)
         self.resistencia = 0.85            # o chefe quase não sai do lugar
         self.distancia_tiro = 128          # cospe fogo quando o herói está mais perto que isso
@@ -132,11 +146,16 @@ class Dragao(Inimigo):
         self.tempo_aviso = 0.5             # segundos piscando vermelho antes do anel sair
 
     def fase(self): #2 fases
+        """1 enquanto tem mais da metade da vida; 2 depois disso."""
         if self.vida > self.vida_maxima / 2:
             return 1
         return 2
 
     def atualizar(self, dt, heroi, mapa):
+        """Olha para o herói e anda até ele contornando as paredes. Fase 1: metade da velocidade. Fase 2:
+        velocidade cheia e um anel de 12 bolas de fogo a cada tempo_anel segundos. Nas duas, cospe fogo
+        quando o herói está perto. Devolve as bolas de fogo criadas.
+        """
         self.recarga_tiro = max(0, self.recarga_tiro - dt)
         caminho = heroi.posicao - self.posicao
         if caminho.length() == 0:
@@ -188,6 +207,7 @@ class Dragao(Inimigo):
         return True
 
     def bola_de_fogo(self, direcao, rapidez):
+        """Cria uma bola de fogo do Dragão nessa direção e rapidez (dono "inimigo")."""
         return Projetil(self.posicao, direcao * rapidez, tamanho=16, cor=RED, dano=15, duracao=2, dono="inimigo",
                         imagem="bola_fogo.png")
 

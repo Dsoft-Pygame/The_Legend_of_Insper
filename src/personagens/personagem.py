@@ -1,3 +1,5 @@
+"""A classe mãe de tudo que tem vida e anda pelo mapa."""
+
 import pygame
 
 from personagens.entidade import Entidade
@@ -9,6 +11,7 @@ class Personagem(Entidade):
     """Tudo que tem vida e anda pelo mapa sem atravessar parede (heróis e inimigos)."""
 
     def __init__(self, x, y, tamanho, cor, vida, velocidade):
+        """Guarda a vida, a velocidade e a direção, e começa sem knockback e sem estar piscando."""
         super().__init__(x, y, tamanho, tamanho, cor)
         self.vida = vida
         self.vida_maxima = vida
@@ -74,6 +77,7 @@ class Personagem(Entidade):
         self.empurrao *= max(0, 1 - 10 * dt)      # perde 10% da força a cada centésimo de segundo
 
     def esta_vivo(self):
+        """True enquanto tem vida."""
         return self.vida > 0
 
     def receber_dano(self, dano):
@@ -84,6 +88,7 @@ class Personagem(Entidade):
         self.invulneravel = self.tempo_invulneravel
 
     def desenhar(self, superficie, camera):
+        """Desenha o personagem, mas pisca (some em quadros alternados) enquanto está invulnerável."""
         if self.invulneravel > 0 and int(self.invulneravel * 10) % 2 == 0:
             return                                # pisca enquanto está invulnerável
         super().desenhar(superficie, camera)

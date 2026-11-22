@@ -1,3 +1,5 @@
+"""A tela onde se joga: os andares da torre, o HUD e a pausa."""
+
 import math
 
 import pygame
@@ -16,6 +18,7 @@ class TelaJogo(Tela):
     """
 
     def __init__(self, aplicacao):
+        """Começa a partida no primeiro andar, com o herói escolhido e a pontuação zerada."""
         super().__init__(aplicacao)
         self.heroi = aplicacao.heroi
         self.pontuacao = Pontuacao()      # os pontos da partida inteira
@@ -36,6 +39,7 @@ class TelaJogo(Tela):
             self.aplicacao.som.tocar_musica("torre")   # do Térreo para a Biblioteca não reinicia
 
     def tratar_evento(self, evento):
+        """Esc pausa e continua; Espaço ataca e Shift esquerdo usa o especial (só fora da pausa)."""
         if evento.type != pygame.KEYDOWN:
             return
         if evento.key == pygame.K_ESCAPE:
@@ -55,6 +59,9 @@ class TelaJogo(Tela):
             self.aplicacao.som.tocar("ataque")
 
     def atualizar(self, dt):
+        """Avança o nível, a câmera e o tempo da partida, passa de andar na saída e termina a partida na
+        vitória ou na derrota. Pausado, nada anda.
+        """
         if self.pausado:
             return                                   # nada anda: nem o tempo da partida
         self.tempo += dt
@@ -90,6 +97,7 @@ class TelaJogo(Tela):
         self.aplicacao.trocar_tela("resultado")
 
     def desenhar(self, superficie):
+        """Desenha o nível, o HUD por cima e, conforme o caso, a pausa ou o nome do andar."""
         self.nivel.desenhar(superficie, self.camera)
         self.desenhar_hud(superficie)
         if self.pausado:

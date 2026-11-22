@@ -129,6 +129,7 @@ class Dragao(Inimigo):
         self.recarga_rota = 0
         self.passo = None                  # próximo ponto do caminho quando há parede no meio
         self.imagem = carregar_imagem("dragao.png")
+        self.tempo_aviso = 0.5             # segundos piscando vermelho antes do anel sair
 
     def fase(self): #2 fases
         if self.vida > self.vida_maxima / 2:
@@ -189,3 +190,28 @@ class Dragao(Inimigo):
     def bola_de_fogo(self, direcao, rapidez):
         return Projetil(self.posicao, direcao * rapidez, tamanho=16, cor=RED, dano=15, duracao=2, dono="inimigo",
                         imagem="bola_fogo.png")
+
+    def avisando_anel(self): # avisa que o anel de fogo sera lançado
+        """True no meio segundo antes do anel de fogo sair (só na fase 2)."""
+        return self.fase() == 2 and self.recarga_anel <= self.tempo_aviso
+
+    def piscando_vermelho(self): #pisca vermelho
+        """Avisando o anel, fica vermelho num décimo de segundo e normal no outro."""
+        return self.avisando_anel() and int(self.recarga_anel * 10) % 2 == 0
+
+    def imagem_atual(self):
+        """Antes do anel de fogo, pisca vermelho para o herói ter tempo de se afastar."""
+        imagem = super().imagem_atual()
+        if imagem is None or not self.piscando_vermelho():
+            return imagem
+        vermelha = imagem.copy()
+        vermelha.fill((255, 80, 80), special_flags=pygame.BLEND_RGB_MULT)   # tira o verde e o azul
+        vermelha.fill((90, 0, 0), special_flags=pygame.BLEND_RGB_ADD)       # e soma vermelho
+        return vermelha
+
+    def desenhar(self, superficie, camera):
+        """Sem o PNG, o quadrado roxo também fica vermelho no aviso."""
+        self.cor = PURPLE
+        if self.piscando_vermelho():
+            self.cor = RED
+        super().desenhar(superficie, camera)

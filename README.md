@@ -103,9 +103,9 @@ O arquivo que roda o jogo é o **`src/main.py`**. O jogo abre em tela cheia, com
 
 | Classe | Vida | Velocidade | Dano | Ataque (Espaço) | Especial (Shift) | Recarga |
 |---|---|---|---|---|---|---|
-| Mago | 60 | 120 | 25 | bola de fogo lenta e forte | anel com 8 bolas de fogo | 9 s |
-| Arqueiro | 80 | 200 | 10 | flecha rápida | 5 flechas em leque | 5 s |
-| Bárbaro | 160 | 150 | 40 | machadada logo na frente | giro que acerta todos em volta | 7 s |
+| Mago | 60 | 135 | 20 | bola de fogo lenta e forte | anel com 8 bolas de fogo | 9 s |
+| Arqueiro | 80 | 200 | 13 | flecha rápida | 5 flechas em leque | 4 s |
+| Bárbaro | 120 | 150 | 35 | machadada logo na frente | giro que acerta todos em volta | 7 s |
 
 Os ataques empurram os inimigos para trás (knockback). Depois de levar dano, o herói fica 0,8 s piscando e não leva dano de novo nesse tempo. O ícone do lado da barra de vida enche enquanto o especial recarrega e fica amarelo, com um "plim", quando ele está pronto.
 
@@ -113,22 +113,22 @@ Os ataques empurram os inimigos para trás (knockback). Depois de levar dano, o 
 
 | Inimigo | Vida | Dano ao encostar | Pontos | Jeito |
 |---|---|---|---|---|
-| Slime | 20 | 10 | 50 | lento; quica no lugar e persegue quando o herói chega perto |
-| Esqueleto | 40 | 15 | 80 | mais rápido e percebe o herói de mais longe |
+| Slime | 25 | 10 | 50 | lento; quica no lugar e persegue quando o herói chega perto |
+| Esqueleto | 36 | 15 | 80 | mais rápido e percebe o herói de mais longe |
 | Morcego | 10 | 5 | 70 | muito rápido; persegue em zigue-zague |
 | Dragão Ancião (chefe) | 360 | 25 | 2000 | 2 fases; contorna as paredes até o herói e cospe fogo |
 
 O Dragão tem duas fases. Na primeira, anda devagar e cospe uma bola de fogo quando o herói chega perto. Com metade da vida, entra na segunda fase: anda na velocidade cheia e solta um anel de 12 bolas de fogo a cada 3 segundos. Meio segundo antes de cada anel, ele **pisca vermelho**, para o jogador ter tempo de se afastar. Para chegar ao herói sem ficar preso nas paredes, ele faz uma busca em largura pela grade do mapa.
 
-Cada inimigo comum derrotado tem 30% de chance de deixar uma **poção de vida**, que devolve 25 de vida.
+Cada inimigo comum derrotado tem 20% de chance de deixar uma **poção de vida**, que devolve 25 de vida.
 
 ### Os andares
 
 | Andar | Mapa | Inimigos | Cenário |
 |---|---|---|---|
-| Térreo | 30 × 14 tiles | 4 slimes | pedra |
-| Biblioteca | 47 × 17 tiles | 3 slimes, 3 esqueletos e 2 morcegos | madeira e estantes de livros |
-| Topo da Torre | 29 × 24 tiles | 2 esqueletos, 1 morcego e o Dragão Ancião | pedra |
+| Térreo | 30 × 14 tiles | 5 slimes e 3 morcegos | pedra |
+| Biblioteca | 47 × 17 tiles | 5 slimes, 5 esqueletos e 5 morcegos | madeira e estantes de livros |
+| Topo da Torre | 29 × 24 tiles | 2 slimes, 4 esqueletos, 8 morcegos e o Dragão Ancião | pedra |
 
 Cada andar é maior que a tela, e a câmera segue o herói. Os mapas completos:
 
@@ -348,7 +348,7 @@ O histórico completo está nos [commits](https://github.com/Dsoft-Pygame/The_Le
 
 **5. Mapas compactos e menos inimigos.** Os primeiros mapas da Biblioteca e do Topo tinham inimigos demais (a Biblioteca chegou a ter 66, e nenhuma classe passava dela). Depois, com os tiles de 32 pixels, os andares ficaram grandes demais. Diminuímos os mapas e o número de inimigos na mesma proporção, para a dificuldade de cada andar continuar parecida.
 
-**6. Balanceamento jogando.** Jogando as três classes, ajustamos os números: o Dragão começou com 600 de vida e terminou com 360, porque o Topo da Torre tem pilares e cantos que dificultam fugir dele; o Mago ficou mais lento e com menos dano; o Bárbaro ganhou vida e dano; os ataques passaram a empurrar os inimigos; e entrou a poção de vida, que começou com 15% de chance e terminou com 30%.
+**6. Balanceamento jogando.** Jogando as três classes, ajustamos os números: o Dragão começou com 600 de vida e terminou com 360, porque o Topo da Torre tem pilares e cantos que dificultam fugir dele; o Mago ficou com menos dano, mas mais rápido; o Arqueiro ganhou dano e recargas menores; o Bárbaro trocou um pouco de vida e dano por um empurrão maior; os ataques passaram a empurrar os inimigos; e entrou a poção de vida, que começou com 15% de chance, chegou a 30% e terminou com 20%.
 
 **7. Extras que ficaram de fora.** O planejamento tinha tasks opcionais de controle (gamepad), movimento em grade e dois jogadores no mesmo teclado. A simplificação tirou o suporte a controle que já existia, e o prazo final passou de 23/11 para 22/11, então priorizamos terminar e polir o jogo principal.
 

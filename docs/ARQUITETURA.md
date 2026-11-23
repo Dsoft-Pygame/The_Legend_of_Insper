@@ -58,7 +58,7 @@ A `TelaJogo` transforma Espaço e Shift esquerdo em `heroi.usar_ataque()` e `her
 3. os projéteis andam e somem os que bateram na parede ou acabaram o tempo;
 4. projétil do herói que encosta num inimigo dá dano e empurra o inimigo (knockback: a força é o `empurrao_ataque` da classe, e a `resistencia` do inimigo diminui, de 0 no slime e no morcego até 0,85 no Dragão), e projétil de inimigo dá dano no herói; cada projétil acerta cada alvo uma vez só; o inimigo empurrado desliza sem atravessar parede e vai freando;
 5. inimigo encostado no herói dá dano de contato;
-6. os inimigos mortos saem da lista, e cada um (menos o chefe) tem 30% de chance de deixar uma `Pocao` de vida no lugar;
+6. os inimigos mortos saem da lista, e cada um (menos o chefe) tem 20% de chance de deixar uma `Pocao` de vida no lugar;
 7. poção encostada no herói devolve 25 de vida, sem passar da vida máxima, e some.
 
 Os inimigos são criados a partir das letras do mapa quando o nível abre. Cada inimigo derrotado soma os seus pontos na `Pontuacao`. Sem inimigos, a saída abre, e a `TelaJogo` usa o `Nivel.heroi_na_saida()` para passar de andar. A partida termina quando o chefe morre (vitória) ou quando a vida do herói acaba (derrota).

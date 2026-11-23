@@ -77,7 +77,7 @@ class Slime(Inimigo):
     """Lento e fraco: o inimigo do primeiro andar."""
 
     def __init__(self, x, y):
-        """Slime: 20 de vida, lento (60 px/s), quica no lugar."""
+        """Slime: 25 de vida, lento (60 px/s), quica no lugar."""
         super().__init__(x, y, 24, CYAN, 25, 60, "Slime", 10, 50, 160)
         self.carregar_quadros("slime", [1, 2, 1, 3])   # normal, achata, normal, estica: quica no lugar
         self.tempo_quadro = 0.2
@@ -86,7 +86,7 @@ class Esqueleto(Inimigo):
     """Mais forte e mais rápido que o slime, e percebe o herói de mais longe."""
 
     def __init__(self, x, y):
-        """Esqueleto: 40 de vida, 110 px/s, percebe o herói a 224 px e anda trocando as pernas."""
+        """Esqueleto: 36 de vida, 110 px/s, percebe o herói a 224 px e anda trocando as pernas."""
         super().__init__(x, y, 24, WHITE, 36, 110, "Esqueleto", 15, 80, 224)
         self.resistencia = 0.3             # mais pesado que o slime e o morcego: voa um pouco menos
         self.tempo_vagando = 1

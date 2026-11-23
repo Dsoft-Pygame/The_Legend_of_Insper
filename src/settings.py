@@ -51,7 +51,7 @@ CURA_POCAO = 25           # quanto de vida a poção devolve
 # Os inimigos de cada um são as letras do mapa. Os tiles são o começo do nome dos PNGs
 # em assets/tiles/: "chao" usa chao_1.png até chao_4.png.
 NIVEIS = [
-    ("Térreo", "torre_1.txt", "chao", "parede"),                       # 4 slimes
-    ("Biblioteca", "torre_2.txt", "chao_madeira", "parede_biblio"),    # 3 slimes, 3 esqueletos e 2 morcegos
-    ("Topo da Torre", "torre_3.txt", "chao", "parede"),                # 2 esqueletos, 1 morcego e o chefe Dragão
+    ("Térreo", "torre_1.txt", "chao", "parede"),                       # 5 slimes e 3 morcegos
+    ("Biblioteca", "torre_2.txt", "chao_madeira", "parede_biblio"),    # 5 slimes, 5 esqueletos e 5 morcegos
+    ("Topo da Torre", "torre_3.txt", "chao", "parede"),                # 2 slimes, 4 esqueletos, 8 morcegos e o chefe Dragão
 ]

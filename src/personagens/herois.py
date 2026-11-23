@@ -87,7 +87,7 @@ class Mago(Heroi):
     """Bola de fogo lenta e forte. Especial: anel com 8 bolas de fogo."""
 
     def __init__(self, x, y):
-        """Mago: 60 de vida, 120 px/s, 25 de dano, especial a cada 9 s. O desenho olha para a esquerda."""
+        """Mago: 60 de vida, 135 px/s, 20 de dano, especial a cada 9 s. O desenho olha para a esquerda."""
         super().__init__(x, y, BLUE, 60, 135, "Mago", "Frágil, mas com dano alto à distância.")
         self.dano = 20
         self.tempo_ataque = 0.6
@@ -119,7 +119,7 @@ class Arqueiro(Heroi):
     """Flecha rápida. Especial: cinco flechas em leque, com a menor recarga das classes."""
 
     def __init__(self, x, y):
-        """Arqueiro: 80 de vida, 200 px/s, 10 de dano, especial a cada 5 s."""
+        """Arqueiro: 80 de vida, 200 px/s, 13 de dano, especial a cada 4 s."""
         super().__init__(x, y, GREEN, 80, 200, "Arqueiro", "Ágil, ataca rápido de longe.")
         self.dano = 13
         self.tempo_ataque = 0.2
@@ -151,7 +151,7 @@ class Barbaro(Heroi):
     """Machadada logo na frente. Especial: giro que acerta todos em volta."""
 
     def __init__(self, x, y):
-        """Bárbaro: 160 de vida, 150 px/s, 40 de dano, especial a cada 7 s. Carrega os quadros da machadada
+        """Bárbaro: 120 de vida, 150 px/s, 35 de dano, especial a cada 7 s. Carrega os quadros da machadada
         e do giro.
         """
         super().__init__(x, y, ORANGE, 120, 150, "Bárbaro", "Resistente, luta de perto.")

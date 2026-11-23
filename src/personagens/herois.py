@@ -88,12 +88,12 @@ class Mago(Heroi):
 
     def __init__(self, x, y):
         """Mago: 60 de vida, 120 px/s, 25 de dano, especial a cada 9 s. O desenho olha para a esquerda."""
-        super().__init__(x, y, BLUE, 60, 120, "Mago", "Frágil, mas com dano alto à distância.")
-        self.dano = 25
+        super().__init__(x, y, BLUE, 60, 135, "Mago", "Frágil, mas com dano alto à distância.")
+        self.dano = 20
         self.tempo_ataque = 0.6
         self.tempo_especial = 9
         self.duracao_especial = 1
-        self.empurrao_ataque = 300         # bola de fogo pesada: empurra bem
+        self.empurrao_ataque = 400         # bola de fogo pesada: empurra bem
         self.imagem = carregar_imagem("mago.png")
         self.desenho_olha_esquerda = True  # o mago.png foi desenhado olhando para a esquerda
 
@@ -121,11 +121,11 @@ class Arqueiro(Heroi):
     def __init__(self, x, y):
         """Arqueiro: 80 de vida, 200 px/s, 10 de dano, especial a cada 5 s."""
         super().__init__(x, y, GREEN, 80, 200, "Arqueiro", "Ágil, ataca rápido de longe.")
-        self.dano = 10
-        self.tempo_ataque = 0.3
-        self.tempo_especial = 5
+        self.dano = 13
+        self.tempo_ataque = 0.2
+        self.tempo_especial = 4
         self.duracao_especial = 1.2        # as flechas do especial vão mais longe que as normais
-        self.empurrao_ataque = 144         # flecha leve: empurra pouco
+        self.empurrao_ataque = 150         # flecha leve: empurra pouco
         self.imagem = carregar_imagem("arqueiro.png")
 
     def atacar(self):
@@ -154,12 +154,12 @@ class Barbaro(Heroi):
         """Bárbaro: 160 de vida, 150 px/s, 40 de dano, especial a cada 7 s. Carrega os quadros da machadada
         e do giro.
         """
-        super().__init__(x, y, ORANGE, 160, 150, "Bárbaro", "Resistente, luta de perto.")
-        self.dano = 40
+        super().__init__(x, y, ORANGE, 120, 150, "Bárbaro", "Resistente, luta de perto.")
+        self.dano = 35
         self.tempo_ataque = 0.5
         self.tempo_especial = 7
         self.duracao_especial = 0.3        # o giro fica pouco tempo na tela
-        self.empurrao_ataque = 456         # machadada: a que empurra mais
+        self.empurrao_ataque = 500         # machadada: a que empurra mais
         self.imagem = carregar_imagem("barbaro.png")
         self.quadros_corte = [carregar_imagem("corte_1.png"), carregar_imagem("corte_2.png"),
                               carregar_imagem("corte_3.png")]
